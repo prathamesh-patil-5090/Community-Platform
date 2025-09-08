@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { BiLike, BiSolidLike } from "react-icons/bi";
 import { MdOutlineModeComment } from "react-icons/md";
