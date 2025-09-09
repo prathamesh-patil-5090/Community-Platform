@@ -1,32 +1,16 @@
 "use client";
 import Image from "next/image";
-import React, { ChangeEvent, ReactHTMLElement, useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { BiLike, BiSolidLike } from "react-icons/bi";
 import { MdOutlineModeComment, MdOutlineReport } from "react-icons/md";
 import { PiDotsThreeCircleVerticalLight } from "react-icons/pi";
 import CommentOptionsModal from "./CommentOptionsModal";
 import { IoSend } from "react-icons/io5";
+import { PostInfoType } from "../../../../lib/types";
 
-type tagsType = string[];
-
-const tags: tagsType = [
-  "facts",
-  "student_life",
-  "im_important",
-  "we_need_better_food",
-];
-
-function Post() {
-  const my_text =
-    "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Impedit aliquam eius deserunt veritatis minus voluptatum, possimus quos quas quasi ullam accusantium. Quae necessitatibus recusandae illo et! Exercitationem officia debitis tempora eos repudiandae natus expedita. Debitis, ducimus repellat quas dolores error, placeat non commodi doloribus amet illo facere libero perferendis harum delectus vel illum. Quisquam deleniti minima quidem vel, velit maiores hic aspernatur est repellendus, illum eius praesentium. Quos delectus aperiam blanditiis minus architecto asperiores eos vero sint magni id unde deleniti illo deserunt repellat voluptatum cumque accusantium exercitationem accusamus, nam odit? Laboriosam voluptatibus velit, deserunt ipsam ad maiores dolore quam.";
-  const postComments = [
-    "Prathamesh, tum age badho ham tumhare saath hai!",
-    "Fuck mess-Food!!!!!",
-    "Ye bhadwa college",
-    "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Impedit aliquam eius deserunt veritatis minus voluptatum, possimus quos quas quasi ullam accusantium. Quae necessitatibus recusandae illo et! Exercitationem officia debitis tempora eos repudiandae natus expedita. Debitis, ducimus repellat quas dolores error, placeat non commodi doloribus amet illo facere libero perferendis harum delectus vel illum. Quisquam deleniti minima quidem vel, velit maiores hic aspernatur est repellendus, illum eius praesentium. Quos delectus aperiam blanditiis minus architecto asperiores eos vero sint magni id unde deleniti illo deserunt repellat voluptatum cumque accusantium exercitationem accusamus, nam odit? Laboriosam voluptatibus velit, deserunt ipsam ad maiores dolore quam.",
-  ];
-  const postId: string = "646d456w56e65d";
+export default function Post({ postData }: { postData: PostInfoType }) {
+  const postComments = postData.postComments || [];
 
   const router = useRouter();
   const [isLiked, setLike] = useState(false);
@@ -36,6 +20,15 @@ function Post() {
   const [comment, setComment] = useState<string>("");
   const [comments, setComments] = useState<string[]>(postComments);
   const [openModalIndex, setOpenModalIndex] = useState<number | null>(null);
+
+  if (!postData) {
+    return <div className="p-5">loading post...</div>;
+  }
+
+  const my_text = postData.postDesc || "";
+
+  const tags: string[] = postData.tags || [];
+  const postId = postData.postId;
 
   const underFiftyWords = (text: string): string => {
     const words = text.split(" ");
@@ -73,20 +66,26 @@ function Post() {
         <div className="flex justify-between gap-2 items-center">
           <div className="flex justify-self-start gap-2 bg-gray-800 px-4 py-2 rounded-md">
             <Image
-              src="/logo/me.webp"
+              src={postData.authorPic ? postData.authorPic : "no-image"}
               alt="Author Pic"
               width={40}
               height={40}
               className="rounded-full"
             />
             <div className="font-sans">
-              <p>Prathamesh Patil</p>
-              <p>8 Sept 2025</p>
+              <p>{postData.authorName}</p>
+              <p>
+                {new Date(postData.postCreationDate)
+                  .toDateString()
+                  .split(" ")
+                  .slice(1)
+                  .join(" ")}
+              </p>
             </div>
           </div>
           <div className="flex items-end gap-2">
             <span className="flex bg-gray-600 rounded-lg px-2 my-4">
-              Article
+              {postData.postType}
             </span>
             <MdOutlineReport
               className="flex text-red-500 my-3 cursor-pointer"
@@ -99,14 +98,14 @@ function Post() {
         className="font-sans font-bold text-xl md:text-3xl py-2 cursor-pointer"
         onClick={() => router.push(`/article/${postId}`)}
       >
-        No good quality food in hostel
+        {postData.postTitle}
       </div>
       <div>
         <Image
-          src="/logo/trial_image.webp"
+          src={postData.postImage ? postData.postImage : "no-image"}
           alt="Post Pic"
-          width={2500}
-          height={1500}
+          width={800}
+          height={100}
           className="rounded-lg"
         />
       </div>
@@ -130,12 +129,12 @@ function Post() {
         {isLiked ? (
           <div className="flex items-center gap-2">
             <BiSolidLike size={40} onClick={handleLike} />
-            <p>{likes}</p>
+            <p>{postData.postLikes}</p>
           </div>
         ) : (
           <div className="flex items-center gap-2">
             <BiLike size={40} onClick={handleLike} />
-            <p>{likes}</p>
+            <p>{postData.postLikes}</p>
           </div>
         )}
         <div
@@ -208,5 +207,3 @@ function Post() {
     </div>
   );
 }
-
-export default Post;

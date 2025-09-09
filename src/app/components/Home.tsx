@@ -2,7 +2,7 @@ import React from "react";
 import PostBar from "./ui/PostBar";
 import SideBar from "./ui/SideBar";
 import TopDiscussionsBox from "./ui/TopDiscussionsBox";
-import Post from "./ui/Post";
+import DisplayPosts from "./DisplayPosts";
 
 function Home() {
   return (
@@ -12,7 +12,7 @@ function Home() {
       </div>
       <div className="flex-1">
         <PostBar />
-        <Post />
+        <DisplayPosts />
       </div>
       <div className="flex-1 hidden md:block">
         <TopDiscussionsBox />
