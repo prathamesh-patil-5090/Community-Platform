@@ -1,6 +1,6 @@
 import React from "react";
 import { LuPencil } from "react-icons/lu";
-import { MdDelete } from "react-icons/md";
+import { MdDelete, MdOutlineReport } from "react-icons/md";
 
 function CommentOptionsModal() {
   return (
@@ -12,6 +12,10 @@ function CommentOptionsModal() {
       <div className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 cursor-pointer">
         <MdDelete size={28} />
         <span>Delete</span>
+      </div>
+      <div className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 cursor-pointer text-red-500">
+        <MdOutlineReport size={28} />
+        <span>Report</span>
       </div>
     </div>
   );

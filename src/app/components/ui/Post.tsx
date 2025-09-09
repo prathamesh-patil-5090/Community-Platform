@@ -3,7 +3,7 @@ import Image from "next/image";
 import React, { ChangeEvent, ReactHTMLElement, useState } from "react";
 import { useRouter } from "next/navigation";
 import { BiLike, BiSolidLike } from "react-icons/bi";
-import { MdOutlineModeComment } from "react-icons/md";
+import { MdOutlineModeComment, MdOutlineReport } from "react-icons/md";
 import { PiDotsThreeCircleVerticalLight } from "react-icons/pi";
 import CommentOptionsModal from "./CommentOptionsModal";
 import { IoSend } from "react-icons/io5";
@@ -70,7 +70,7 @@ function Post() {
   return (
     <div className="min-w-auto max-w-full border rounded-xl p-5 mt-2">
       <div>
-        <div className="flex justify-between gap-2">
+        <div className="flex justify-between gap-2 items-center">
           <div className="flex justify-self-start gap-2 bg-gray-800 px-4 py-2 rounded-md">
             <Image
               src="/logo/me.webp"
@@ -84,9 +84,15 @@ function Post() {
               <p>8 Sept 2025</p>
             </div>
           </div>
-          <span className="flex bg-gray-600 rounded-lg pt-3 px-2 my-2">
-            Article
-          </span>
+          <div className="flex items-end gap-2">
+            <span className="flex bg-gray-600 rounded-lg px-2 my-4">
+              Article
+            </span>
+            <MdOutlineReport
+              className="flex text-red-500 my-3 cursor-pointer"
+              size={30}
+            />
+          </div>
         </div>
       </div>
       <div
@@ -132,11 +138,11 @@ function Post() {
             <p>{likes}</p>
           </div>
         )}
-        <div className="flex items-center gap-2">
-          <MdOutlineModeComment
-            size={40}
-            onClick={() => setCommentPressed(!isCommentPressed)}
-          />
+        <div
+          className="flex items-center gap-2"
+          onClick={() => setCommentPressed(!isCommentPressed)}
+        >
+          <MdOutlineModeComment size={40} />
           <p className="font-sans font-bold">Add a Comment</p>
         </div>
       </div>
@@ -172,7 +178,7 @@ function Post() {
                   >
                     {comment}
                     <div
-                      className="flex items-center gap-3 pl-2 relative"
+                      className="flex items-start gap-3 pl-2 relative"
                       onClick={() =>
                         setOpenModalIndex(openModalIndex === idx ? null : idx)
                       }
