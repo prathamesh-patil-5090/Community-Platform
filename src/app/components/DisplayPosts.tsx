@@ -109,7 +109,7 @@ const PostInfo: PostsInfoType = [
   {
     postId: "mnop9012qrst3456uvwx",
     authorName: "Vikram Rao",
-    authorPic: "/post7.webp",
+    authorPic: "/post7.jpg",
     postCreationDate: "2025-09-02",
     tags: ["mental_health", "wellness", "student_life"],
     postType: "Article",

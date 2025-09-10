@@ -11,10 +11,11 @@ import { PostInfoType } from "../../../../lib/types";
 
 export default function Post({ postData }: { postData: PostInfoType }) {
   const postComments = postData.postComments || [];
+  const postLikes = postData.postLikes || 0;
 
   const router = useRouter();
   const [isLiked, setLike] = useState(false);
-  const [likes, setLikes] = useState<number>(0);
+  const [likes, setLikes] = useState<number>(postLikes);
   const [isCommentPressed, setCommentPressed] = useState(false);
   const [isCommentInput, setCommentInput] = useState(false);
   const [comment, setComment] = useState<string>("");
@@ -38,14 +39,8 @@ export default function Post({ postData }: { postData: PostInfoType }) {
   };
 
   const handleLike = (): void => {
-    if (isLiked) {
-      setLike(false);
-      setLikes(likes - 1);
-    }
-    if (!isLiked) {
-      setLike(true);
-      setLikes(likes + 1);
-    }
+    setLike(!isLiked);
+    setLikes(isLiked ? likes - 1 : likes + 1);
   };
 
   const addComment = (comment: string): void => {
@@ -129,12 +124,12 @@ export default function Post({ postData }: { postData: PostInfoType }) {
         {isLiked ? (
           <div className="flex items-center gap-2">
             <BiSolidLike size={40} onClick={handleLike} />
-            <p>{postData.postLikes}</p>
+            <p>{likes}</p>
           </div>
         ) : (
           <div className="flex items-center gap-2">
             <BiLike size={40} onClick={handleLike} />
-            <p>{postData.postLikes}</p>
+            <p>{likes}</p>
           </div>
         )}
         <div
