@@ -26,10 +26,6 @@ export default function Post({ postData }: { postData: PostInfoType }) {
   const [isReport, setReport] = useState<boolean>(false);
   const [Blur, setBlur] = useState<string>("none");
 
-  if (!postData) {
-    return <div className="p-5">loading post...</div>;
-  }
-
   const my_text = postData.postDesc || "";
 
   const tags: string[] = postData.tags || [];
@@ -81,6 +77,10 @@ export default function Post({ postData }: { postData: PostInfoType }) {
       document.body.style.overflow = "unset";
     };
   }, [isReport]);
+
+  if (!postData) {
+    return <div className="p-5">loading post...</div>;
+  }
 
   return (
     <div className="relative min-w-auto max-w-full border rounded-xl p-5 mt-2">
