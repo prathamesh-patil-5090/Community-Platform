@@ -215,7 +215,15 @@ export default function Post({ postData }: { postData: PostInfoType }) {
                           className="bg-white absolute top-8 right-0 border border-gray-300 rounded-lg shadow-lg z-50"
                           onClick={(e) => e.stopPropagation()}
                         >
-                          <CommentOptionsModal />
+                          <CommentOptionsModal
+                            onDelete={() => {
+                              setComments(comments.filter((_, i) => i !== idx));
+                              setOpenModalIndex(null);
+                            }}
+                            onReport={() => {
+                              setOpenModalIndex(null);
+                            }}
+                          />
                         </div>
                       )}
                     </div>

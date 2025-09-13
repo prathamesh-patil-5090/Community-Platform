@@ -13,3 +13,11 @@ export interface PostInfoType {
 }
 
 export type PostsInfoType = PostInfoType[];
+
+export interface TopPostProps {
+  postTitle: string;
+  postLink: string;
+  numberOfComments: number;
+}
+
+export type TopPostsProps = TopPostProps[];

@@ -1,3 +1,5 @@
+"use client";
+import { useState } from "react";
 import { IoClose } from "react-icons/io5";
 import { toast } from "react-toastify";
 
@@ -10,7 +12,12 @@ export default function ReportsComponent({
   postData,
   onClose,
 }: ReportsComponentProps) {
-  const handleYes = () => {
+  const [reason, setReason] = useState<string>("");
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+
+  const handleYes = async () => {
+    setIsSubmitting(true);
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     toast.success("Successfully Reported. Appropriate action will taken soon", {
       style: {
         fontSize: "0.85rem",
@@ -19,12 +26,15 @@ export default function ReportsComponent({
         maxWidth: "90vw",
         width: "auto",
         wordWrap: "break-word",
+        backgroundColor: "#1f2937",
+        color: "#ffffff",
         lineHeight: "1.4",
       },
       closeOnClick: true,
       pauseOnHover: true,
       draggable: true,
     });
+    setIsSubmitting(false);
     onClose();
   };
 
@@ -33,28 +43,47 @@ export default function ReportsComponent({
   };
 
   return (
-    <div className="grid grid-rows-1 rounded-lg bg-white max-w-[300px] md:max-w-[400px] md:min-h-72 px-2 mt-15 md:py-2 shadow-lg">
-      <div className="flex justify-between items-center mb-4">
-        <div className="text-black font-sans font-bold text-2xl flex-wrap">
-          Do you want to report this post - {postData}?
+    <div className="fixed inset-0 bg-black-70  flex justify-center items-center rounded-lg z-50 animate-fadeIn">
+      <div className="bg-gray-800 rounded-lg max-w-[300px] md:max-w-[400px] min-h-72 p-6 shadow-2xl border border-gray-600">
+        <div className="flex justify-center items-center mb-4">
+          <h2 className="text-white font-sans font-bold text-xl md:text-2xl flex-wrap">
+            Do you want to report this post - {postData}?
+          </h2>
+          <IoClose
+            size={70}
+            className="cursor-pointer text-gray-400 hover:text-white transition-colors"
+            onClick={onClose}
+            aria-label="Close report modal"
+          />
         </div>
-        <IoClose size={24} className="cursor-pointer" onClick={onClose} />
-      </div>
-      <div className="flex items-center justify-around py-4">
-        <button
-          className="bg-red-500 rounded-lg text-white cursor-pointer p-4 hover:bg-gray-600"
-          onClick={handleYes}
-          aria-label="Confirm report"
-        >
-          Yes
-        </button>
-        <button
-          className="bg-black rounded-lg text-white cursor-pointer p-4 hover:bg-gray-600"
-          onClick={handleNo}
-          aria-label="Cancel report"
-        >
-          No
-        </button>
+        <p className="text-gary-300 mb-4 text-sm">
+          Please provide a reason fro reporting this post (optional):
+        </p>
+        <textarea
+          className="bg-gray-700 w-full p-2 mb-4 rounded-lg text-white border border-gray-600 focuus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+          rows={3}
+          placeholder="e.g., Inappropriate content, spam..."
+          value={reason}
+          onChange={(e) => setReason(e.target.value)}
+        />
+        <div className="flex items-center justify-around py-4">
+          <button
+            className="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-200 disabled:opacity-50 cursor-pointer"
+            onClick={handleYes}
+            disabled={isSubmitting}
+            aria-label="Confirm report"
+          >
+            {isSubmitting ? "Reporting..." : "Yes, Report"}
+          </button>
+          <button
+            className="bg-black hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-200 disabled:opacity-50 cursor-pointer
+            "
+            onClick={handleNo}
+            aria-label="Cancel report"
+          >
+            No
+          </button>
+        </div>
       </div>
     </div>
   );

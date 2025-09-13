@@ -7,10 +7,10 @@ import DisplayPosts from "./DisplayPosts";
 function Home() {
   return (
     <div className="flex items-start justify-center md:justify-evenly gap-12">
-      <div className="flex-1 hidden md:block">
+      <div className="flex-none hidden md:block">
         <SideBar />
       </div>
-      <div className="flex-1">
+      <div className="flex-2">
         <PostBar />
         <DisplayPosts />
       </div>
