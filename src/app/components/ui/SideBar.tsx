@@ -67,7 +67,7 @@ function SideBar() {
   const router = useRouter();
   return (
     <div
-      className="rounded-lg p-4 max-w-3xs"
+      className="rounded-lg p-4 max-w-3xs items-left justify-left"
       role="region"
       aria-label="sidebar"
     >

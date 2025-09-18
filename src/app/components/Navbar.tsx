@@ -36,6 +36,7 @@ function Navbar() {
         </div>
         <FaBell
           size={40}
+          className="cursor-pointer"
           aria-label="Notifications"
           onClick={() => {
             router.push("/notifications");
@@ -43,6 +44,7 @@ function Navbar() {
         />
         <CgProfile
           size={40}
+          className="cursor-pointer"
           aria-label="Profile"
           onClick={() => {
             router.push("/profile");

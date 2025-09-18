@@ -21,3 +21,20 @@ export interface TopPostProps {
 }
 
 export type TopPostsProps = TopPostProps[];
+
+export interface NotificationDetailProps {
+  user: string;
+  userPic?: string;
+  time: string;
+  postTitle: string;
+  tags: string[];
+  notificationType: "post" | "comment";
+  authorProfile: string;
+  postLink: string;
+  isLiked: boolean;
+  isSaved: boolean;
+  isSubscribed: boolean;
+  comment?: string;
+}
+
+export type NotificationDetailsProps = NotificationDetailProps[];
