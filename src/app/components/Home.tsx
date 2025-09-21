@@ -6,7 +6,7 @@ import DisplayPosts from "./DisplayPosts";
 
 function Home() {
   return (
-    <div className="flex items-start justify-center md:justify-evenly gap-12">
+    <div className="bg-gray-950 flex items-start justify-center md:justify-evenly gap-12">
       <div className="flex-none hidden md:block">
         <SideBar />
       </div>
