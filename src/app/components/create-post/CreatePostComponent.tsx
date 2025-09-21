@@ -210,7 +210,7 @@ function MenuBar({ editor }: { editor: Editor | null }) {
   );
 }
 
-export default () => {
+const CreatePostComponent = () => {
   const editor = useEditor({
     extensions,
     immediatelyRender: false,
@@ -252,3 +252,8 @@ export default () => {
     </div>
   );
 };
+
+// Added: Set display name for React DevTools and ESLint compliance
+CreatePostComponent.displayName = "CreatePostComponent";
+
+export default CreatePostComponent;
