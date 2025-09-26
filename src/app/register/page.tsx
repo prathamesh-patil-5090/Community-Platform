@@ -12,12 +12,15 @@ function RegisterPage() {
     <div className="min-h-screen bg-black text-white flex flex-col">
       {/* Header */}
       <div className="flex justify-between items-center p-6">
-        <div className="flex items-center">
+        <div
+          className="flex items-center cursor-pointer"
+          onClick={() => router.push("/")}
+        >
           <Logo />
         </div>
         <button
           onClick={() => router.push("/login")}
-          className="text-gray-300 hover:text-white transition-colors rounded-lg border border-white/10 p-2"
+          className="text-gray-300 hover:text-white transition-colors rounded-lg border border-white/10 p-2 cursor-pointer"
         >
           Sign In
         </button>

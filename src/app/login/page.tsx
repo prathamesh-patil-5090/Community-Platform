@@ -12,12 +12,15 @@ function LoginPage() {
     <div className="min-h-screen bg-black text-white flex flex-col">
       {/* Header */}
       <div className="flex justify-between items-center p-6">
-        <div className="flex items-center">
+        <div
+          className="flex items-center cursor-pointer"
+          onClick={() => router.push("/")}
+        >
           <Logo />
         </div>
         <button
           onClick={() => router.push("/register")}
-          className="text-gray-300 hover:text-white transition-colors rounded-lg border border-white/10 p-2"
+          className="text-gray-300 hover:text-white transition-colors cursor-pointer rounded-lg border border-white/10 p-2"
         >
           Sign Up
         </button>
@@ -128,7 +131,7 @@ function LoginPage() {
 
           {/* Sign up link */}
           <div className="text-center mt-8">
-            <span className="text-gray-400">Don't have an account? </span>
+            <span className="text-gray-400">Don&apos;t have an account? </span>
             <button
               onClick={() => router.push("/register")}
               className="text-blue-400 hover:text-blue-300 transition-colors"

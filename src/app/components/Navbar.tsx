@@ -3,7 +3,6 @@ import "./css/CreatePostButton.css";
 import Logo from "./ui/Logo";
 import SearchBar from "./ui/SearchBar";
 import Button from "./ui/Button";
-import { CgProfile } from "react-icons/cg";
 import { CiSearch } from "react-icons/ci";
 import { IoPersonCircle } from "react-icons/io5";
 import { useRouter } from "next/navigation";
