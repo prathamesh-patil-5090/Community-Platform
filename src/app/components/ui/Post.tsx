@@ -83,18 +83,18 @@ export default function Post({ postData }: { postData: PostInfoType }) {
   }
 
   return (
-    <div className="relative min-w-auto max-w-full border rounded-xl p-5 mt-2">
+    <div className="bg-[#0A0A0A] relative min-w-auto max-w-full border border-white/50 rounded-xl p-5 mt-2">
       <div className={`blur-${Blur}`}>
         <div className="flex justify-between gap-2 items-center">
-          <div className="flex justify-self-start gap-2 bg-gray-800 px-4 py-2 rounded-md">
+          <div className="flex items-center justify-self-start gap-2 bg-[#0A0A0A] px-1 py-2 rounded-md">
             <Image
               src={postData.authorPic ? postData.authorPic : "no-image"}
               alt="Author Pic"
-              width={40}
-              height={40}
-              className="rounded-full"
+              width={60}
+              height={60}
+              className="w-10 h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 rounded-full object-cover flex-shrink-0"
             />
-            <div className="font-sans">
+            <div className="font-sans text-sm md:text-lg">
               <p>{postData.authorName}</p>
               <p>
                 {new Date(postData.postCreationDate)

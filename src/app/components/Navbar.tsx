@@ -2,13 +2,12 @@
 import Logo from "./ui/Logo";
 import SearchBar from "./ui/SearchBar";
 import Button from "./ui/Button";
-import { FaBell } from "react-icons/fa";
 import { CgProfile } from "react-icons/cg";
 import { CiSearch } from "react-icons/ci";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { HiMenuAlt2 } from "react-icons/hi";
-import { IoIosClose } from "react-icons/io";
+import { IoIosClose, IoIosNotificationsOutline } from "react-icons/io";
 import SideBar from "./ui/SideBar";
 
 function Navbar() {
@@ -25,7 +24,7 @@ function Navbar() {
 
   return (
     <div>
-      <div className="bg-gray-800 flex items-center justify-between pt-2 pr-5 sm:pr-15 pb-2  border border-black border-b-white">
+      <div className="bg-black/30 flex items-center justify-between pt-2 pr-5 sm:pr-15 pb-2 border border-black border-b-white/50">
         <div className="flex items-center justify-center pl-3">
           <HiMenuAlt2
             size={40}
@@ -50,7 +49,7 @@ function Navbar() {
             <Button
               name="Create Post"
               onClick={() => router.push("/create-post")}
-              className="bg-gray-800"
+              className="bg-transparent"
             />
           </div>
           <div className="md:hidden">
@@ -62,7 +61,7 @@ function Navbar() {
               }}
             />
           </div>
-          <FaBell
+          <IoIosNotificationsOutline
             size={40}
             className="cursor-pointer"
             aria-label="Notifications"
@@ -72,7 +71,7 @@ function Navbar() {
           />
           <CgProfile
             size={40}
-            className="cursor-pointer"
+            className="cursor-pointer text-white"
             aria-label="Profile"
             onClick={() => {
               router.push("/profile");
@@ -85,11 +84,11 @@ function Navbar() {
       {isMenuOpen && (
         <div className="md:hidden">
           <div
-            className="fixed inset-0 bg-black/50 z-40 "
+            className="fixed inset-0 bg-black/30 z-40 "
             onClick={toggleMenu}
             aria-label="Close Menu"
           >
-            <div className="fixed top-0 left-0 w-80 h-full bg-gray-800 transform transition-transform duration-300 ease-in-out overflow-y-auto">
+            <div className="fixed top-0 left-0 w-80 h-full bg-[#0A0A0A] transform transition-transform duration-300 ease-in-out">
               <div className="flex items-center justify-between p-4 border-b border-gray-700">
                 <h2 className="text-white text-xl font-semibold">Menu</h2>
                 <IoIosClose
@@ -99,7 +98,7 @@ function Navbar() {
                   aria-label="Close Menu"
                 />
               </div>
-              <div onClick={handleSidebarItemClick}>
+              <div className="bg-[#0A0A0A]" onClick={handleSidebarItemClick}>
                 <SideBar />
               </div>
             </div>
