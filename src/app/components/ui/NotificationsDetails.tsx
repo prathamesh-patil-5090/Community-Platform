@@ -92,7 +92,9 @@ export default function NotificationsDetails({
               {/*Display Comment if notificationType: "comment" */}
               {noti.comment && (
                 <div className="border border-white/10 border-l-3 border-l-blue-300 text-wrap justify-center p-3 md:ml-20 md:w-xl bg-black/10">
-                  <span className="font-bold italic text-white">New Comment - </span>
+                  <span className="font-bold italic text-white">
+                    New Comment -{" "}
+                  </span>
                   <span className="text-gray-400">{noti.comment}</span>
                 </div>
               )}
