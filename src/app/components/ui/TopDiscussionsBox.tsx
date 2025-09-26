@@ -6,7 +6,7 @@ function TopDiscussionsBox() {
   const router = useRouter();
   return (
     <div
-      className="bg-[#0A0A0A] border border-white/50 rounded-lg p-4 max-w-95"
+      className="bg-[#0A0A0A] border border-white/10 rounded-lg p-4 max-w-95"
       role="region"
       aria-label="top-discussions-heading"
     >

@@ -46,7 +46,7 @@ export default function NotificationsDetails({
           return (
             <div
               key={idx}
-              className="rounded-lg border border-gray-500 border-l-8 hover:border-l-blue-500 p-3 font-sans my-3"
+              className="rounded-lg border border-white/10 border-l-8 hover:border-l-blue-500 p-3 font-sans my-3 bg-[#0A0A0A]"
             >
               {/* Profile Section */}
               <div className="flex items-center justify-left pb-3">
@@ -74,10 +74,10 @@ export default function NotificationsDetails({
                 </div>
               </div>
               {/*Notifications Details*/}
-              <div className="rounded-lg rounded-b-none border border-gray-500 py-5 text-wrap justify-center p-3 md:ml-20 md:w-xl hover:text-blue-300">
+              <div className="rounded-lg rounded-b-none border border-white/10 py-5 text-wrap justify-center p-3 md:ml-20 md:w-xl hover:text-blue-300 bg-black/10">
                 <Link
                   href={noti.postLink}
-                  className="flex flex-wrap font-sans font-bold text-md md:text-3xl"
+                  className="flex flex-wrap font-sans font-bold text-md md:text-3xl text-white"
                 >
                   {noti.postTitle}
                 </Link>
@@ -91,13 +91,13 @@ export default function NotificationsDetails({
               </div>
               {/*Display Comment if notificationType: "comment" */}
               {noti.comment && (
-                <div className="border border-gray-500 border-l-3 border-l-blue-300 text-wrap justify-center p-3 md:ml-20 md:w-xl">
-                  <span className="font-bold italic">New Comment - </span>
-                  <span className="text-gray-500">{noti.comment}</span>
+                <div className="border border-white/10 border-l-3 border-l-blue-300 text-wrap justify-center p-3 md:ml-20 md:w-xl bg-black/10">
+                  <span className="font-bold italic text-white">New Comment - </span>
+                  <span className="text-gray-400">{noti.comment}</span>
                 </div>
               )}
               {/*Like, Save and Subscribe to comments */}
-              <div className="border border-gray-500 text-wrap justify-center p-3 md:ml-20 md:w-xl rounded-lg rounded-t-none">
+              <div className="border border-white/10 text-wrap justify-center p-3 md:ml-20 md:w-xl rounded-lg rounded-t-none bg-black/10">
                 <div className="flex items-center justify-between gap-4">
                   <div className="flex items-left gap-2">
                     <button
@@ -105,7 +105,7 @@ export default function NotificationsDetails({
                       className={`flex items-center gap-2 p-2 rounded-lg cursor-pointer transition-colors ${
                         likes[idx]
                           ? "text-red-500"
-                          : "text-gray-600 hover:bg-gray-100"
+                          : "text-white/80 hover:bg-gray-700"
                       }`}
                     >
                       <CiHeart
@@ -119,7 +119,7 @@ export default function NotificationsDetails({
                       className={`flex items-center gap-2 p-2 rounded-lg transition-colors cursor-pointer ${
                         saves[idx]
                           ? "text-blue-500"
-                          : "text-gray-600 hover:bg-gray-100"
+                          : "text-white/80 hover:bg-gray-700"
                       }`}
                     >
                       <CiBookmark
@@ -134,7 +134,7 @@ export default function NotificationsDetails({
                     className={`flex items-center gap-2 p-2 rounded-lg cursor-pointer transition-colors ${
                       subscriptions[idx]
                         ? "text-green-500"
-                        : "text-gray-600 hover:bg-gray-100"
+                        : "text-white/80 hover:bg-gray-700"
                     }`}
                   >
                     <CiBellOn

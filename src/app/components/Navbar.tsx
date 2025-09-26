@@ -1,9 +1,11 @@
 "use client";
+import "./css/CreatePostButton.css";
 import Logo from "./ui/Logo";
 import SearchBar from "./ui/SearchBar";
 import Button from "./ui/Button";
 import { CgProfile } from "react-icons/cg";
 import { CiSearch } from "react-icons/ci";
+import { IoPersonCircle } from "react-icons/io5";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { HiMenuAlt2 } from "react-icons/hi";
@@ -24,7 +26,7 @@ function Navbar() {
 
   return (
     <div>
-      <div className="bg-black/30 flex items-center justify-between pt-2 pr-5 sm:pr-15 pb-2 border border-black border-b-white/50">
+      <div className="bg-[#0A0A0A] flex items-center justify-between pt-2 pr-5 sm:pr-15 pb-2 border border-white/10">
         <div className="flex items-center justify-center pl-3">
           <HiMenuAlt2
             size={40}
@@ -49,7 +51,7 @@ function Navbar() {
             <Button
               name="Create Post"
               onClick={() => router.push("/create-post")}
-              className="bg-transparent"
+              className="bg-transparent gradient-text border-white/10"
             />
           </div>
           <div className="md:hidden">
@@ -63,15 +65,15 @@ function Navbar() {
           </div>
           <IoIosNotificationsOutline
             size={40}
-            className="cursor-pointer"
+            className="cursor-pointer rounded-full border border-white/10 p-1"
             aria-label="Notifications"
             onClick={() => {
               router.push("/notifications");
             }}
           />
-          <CgProfile
+          <IoPersonCircle
             size={40}
-            className="cursor-pointer text-white"
+            className="cursor-pointer text-white/80"
             aria-label="Profile"
             onClick={() => {
               router.push("/profile");

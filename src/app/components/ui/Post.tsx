@@ -83,7 +83,7 @@ export default function Post({ postData }: { postData: PostInfoType }) {
   }
 
   return (
-    <div className="bg-[#0A0A0A] relative min-w-auto max-w-full border border-white/50 rounded-xl p-5 mt-2">
+    <div className="bg-[#0A0A0A] relative min-w-auto max-w-full border border-white/10 rounded-xl p-5 mt-2">
       <div className={`blur-${Blur}`}>
         <div className="flex justify-between gap-2 items-center">
           <div className="flex items-center justify-self-start gap-2 bg-[#0A0A0A] px-1 py-2 rounded-md">
@@ -95,8 +95,8 @@ export default function Post({ postData }: { postData: PostInfoType }) {
               className="w-10 h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 rounded-full object-cover flex-shrink-0"
             />
             <div className="font-sans text-sm md:text-lg">
-              <p>{postData.authorName}</p>
-              <p>
+              <p className="text-sm">{postData.authorName}</p>
+              <p className="text-sm">
                 {new Date(postData.postCreationDate)
                   .toDateString()
                   .split(" ")
@@ -141,7 +141,7 @@ export default function Post({ postData }: { postData: PostInfoType }) {
           {tags.map((tag, index) => (
             <button
               key={index}
-              className="font-light bg-gray-700 rounded-xl px-1 py-1"
+              className="font-light bg-gray-700 rounded-md p-1"
               onClick={() => router.push(`/tags/${tag}`)}
             >
               #{tag}
@@ -151,12 +151,12 @@ export default function Post({ postData }: { postData: PostInfoType }) {
         <div className="flex gap-5 py-2">
           {isLiked ? (
             <div className="flex items-center gap-2">
-              <BiSolidLike size={40} onClick={handleLike} />
+              <BiSolidLike size={30} onClick={handleLike} />
               <p>{likes}</p>
             </div>
           ) : (
             <div className="flex items-center gap-2">
-              <BiLike size={40} onClick={handleLike} />
+              <BiLike size={30} onClick={handleLike} />
               <p>{likes}</p>
             </div>
           )}
@@ -164,7 +164,7 @@ export default function Post({ postData }: { postData: PostInfoType }) {
             className="flex items-center gap-2"
             onClick={() => setCommentPressed(!isCommentPressed)}
           >
-            <MdOutlineModeComment size={40} />
+            <MdOutlineModeComment size={30} />
             <p className="font-sans font-bold">Add a Comment</p>
           </div>
         </div>
