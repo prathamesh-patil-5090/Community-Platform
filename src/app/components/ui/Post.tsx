@@ -31,6 +31,16 @@ export default function Post({ postData }: { postData: PostInfoType }) {
   const tags: string[] = postData.tags || [];
   const postId = postData.postId;
 
+  const formatLikes = (num: number): string => {
+    if (num >= 1000000) {
+      return (num / 1000000).toFixed(1).replace(/\.0$/, "") + "M";
+    } else if (num >= 1000) {
+      return (num / 1000).toFixed(1).replace(/\.0$/, "") + "K";
+    } else {
+      return num.toString();
+    }
+  };
+
   const underFiftyWords = (text: string): string => {
     const words = text.split(" ");
     const shouldTruncate = words.length > 50;
@@ -83,7 +93,7 @@ export default function Post({ postData }: { postData: PostInfoType }) {
   }
 
   return (
-    <div className="bg-[#0A0A0A] relative min-w-auto max-w-full border border-white/10 rounded-xl p-5 mt-2">
+    <div className="bg-[#0A0A0A] relative min-w-auto max-w-full border border-white/10 md:rounded-xl p-5 mt-2">
       <div className={`blur-${Blur}`}>
         <div className="flex justify-between gap-2 items-center">
           <div className="flex items-center justify-self-start gap-2 bg-[#0A0A0A] px-1 py-2 rounded-md">
@@ -94,9 +104,9 @@ export default function Post({ postData }: { postData: PostInfoType }) {
               height={60}
               className="w-10 h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 rounded-full object-cover flex-shrink-0"
             />
-            <div className="font-sans text-sm md:text-lg">
-              <p className="text-sm">{postData.authorName}</p>
-              <p className="text-sm">
+            <div className="font-sans ">
+              <p className="text-md md:text-lg">{postData.authorName}</p>
+              <p className="text-md md:text-lg">
                 {new Date(postData.postCreationDate)
                   .toDateString()
                   .split(" ")
@@ -105,16 +115,13 @@ export default function Post({ postData }: { postData: PostInfoType }) {
               </p>
             </div>
           </div>
-          <div className="flex items-end gap-2">
-            <span className="flex bg-gray-600 rounded-lg px-2 my-4">
-              {postData.postType}
-            </span>
+          {/* <div className="flex items-end gap-2">
             <MdOutlineReport
               className="flex text-red-500 my-3 cursor-pointer"
               size={30}
               onClick={handleReport}
             />
-          </div>
+          </div> */}
         </div>
 
         <div
@@ -141,10 +148,10 @@ export default function Post({ postData }: { postData: PostInfoType }) {
           {tags.map((tag, index) => (
             <button
               key={index}
-              className="font-light bg-gray-700 rounded-md p-1"
+              className="font-light p-1"
               onClick={() => router.push(`/tags/${tag}`)}
             >
-              #{tag}
+              #{tag}#{tag}
             </button>
           ))}
         </div>
@@ -152,12 +159,12 @@ export default function Post({ postData }: { postData: PostInfoType }) {
           {isLiked ? (
             <div className="flex items-center gap-2">
               <BiSolidLike size={30} onClick={handleLike} />
-              <p>{likes}</p>
+              <p>{formatLikes(likes)}</p>
             </div>
           ) : (
             <div className="flex items-center gap-2">
               <BiLike size={30} onClick={handleLike} />
-              <p>{likes}</p>
+              <p>{formatLikes(likes)}</p>
             </div>
           )}
           <div
@@ -165,7 +172,6 @@ export default function Post({ postData }: { postData: PostInfoType }) {
             onClick={() => setCommentPressed(!isCommentPressed)}
           >
             <MdOutlineModeComment size={30} />
-            <p className="font-sans font-bold">Add a Comment</p>
           </div>
         </div>
       </div>
@@ -173,9 +179,9 @@ export default function Post({ postData }: { postData: PostInfoType }) {
         {isCommentPressed && (
           <div className="pt-2">
             {/* Input area */}
-            <div className="relative flex items-center gap-2">
+            <div className="relative flex items-center justify-center gap-2">
               <textarea
-                className="border p-2 w-full md:w-150 rounded-xl resize-y"
+                className="border p-2 w-[80vw] md:w-150 rounded-xl resize-y"
                 style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
                 onClick={() => setCommentInput(true)}
                 value={comment}
@@ -184,7 +190,7 @@ export default function Post({ postData }: { postData: PostInfoType }) {
               />
               {isCommentInput && (
                 <IoSend
-                  className=""
+                  className="cursor-pointer"
                   onClick={handleSubmitComment}
                   size={30}
                 ></IoSend>
@@ -195,39 +201,54 @@ export default function Post({ postData }: { postData: PostInfoType }) {
             <div className="mt-4 space-y-2">
               {comments.length > 0 ? (
                 comments.map((comment, idx) => (
-                  <h3
-                    key={idx}
-                    className="flex justify-between text-justify border rounded-lg p-3"
-                  >
-                    {comment}
-                    <div
-                      className="flex items-start gap-3 pl-2 relative"
-                      onClick={() =>
-                        setOpenModalIndex(openModalIndex === idx ? null : idx)
-                      }
-                    >
-                      <PiDotsThreeCircleVerticalLight
-                        size={25}
-                        className="cursor-pointer"
-                      />
-                      {openModalIndex === idx && (
-                        <div
-                          className="bg-white absolute top-8 right-0 border border-gray-300 rounded-lg shadow-lg z-50"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <CommentOptionsModal
-                            onDelete={() => {
-                              setComments(comments.filter((_, i) => i !== idx));
-                              setOpenModalIndex(null);
-                            }}
-                            onReport={() => {
-                              setOpenModalIndex(null);
-                            }}
-                          />
-                        </div>
-                      )}
-                    </div>
-                  </h3>
+                  <div key={idx}>
+                    <h3 className="flex justify-between text-justify border rounded-lg p-3 text-wrap">
+                      <div className="flex justify-start gap-2 md:gap-2 items-start text-wrap">
+                        <Image
+                          src={"/logo/me.webp"}
+                          width={25}
+                          height={25}
+                          className="rounded-full flex-shrink-0 w-6 h-6 object-cover"
+                          alt="Profile of Commentor"
+                        ></Image>
+                        <p className="flex-1 text-wrap break-all">{comment}</p>
+                      </div>
+                      <div
+                        className="flex items-start gap-3 pl-2 relative"
+                        onClick={() =>
+                          setOpenModalIndex(openModalIndex === idx ? null : idx)
+                        }
+                      >
+                        <PiDotsThreeCircleVerticalLight
+                          size={25}
+                          className="cursor-pointer"
+                        />
+                        {openModalIndex === idx && (
+                          <div
+                            className="bg-gray-950 absolute top-8 right-0 border border-gray-300 rounded-lg shadow-lg z-50"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <CommentOptionsModal
+                              onEdit={() => {
+                                // TODO: Implement edit functionality
+                                console.log("Edit comment at index:", idx);
+                                setOpenModalIndex(null);
+                              }}
+                              onDelete={() => {
+                                setComments(
+                                  comments.filter((_, i) => i !== idx)
+                                );
+                                setOpenModalIndex(null);
+                              }}
+                              onReport={() => {
+                                setOpenModalIndex(null);
+                              }}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    </h3>
+                  </div>
                 ))
               ) : (
                 <p className="bg-gray-600 rounded-lg p-3">No Comments</p>

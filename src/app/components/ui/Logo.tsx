@@ -1,5 +1,3 @@
-import Image from "next/image";
-
 interface LogoProps {
   onClick?: () => void;
 }
@@ -7,12 +5,7 @@ interface LogoProps {
 function Logo({ onClick }: LogoProps) {
   return (
     <div onClick={onClick} style={{ cursor: onClick ? "pointer" : "default" }}>
-      <Image
-        src="/logo/community_logo.png"
-        alt="Community logomark"
-        height={50}
-        width={40}
-      />
+      <span className="text-white text-3xl font-extrabold mb-2">{"{C*"}</span>
     </div>
   );
 }
