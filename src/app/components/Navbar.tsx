@@ -25,7 +25,7 @@ function Navbar() {
 
   return (
     <div>
-      <div className="bg-[#0A0A0A] flex items-center justify-between pt-2 pr-5 sm:pr-15 pb-2 border border-white/10">
+      <div className="bg-[#0A0A0A] flex items-center justify-between pt-2 pr-5 sm:pr-15 pb-2 border border-white/10 border-l-black border-r-black">
         <div className="flex items-center justify-center pl-3">
           <HiMenuAlt2
             size={40}
@@ -56,7 +56,7 @@ function Navbar() {
           <div className="md:hidden">
             <CiSearch
               className="text-white"
-              size={40}
+              size={35}
               onClick={() => {
                 router.push("/search");
               }}

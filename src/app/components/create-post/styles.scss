@@ -2,11 +2,9 @@
 .ProseMirror {
   outline: none;
   padding: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 0.5rem;
   min-height: 200px;
-  background: white;
-  color: black;
+  background: #0a0a0a; /* bg-gray-300 equivalent */
+  color: white;
 
   :first-child {
     margin-top: 0;
@@ -110,20 +108,21 @@
   
   button {
     padding: 0.5rem 1rem;
-    border: 1px solid #ccc;
     border-radius: 0.25rem;
-    background: #1e2939;
+    background: transparent;
     cursor: pointer;
     font-size: 0.875rem;
+    color: #e5e7eb;
     
     &:hover {
-      background: #f0f0f0;
+      background: #374151;
+      color: #ffffff;
     }
     
     &.is-active {
-      background: #007bff;
-      color: white;
-      border-color: #007bff;
+      background: #1e293b;
+      color: #ffffff;
+      border-color: #1e293b;
     }
     
     &:disabled {
