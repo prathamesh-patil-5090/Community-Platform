@@ -3,23 +3,31 @@ import Button from "./Button";
 import { useRouter } from "next/navigation";
 import "../css/CreatePostButton.css";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 function PostBar() {
   const router = useRouter();
   const [showButton, setShowButton] = useState<boolean>(false);
+  const postBarRef = useRef<HTMLDivElement>(null);
 
-  const handleBlur = () => {
-    setTimeout(() => {
-      setShowButton(false);
-    }, 300);
-  };
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        postBarRef.current &&
+        !postBarRef.current.contains(event.target as Node)
+      ) {
+        setShowButton(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [postBarRef]);
 
   return (
     <div
       className="relative max-w-full flex flex-col gap-2 p-2 hidden:border md:border md:border-white/10 rounded-md"
       onFocus={() => setShowButton(true)}
-      onBlur={handleBlur}
+      ref={postBarRef}
     >
       <textarea
         rows={1}

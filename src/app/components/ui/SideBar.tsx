@@ -81,7 +81,7 @@ function SideBar() {
             <span className="text-2xl group-hover:no-underline">
               {obj.icon}
             </span>
-            <h4 className="font-sans text-xl font-light group-hover:underline group-hover:underline-offset-[3px]">
+            <h4 className="font-sans text-xl font-medium group-hover:underline group-hover:underline-offset-[3px]">
               {obj.name}
             </h4>
           </div>
