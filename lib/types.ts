@@ -38,3 +38,45 @@ export interface NotificationDetailProps {
 }
 
 export type NotificationDetailsProps = NotificationDetailProps[];
+
+export interface SearchDetailProp {
+  type:
+    | "posts"
+    | "people"
+    | "organizations"
+    | "tags"
+    | "comments"
+    | "my posts only";
+  user?: string;
+  name?: string;
+  authorPic?: string;
+  authorName?: string;
+  logo?: string;
+  userPic?: string;
+  time?: string;
+  postId?: string;
+  postTitle?: string;
+  tag?: string;
+  description?: string;
+  website?: string;
+  comment?: string;
+  bio?: string;
+  count?: number;
+  followers?: number;
+  members?: number;
+  tags?: string[];
+  authorProfile?: string;
+  profileLink?: string;
+  postLink?: string;
+  isLiked?: boolean;
+  isSaved?: boolean;
+  isSubscribed?: boolean;
+  postCreationDate?: string;
+  postType?: "Article" | "Post";
+  postDesc?: string;
+  postImage?: string;
+  postLikes?: number;
+  postComments?: string[];
+}
+
+export type SearchDetailProps = SearchDetailProp[];

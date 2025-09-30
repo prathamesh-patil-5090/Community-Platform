@@ -3,7 +3,7 @@ import Image from "next/image";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { BiLike, BiSolidLike } from "react-icons/bi";
-import { MdOutlineModeComment, MdOutlineReport } from "react-icons/md";
+import { MdOutlineModeComment } from "react-icons/md";
 import { PiDotsThreeCircleVerticalLight } from "react-icons/pi";
 import CommentOptionsModal from "./CommentOptionsModal";
 import { IoSend } from "react-icons/io5";
@@ -63,12 +63,6 @@ export default function Post({ postData }: { postData: PostInfoType }) {
       setComment("");
       setCommentInput(false);
     }
-  };
-
-  const handleReport = (): void => {
-    const newIsReport = !isReport;
-    setReport(newIsReport);
-    setBlur(newIsReport ? "xl" : "none");
   };
 
   const closeReportModal = (): void => {
