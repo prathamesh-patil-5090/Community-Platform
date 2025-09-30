@@ -23,7 +23,7 @@ export default function Search({ sortOptions, setSortOptions }: SearchProps) {
     <div className="justify-center">
       {/* Mobile and Desktop Layout */}
       <div className="hidden md:flex flex-row items-center justify-between">
-        <h1 className="hidden md:block flex-row gap-1 font-extrabold text-5xl p-2">
+        <h1 className="hidden md:block flex-row gap-1 f ont-extrabold text-5xl p-2">
           Search Results {params && <span> - {params}</span>}
         </h1>
         {params && (
