@@ -82,30 +82,33 @@ function Navbar() {
       </div>
 
       {/*Mobile Menu */}
-      {isMenuOpen && (
-        <div className="md:hidden">
-          <div
-            className="fixed inset-0 bg-black/30 z-40 "
-            onClick={toggleMenu}
-            aria-label="Close Menu"
-          >
-            <div className="fixed top-0 left-0 w-80 h-full bg-[#0A0A0A] transform transition-transform duration-300 ease-in-out">
-              <div className="flex items-center justify-between p-4 border-b border-gray-700">
-                <h2 className="text-white text-xl font-semibold">Menu</h2>
-                <IoIosClose
-                  onClick={toggleMenu}
-                  size={40}
-                  className="cursor-pointer"
-                  aria-label="Close Menu"
-                />
-              </div>
-              <div className="bg-[#0A0A0A]" onClick={handleSidebarItemClick}>
-                <SideBar />
-              </div>
-            </div>
+      <div
+        className={`md:hidden fixed inset-0 bg-black/30 z-40 transition-opacity duration-300 ${
+          isMenuOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
+        onClick={toggleMenu}
+        aria-label="Close Menu"
+      >
+        <div
+          className={`fixed top-0 left-0 w-80 h-full bg-[#0A0A0A] transform transition-transform duration-300 ease-in-out ${
+            isMenuOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="flex items-center justify-between p-4 border-b border-gray-700">
+            <h2 className="text-white text-xl font-semibold">Menu</h2>
+            <IoIosClose
+              onClick={toggleMenu}
+              size={40}
+              className="cursor-pointer"
+              aria-label="Close Menu"
+            />
+          </div>
+          <div className="bg-[#0A0A0A]" onClick={handleSidebarItemClick}>
+            <SideBar />
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }

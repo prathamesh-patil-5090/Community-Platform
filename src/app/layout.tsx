@@ -30,7 +30,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Community Platfrom",
+  title: "Community Platform",
   description: "An open-sourced community platform ",
 };
 

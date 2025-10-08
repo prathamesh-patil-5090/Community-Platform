@@ -10,6 +10,7 @@ import { IoSend } from "react-icons/io5";
 import { PostInfoType } from "../../../../lib/types";
 import ReportsComponent from "./ReportsComponent";
 import { createPortal } from "react-dom";
+import Link from "next/link";
 
 export default function Post({ postData }: { postData: PostInfoType }) {
   const postComments = postData.postComments || [];
@@ -91,15 +92,22 @@ export default function Post({ postData }: { postData: PostInfoType }) {
       <div className={`blur-${Blur}`}>
         <div className="flex justify-between gap-2 items-center">
           <div className="flex items-center justify-self-start gap-2 bg-[#0A0A0A] px-1 py-2 rounded-md">
-            <Image
-              src={postData.authorPic ? postData.authorPic : "no-image"}
-              alt="Author Pic"
-              width={60}
-              height={60}
-              className="w-10 h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 rounded-full object-cover flex-shrink-0"
-            />
+            <Link href={`/author/${postData.authorId}`}>
+              <Image
+                src={postData.authorPic ? postData.authorPic : "no-image"}
+                alt="Author Pic"
+                width={60}
+                height={60}
+                className="w-10 h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 rounded-full object-cover flex-shrink-0"
+              />
+            </Link>
             <div className="font-sans ">
-              <p className="text-md md:text-lg">{postData.authorName}</p>
+              <Link
+                className="text-md md:text-lg"
+                href={`/author/${postData.authorId}`}
+              >
+                {postData.authorName}
+              </Link>
               <p className="text-md md:text-lg">
                 {new Date(postData.postCreationDate)
                   .toDateString()
@@ -120,7 +128,7 @@ export default function Post({ postData }: { postData: PostInfoType }) {
 
         <div
           className="font-sans font-bold text-xl md:text-3xl py-2 cursor-pointer"
-          onClick={() => router.push(`/article/${postId}`)}
+          onClick={() => router.push(`/posts/${postId}`)}
         >
           {postData.postTitle}
         </div>
@@ -142,10 +150,10 @@ export default function Post({ postData }: { postData: PostInfoType }) {
           {tags.map((tag, index) => (
             <button
               key={index}
-              className="font-light p-1"
-              onClick={() => router.push(`/tags/${tag}`)}
+              className="font-light p-1 hover:text-blue-500 cursor-pointer"
+              onClick={() => router.push(`/search?q=${tag}`)}
             >
-              #{tag}#{tag}
+              #{tag}
             </button>
           ))}
         </div>

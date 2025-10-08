@@ -9,7 +9,7 @@ interface SearchDetailsProps {
   searchType:
     | "posts"
     | "people"
-    | "organizations"
+    | "channels"
     | "tags"
     | "comments"
     | "my posts only";
@@ -231,7 +231,7 @@ export default function SearchDetailsComponent({
                   <p className="text-gray-400">{search.bio}</p>
                 </div>
               </>
-            ) : search.type === "organizations" ? (
+            ) : search.type === "channels" ? (
               <>
                 <div className="flex items-center justify-left pb-3">
                   <Image

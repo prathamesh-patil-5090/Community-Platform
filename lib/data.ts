@@ -49,13 +49,14 @@ export const PostInfo: PostsInfoType = [
   {
     postId: "32155w7f2152t8esjh85yt",
     authorName: "Prathamesh patil",
+    authorId: "prathamesh-patil-5090",
     authorPic: "/logo/me.webp",
     postCreationDate: "2025-09-08",
     tags: ["facts", "student_life", "im_important"],
-    postType: "Article",
+    postType: "Post",
     postTitle: "No good quality food in hostel",
     postDesc:
-      "This article discusses the ongoing issues with food quality in the hostel mess, highlighting student complaints and suggestions for improvement.",
+      "This Post discusses the ongoing issues with food quality in the hostel mess, highlighting student complaints and suggestions for improvement.",
     postImage: "/post1.webp",
     postLikes: 25000,
     postComments: [
@@ -67,6 +68,7 @@ export const PostInfo: PostsInfoType = [
   {
     postId: "45678g9h3210k1lmn23op",
     authorName: "Anjali Sharma",
+    authorId: "prathamesh-patil-5090",
     authorPic: "/post2.webp",
     postCreationDate: "2025-09-07",
     tags: ["campus_events", "student_life", "fun"],
@@ -85,10 +87,11 @@ export const PostInfo: PostsInfoType = [
   {
     postId: "78901q2w3456e7r8t9y0u",
     authorName: "Ravi Kumar",
+    authorId: "prathamesh-patil-5090",
     authorPic: "/post3.webp",
     postCreationDate: "2025-09-06",
     tags: ["study_tips", "exams", "student_life"],
-    postType: "Article",
+    postType: "Post",
     postTitle: "How to Ace Your Exams",
     postDesc:
       "A comprehensive guide to effective study techniques, time management, and tips to perform well in exams.",
@@ -97,12 +100,13 @@ export const PostInfo: PostsInfoType = [
     postComments: [
       "Great tips, thanks!",
       "I needed this.",
-      "More articles like this please.",
+      "More Posts like this please.",
     ],
   },
   {
     postId: "12345a6s7d8f9g0h1j2k3",
     authorName: "Sneha Patel",
+    authorId: "prathamesh-patil-5090",
     authorPic: "/post4.webp",
     postCreationDate: "2025-09-05",
     tags: ["hostel_life", "complaints", "we_need_better_food"],
@@ -121,10 +125,11 @@ export const PostInfo: PostsInfoType = [
   {
     postId: "98765z1x2c3v4b5n6m7l8",
     authorName: "Karan Singh",
+    authorId: "prathamesh-patil-5090",
     authorPic: "/post5.webp",
     postCreationDate: "2025-09-04",
     tags: ["sports", "student_life", "fitness"],
-    postType: "Article",
+    postType: "Post",
     postTitle: "Benefits of Campus Sports",
     postDesc:
       "Explore how participating in sports on campus improves physical health, mental well-being, and social skills.",
@@ -139,6 +144,7 @@ export const PostInfo: PostsInfoType = [
   {
     postId: "abcd1234efgh5678ijkl",
     authorName: "Maya Gupta",
+    authorId: "prathamesh-patil-5090",
     authorPic: "/post6.webp",
     postCreationDate: "2025-09-03",
     tags: ["library", "study_hacks", "student_life"],
@@ -153,10 +159,11 @@ export const PostInfo: PostsInfoType = [
   {
     postId: "mnop9012qrst3456uvwx",
     authorName: "Vikram Rao",
+    authorId: "prathamesh-patil-5090",
     authorPic: "/post7.jpg",
     postCreationDate: "2025-09-02",
     tags: ["mental_health", "wellness", "student_life"],
-    postType: "Article",
+    postType: "Post",
     postTitle: "Managing Stress During Exams",
     postDesc:
       "Tips and strategies for staying calm and focused during exam season, including mindfulness and self-care.",
@@ -304,7 +311,7 @@ export const SearchDetails: SearchDetailProps = [
     followers: 1500,
   },
   {
-    type: "organizations",
+    type: "channels",
     name: "Tech Innovators Inc.",
     logo: "/org1.webp",
     description: "Leading organization in tech innovation and development.",
@@ -339,10 +346,10 @@ export const SearchDetails: SearchDetailProps = [
     authorPic: "/logo/me.webp",
     postCreationDate: "2025-09-08",
     tags: ["facts", "student_life", "im_important"],
-    postType: "Article",
+    postType: "Post",
     postTitle: "No good quality food in hostel",
     postDesc:
-      "This article discusses the ongoing issues with food quality in the hostel mess, highlighting student complaints and suggestions for improvement.",
+      "This Post discusses the ongoing issues with food quality in the hostel mess, highlighting student complaints and suggestions for improvement.",
     postImage: "/post1.webp",
     postLikes: 25000,
     postComments: [
@@ -373,7 +380,7 @@ export const SearchDetails: SearchDetailProps = [
     followers: 2200,
   },
   {
-    type: "organizations",
+    type: "channels",
     name: "Art Collective",
     logo: "/org2.webp",
     description:

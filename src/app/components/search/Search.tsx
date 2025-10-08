@@ -15,7 +15,7 @@ interface SearchProps {
 export default function Search({ sortOptions, setSortOptions }: SearchProps) {
   const { width } = useWindowSize();
   const [notiType, setNotiType] = useState<
-    "posts" | "people" | "organizations" | "tags" | "comments" | "my posts only"
+    "posts" | "people" | "channels" | "tags" | "comments" | "my posts only"
   >("posts");
   const searchParams = useSearchParams();
   const params = searchParams?.get("q") || "";

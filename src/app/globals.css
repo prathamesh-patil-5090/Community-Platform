@@ -51,7 +51,7 @@ body {
 }
 
 ::-webkit-scrollbar {
-  width: 12px;
+  width: 3px;
 }
 
 ::-webkit-scrollbar-track {
@@ -60,7 +60,7 @@ body {
 
 ::-webkit-scrollbar-thumb {
   background-color: var(--border);
-  border-radius: 6px;
+  border-radius: 1px;
 }
 
 ::-webkit-scrollbar-thumb:hover {

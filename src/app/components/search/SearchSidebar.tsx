@@ -6,12 +6,7 @@ import { useWindowSize } from "../hooks/useWindowSize";
 interface SearchSidebarProps {
   setType: Dispatch<
     SetStateAction<
-      | "posts"
-      | "people"
-      | "organizations"
-      | "tags"
-      | "comments"
-      | "my posts only"
+      "posts" | "people" | "channels" | "tags" | "comments" | "my posts only"
     >
   >;
 }
@@ -19,7 +14,7 @@ interface SearchSidebarProps {
 const SearchOptions = [
   "posts",
   "people",
-  "organizations",
+  "channels",
   "tags",
   "comments",
   "my posts only",
@@ -37,7 +32,7 @@ export default function SearchSidebar({ setType }: SearchSidebarProps) {
     const type:
       | "posts"
       | "people"
-      | "organizations"
+      | "channels"
       | "tags"
       | "comments"
       | "my posts only" =
@@ -47,8 +42,8 @@ export default function SearchSidebar({ setType }: SearchSidebarProps) {
         ? "comments"
         : option === "people"
         ? "people"
-        : option === "organizations"
-        ? "organizations"
+        : option === "channels"
+        ? "channels"
         : option === "tags"
         ? "tags"
         : "my posts only";

@@ -1,6 +1,7 @@
 export interface PostInfoType {
   authorName: string;
   authorPic?: string;
+  authorId: string;
   postCreationDate: string;
   postType: "Article" | "Post";
   tags?: string[];
@@ -40,13 +41,7 @@ export interface NotificationDetailProps {
 export type NotificationDetailsProps = NotificationDetailProps[];
 
 export interface SearchDetailProp {
-  type:
-    | "posts"
-    | "people"
-    | "organizations"
-    | "tags"
-    | "comments"
-    | "my posts only";
+  type: "posts" | "people" | "channels" | "tags" | "comments" | "my posts only";
   user?: string;
   name?: string;
   authorPic?: string;
