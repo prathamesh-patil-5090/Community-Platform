@@ -4,7 +4,17 @@ import { useEffect, useState } from "react";
 import Logo from "./Logo";
 
 const PageLoader = () => {
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(() => {
+    if (typeof window !== "undefined") {
+      const cookies = document.cookie
+        .split(";")
+        .find((c) => c.trim().startsWith("isPageLoadedAlready="));
+      if (cookies && cookies.split("=")[1] === "true") {
+        return false;
+      }
+    }
+    return true;
+  });
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
@@ -13,7 +23,10 @@ const PageLoader = () => {
       setProgress((prev) => {
         if (prev >= 100) {
           clearInterval(interval);
-          setTimeout(() => setIsLoading(false), 300);
+          setTimeout(() => {
+            setIsLoading(false);
+            document.cookie = "isPageLoadedAlready=true; path=/";
+          }, 300);
           return 100;
         }
         return prev + Math.random() * 15;
@@ -23,13 +36,25 @@ const PageLoader = () => {
     // Ensure loading completes within 2 seconds
     const timeout = setTimeout(() => {
       setProgress(100);
-      setTimeout(() => setIsLoading(false), 300);
+      setTimeout(() => {
+        setIsLoading(false);
+        document.cookie = "isPageLoadedAlready=true; path=/";
+      }, 300);
     }, 2000);
 
     return () => {
       clearInterval(interval);
       clearTimeout(timeout);
     };
+  }, []);
+
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      document.cookie =
+        "isPageLoadedAlready=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, []);
 
   if (!isLoading) return null;
