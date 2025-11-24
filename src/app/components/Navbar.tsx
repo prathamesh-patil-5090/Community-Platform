@@ -1,31 +1,31 @@
 "use client";
-import "./css/CreatePostButton.css";
-import Logo from "./ui/Logo";
-import SearchBar from "./ui/SearchBar";
-import Button from "./ui/Button";
-import { CiSearch } from "react-icons/ci";
-import { IoPersonCircle } from "react-icons/io5";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { CiSearch } from "react-icons/ci";
 import { HiMenuAlt2 } from "react-icons/hi";
 import { IoIosClose, IoIosNotificationsOutline } from "react-icons/io";
+import { IoPersonCircle } from "react-icons/io5";
+import "./css/CreatePostButton.css";
+import Button from "./ui/Button";
+import Logo from "./ui/Logo";
+import SearchBar from "./ui/SearchBar";
 import SideBar from "./ui/SideBar";
 
 function Navbar() {
   const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
-
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
-
   const handleSidebarItemClick = () => {
     setIsMenuOpen(false);
   };
-
   return (
     <div>
-      <div className="bg-[#0A0A0A] flex items-center justify-between pt-2 pr-5 sm:pr-15 pb-2 border border-white/10 border-l-black border-r-black">
+      <div className="bg-[#0A0A0A] flex items-center justify-between pt-2 pr-5 sm:pr-15 pb-3 relative">
+        {/* Border overlay that starts at 233px */}
+        <div className="hidden lg:block absolute bottom-0 left-[233px] right-0 border-b border-white/10"></div>
+        
         <div className="flex items-center justify-center pl-3">
           <HiMenuAlt2
             size={40}
@@ -33,7 +33,6 @@ function Navbar() {
             onClick={toggleMenu}
             aria-label="Menu"
           />
-
           <div className="flex gap-4 pl-3">
             <Logo
               onClick={() => {
@@ -80,7 +79,6 @@ function Navbar() {
           />
         </div>
       </div>
-
       {/*Mobile Menu */}
       <div
         className={`md:hidden fixed inset-0 bg-black/30 z-40 transition-opacity duration-300 ${
@@ -112,5 +110,4 @@ function Navbar() {
     </div>
   );
 }
-
 export default Navbar;

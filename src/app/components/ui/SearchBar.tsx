@@ -17,7 +17,7 @@ function SearchBar() {
     }
   };
   return (
-    <div className="relative h-[50px]">
+    <div className="bg-black/30 rounded-lg relative">
       <CiSearch
         className="absolute left-3 top-1/3 transform -translate-y-1/3 text-white"
         size={18}

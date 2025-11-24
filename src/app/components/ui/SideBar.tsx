@@ -67,7 +67,7 @@ function SideBar() {
   const router = useRouter();
   return (
     <div
-      className="rounded-lg p-4 max-w-3xs items-left justify-left"
+      className="bg-[#0A0A0A]  lg:border-white/10 lg:border-r-1 p-4 max-w-3xs items-left justify-left lg:-mt-3"
       role="region"
       aria-label="sidebar"
     >
@@ -75,7 +75,7 @@ function SideBar() {
         return (
           <div
             key={idx}
-            className="group flex items-center justify-left-safe gap-2 py-3 hover:border hover:border-amber-50 rounded-lg p-2 cursor-pointer"
+            className="group flex items-center justify-left-safe gap-2 py-3 hover:border hover:border-amber-50 p-2 cursor-pointer"
             onClick={() => router.push(`${obj.link}`)}
           >
             <span className="text-2xl group-hover:no-underline">
