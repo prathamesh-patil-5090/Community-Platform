@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { CiHeart, CiBookmark, CiBellOn } from "react-icons/ci";
 import { useState } from "react";
-import { notificationDetails } from "../../../../lib/data";
+import { notificationDetails } from "@/lib/data";
 
 interface NotificationDetailsProps {
   notiType: "post" | "comment" | "all";

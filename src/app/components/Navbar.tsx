@@ -1,5 +1,5 @@
 "use client";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { CiSearch } from "react-icons/ci";
 import { HiMenuAlt2 } from "react-icons/hi";
@@ -13,6 +13,7 @@ import SideBar from "./ui/SideBar";
 
 function Navbar() {
   const router = useRouter();
+  const pathName = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -22,10 +23,11 @@ function Navbar() {
   };
   return (
     <div>
-      <div className="bg-[#0A0A0A] flex items-center justify-between pt-2 pr-5 sm:pr-15 pb-3 relative">
-        {/* Border overlay that starts at 233px */}
-        <div className="hidden lg:block absolute bottom-0 left-[233px] right-0 border-b border-white/10"></div>
-        
+      <div className="w-full bg-[#0A0A0A] flex items-center justify-between pt-2 pr-5 sm:pr-15 pb-3 relative">
+        {pathName === "/" && (
+          <div className="hidden lg:block absolute bottom-0 left-[233px] right-0 border-b border-white/10"></div>
+        )}
+
         <div className="flex items-center justify-center pl-3">
           <HiMenuAlt2
             size={40}

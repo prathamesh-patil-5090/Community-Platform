@@ -1,6 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { TopPosts } from "../../../../lib/data";
+import { TopPosts } from "../../../lib/data";
 
 function TopDiscussionsBox() {
   const router = useRouter();

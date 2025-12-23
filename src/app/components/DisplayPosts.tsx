@@ -1,4 +1,4 @@
-import { PostInfo } from "../../../lib/data";
+import { PostInfo } from "../../lib/data";
 import Post from "./ui/Post";
 
 export default function DisplayPosts() {

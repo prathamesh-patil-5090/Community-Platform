@@ -1,18 +1,18 @@
 "use client";
-import Link from "next/link";
+import { notificationDetails } from "@/lib/data";
 import Image from "next/image";
-import { CiHeart, CiBookmark } from "react-icons/ci";
-import { useState } from "react";
-import { notificationDetails } from "../../../../lib/data";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { CiBookmark, CiHeart } from "react-icons/ci";
 
 export default function NotificationsDetails() {
   const router = useRouter();
   const [likes, setLikes] = useState(
-    notificationDetails.map((noti) => noti.isLiked || false)
+    notificationDetails.map((noti) => noti.isLiked || false),
   );
   const [saves, setSaves] = useState(
-    notificationDetails.map((noti) => noti.isSaved || false)
+    notificationDetails.map((noti) => noti.isSaved || false),
   );
 
   const handleLike = (idx: number) => {

@@ -60,7 +60,7 @@ export const PostInfo: PostsInfoType = [
     postImage: "/post1.webp",
     postLikes: 25000,
     postComments: [
-      "Prathamesh, tum age badho ham tumhare saath hai!",
+      "Bhavesh, tum age badho ham tumhare saath hai!",
       "Fuck mess-Food!!!!!",
       "Ye bhadwa college",
     ],

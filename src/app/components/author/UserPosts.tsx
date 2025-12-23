@@ -3,8 +3,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { CiHeart, CiBookmark } from "react-icons/ci";
 import { useState } from "react";
-import { notificationDetails } from "../../../../lib/data";
 import { useRouter } from "next/navigation";
+import { notificationDetails } from "@/lib/data";
 
 export default function NotificationsDetails() {
   const router = useRouter();

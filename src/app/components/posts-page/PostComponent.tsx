@@ -1,18 +1,36 @@
 "use client";
 import Image from "next/image";
-import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { BiLike, BiSolidLike } from "react-icons/bi";
+import { IoSend } from "react-icons/io5";
 import { MdOutlineModeComment } from "react-icons/md";
 import { PiDotsThreeCircleVerticalLight } from "react-icons/pi";
-import CommentOptionsModal from "./CommentOptionsModal";
-import { IoSend } from "react-icons/io5";
-import ReportsComponent from "./ReportsComponent";
-import { createPortal } from "react-dom";
-import Link from "next/link";
-import { PostInfoType } from "@/lib/types";
+import CommentOptionsModal from "../ui/CommentOptionsModal";
+import ReportsComponent from "../ui/ReportsComponent";
 
-export default function Post({ postData }: { postData: PostInfoType }) {
+export type PostData = {
+  postId: string;
+  authorName?: string;
+  authorId?: string;
+  authorPic?: string;
+  postCreationDate?: string;
+  tags?: string[];
+  postType?: string;
+  postTitle?: string;
+  postDesc?: string;
+  postImage?: string;
+  postLikes?: number;
+  postComments?: string[];
+};
+
+export type PostComponentRef = {
+  openCommentsAndScroll: () => void;
+};
+
+const PostComponent = forwardRef<PostComponentRef, { postData: PostData }>(({ postData }, ref) => {
   const postComments = postData.postComments || [];
   const postLikes = postData.postLikes || 0;
 
@@ -27,10 +45,25 @@ export default function Post({ postData }: { postData: PostInfoType }) {
   const [isReport, setReport] = useState<boolean>(false);
   const [Blur, setBlur] = useState<string>("none");
 
-  const my_text = postData.postDesc || "";
+  const commentsRef = useRef<HTMLDivElement>(null);
 
+  const my_text = postData.postDesc || "";
   const tags: string[] = postData.tags || [];
   const postId = postData.postId;
+
+  // Expose method to parent component
+  useImperativeHandle(ref, () => ({
+    openCommentsAndScroll: () => {
+      setCommentPressed(true);
+      // Scroll after state update
+      setTimeout(() => {
+        commentsRef.current?.scrollIntoView({ 
+          behavior: "smooth", 
+          block: "start" 
+        });
+      }, 100);
+    }
+  }));
 
   const formatLikes = (num: number): string => {
     if (num >= 1000000) {
@@ -109,7 +142,7 @@ export default function Post({ postData }: { postData: PostInfoType }) {
                 {postData.authorName}
               </Link>
               <p className="text-md md:text-lg">
-                {new Date(postData.postCreationDate)
+                {postData.postCreationDate && new Date(postData.postCreationDate)
                   .toDateString()
                   .split(" ")
                   .slice(1)
@@ -117,35 +150,14 @@ export default function Post({ postData }: { postData: PostInfoType }) {
               </p>
             </div>
           </div>
-          {/* <div className="flex items-end gap-2">
-            <MdOutlineReport
-              className="flex text-red-500 my-3 cursor-pointer"
-              size={30}
-              onClick={handleReport}
-            />
-          </div> */}
         </div>
 
         <div
-          className="font-sans font-bold text-xl md:text-3xl py-2 cursor-pointer"
+          className="font-sans font-bold text-xl md:text-5xl py-2 cursor-pointer"
           onClick={() => router.push(`/posts/${postId}`)}
         >
           {postData.postTitle}
         </div>
-        <div>
-          <Image
-            src={postData.postImage ? postData.postImage : "no-image"}
-            alt="Post Pic"
-            width={800}
-            height={100}
-            className="rounded-lg"
-          />
-        </div>
-
-        <p className="font-sans font-small md:font-medium md:tracking-wide text-justify text-white py-2">
-          {underFiftyWords(my_text)}
-        </p>
-
         <div className="flex flex-wrap gap-2 py-2">
           {tags.map((tag, index) => (
             <button
@@ -157,6 +169,20 @@ export default function Post({ postData }: { postData: PostInfoType }) {
             </button>
           ))}
         </div>
+        <div>
+          <Image
+            src={postData.postImage ? postData.postImage : "no-image"}
+            alt="Post Pic"
+            width={1100}
+            height={100}
+            className="rounded-lg"
+          />
+        </div>
+
+        <p className="font-sans font-small md:font-medium md:tracking-wide text-justify text-white py-2">
+          {underFiftyWords(my_text)}
+        </p>
+
         <div className="flex gap-5 py-2">
           {isLiked ? (
             <div className="flex items-center gap-2">
@@ -170,20 +196,21 @@ export default function Post({ postData }: { postData: PostInfoType }) {
             </div>
           )}
           <div
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 cursor-pointer"
             onClick={() => setCommentPressed(!isCommentPressed)}
           >
             <MdOutlineModeComment size={30} />
           </div>
         </div>
       </div>
-      <div className="flex justify-center items-center pt-2">
+      
+      <div ref={commentsRef} className="flex justify-center items-center pt-2">
         {isCommentPressed && (
-          <div className="pt-2">
+          <div className="pt-2 w-full">
             {/* Input area */}
             <div className="relative flex items-center justify-center gap-2">
               <textarea
-                className="border p-2 w-[80vw] md:w-150 rounded-xl resize-y"
+                className="border p-2 w-[80vw] md:w-150 rounded-xl resize-y text-black"
                 style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
                 onClick={() => setCommentInput(true)}
                 value={comment}
@@ -232,13 +259,12 @@ export default function Post({ postData }: { postData: PostInfoType }) {
                           >
                             <CommentOptionsModal
                               onEdit={() => {
-                                // TODO: Implement edit functionality
                                 console.log("Edit comment at index:", idx);
                                 setOpenModalIndex(null);
                               }}
                               onDelete={() => {
                                 setComments(
-                                  comments.filter((_, i) => i !== idx)
+                                  comments.filter((_, i) => i !== idx),
                                 );
                                 setOpenModalIndex(null);
                               }}
@@ -264,13 +290,17 @@ export default function Post({ postData }: { postData: PostInfoType }) {
           <div className="fixed inset-0 bg-black/55 flex justify-center items-center z-50 overflow-hidden">
             <div onClick={(e) => e.stopPropagation()}>
               <ReportsComponent
-                postData={postData.postTitle}
+                postData={postData.postTitle || ""}
                 onClose={closeReportModal}
               />
             </div>
           </div>,
-          document.body
+          document.body,
         )}
     </div>
   );
-}
+});
+
+PostComponent.displayName = "PostComponent";
+
+export default PostComponent;

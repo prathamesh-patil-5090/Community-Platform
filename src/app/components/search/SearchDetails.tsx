@@ -2,8 +2,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { CiHeart, CiBookmark, CiBellOn } from "react-icons/ci";
 import { useState } from "react";
-import { SearchDetails } from "../../../../lib/data";
-import { SearchDetailProp } from "../../../../lib/types";
+import { SearchDetails } from "@/lib/data";
+import { SearchDetailProp } from "@/lib/types";
 
 interface SearchDetailsProps {
   searchType:
