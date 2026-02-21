@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import Logo from "../components/ui/Logo";
 
 function RegisterPage() {
@@ -95,35 +95,7 @@ function RegisterPage() {
                 </svg>
                 <span>Continue with GitHub</span>
               </button>
-
-              <button className="w-full py-3 bg-black/10 border border-gray-700 rounded-md flex items-center justify-center space-x-3 hover:bg-gray-800 transition-colors">
-                <svg
-                  className="w-5 h-5"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-                </svg>
-                <span>Continue with SAML SSO</span>
-              </button>
-
-              <button className="w-full py-3 bg-black/10 border border-gray-700 rounded-md flex items-center justify-center space-x-3 hover:bg-gray-800 transition-colors">
-                <svg
-                  className="w-5 h-5"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-                  <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-                </svg>
-                <span>Continue with Passkey</span>
-              </button>
             </div>
-
-            {/* Show other options */}
-            <button className="w-full py-3 text-gray-400 hover:text-white transition-colors">
-              Show other options
-            </button>
           </div>
 
           {/* Sign in link */}
