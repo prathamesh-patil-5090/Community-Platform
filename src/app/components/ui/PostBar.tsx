@@ -1,13 +1,13 @@
 "use client";
-import Button from "./Button";
 import { useRouter } from "next/navigation";
-import "../css/CreatePostButton.css";
-import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import "../css/CreatePostButton.css";
+import Button from "./Button";
 
 function PostBar() {
   const router = useRouter();
   const [showButton, setShowButton] = useState<boolean>(false);
+  const [content, setContent] = useState<string>("");
   const postBarRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -21,7 +21,14 @@ function PostBar() {
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [postBarRef]);
+  }, []);
+
+  const handleNavigateToFullEditor = () => {
+    if (content.trim()) {
+      sessionStorage.setItem("quickpost_draft", content.trim());
+    }
+    router.push("/create-post");
+  };
 
   return (
     <div
@@ -33,20 +40,26 @@ function PostBar() {
         rows={1}
         cols={200}
         placeholder="What's on your mind?"
-        className={` text-white border border-white/10 bg-[#0A0A0A] rounded-md px-4 pl-2 py-2 w-full focus:outline-black`}
-      ></textarea>
+        value={content}
+        onChange={(e) => setContent(e.target.value)}
+        className="text-white border border-white/10 bg-[#0A0A0A] rounded-md px-4 pl-2 py-2 w-full focus:outline-black resize-none"
+      />
       {showButton && (
         <div className="flex flex-row items-center justify-around md:justify-between p-2 font-light text-sm">
           <span>
             Quickie Posts (beta) show up in the feed but not notifications or
             your profile —{" "}
-            <Link className="underline font-semibold" href={"/create-post"}>
+            <button
+              type="button"
+              className="underline font-semibold cursor-pointer hover:text-blue-400 transition-colors"
+              onClick={handleNavigateToFullEditor}
+            >
               Open Full Editor
-            </Link>
+            </button>
           </span>
           <Button
             name={"Create"}
-            onClick={() => router.push("/create-post")}
+            onClick={handleNavigateToFullEditor}
             className="gradient-text border border-white/10"
           />
         </div>

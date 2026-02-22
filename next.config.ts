@@ -23,6 +23,11 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "secure.gravatar.com",
       },
+      // Cloudinary delivery URLs (uploaded post/avatar images)
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+      },
     ],
   },
 };

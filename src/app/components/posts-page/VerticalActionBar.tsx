@@ -11,21 +11,16 @@ type Props = {
   initialIsLiked?: boolean;
   initialBookmarked?: boolean;
   commentsCount?: number;
-  // Callbacks are optional — Post page can pass handlers to synchronize state upstream
-  // Rename callbacks to end with 'Action' to satisfy Next.js serialization rules for use-client components
-  onLikeAction?: (liked: boolean) => void;
+  onLikeAction?: (liked: boolean, newCount: number) => void;
   onCommentClickAction?: () => void;
   onBookmarkAction?: (bookmarked: boolean) => void;
 };
 
 const formatCount = (num = 0) => {
-  if (num >= 1000000) {
-    return (num / 1000000).toFixed(1).replace(/\.0$/, "") + "M";
-  } else if (num >= 1000) {
-    return (num / 1000).toFixed(1).replace(/\.0$/, "") + "K";
-  } else {
-    return String(num);
-  }
+  if (num >= 1_000_000)
+    return (num / 1_000_000).toFixed(1).replace(/\.0$/, "") + "M";
+  if (num >= 1_000) return (num / 1_000).toFixed(1).replace(/\.0$/, "") + "K";
+  return String(num);
 };
 
 export default function VerticalActionBar({
@@ -40,20 +35,55 @@ export default function VerticalActionBar({
 }: Props) {
   const [isLiked, setIsLiked] = useState<boolean>(initialIsLiked);
   const [likes, setLikes] = useState<number>(initialLikes);
+  const [likeLoading, setLikeLoading] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState<boolean>(initialBookmarked);
   const [copied, setCopied] = useState<boolean>(false);
 
-  const handleLike = () => {
-    const next = !isLiked;
-    setIsLiked(next);
-    setLikes((prev) => (next ? prev + 1 : Math.max(0, prev - 1)));
-    if (onLikeAction) onLikeAction(next);
+  const handleLike = async () => {
+    if (likeLoading) return;
+
+    // Optimistic update
+    const prevLiked = isLiked;
+    const prevCount = likes;
+    const nextLiked = !isLiked;
+    const nextCount = nextLiked ? likes + 1 : Math.max(0, likes - 1);
+
+    setIsLiked(nextLiked);
+    setLikes(nextCount);
+    onLikeAction?.(nextLiked, nextCount);
+
+    setLikeLoading(true);
+    try {
+      const res = await fetch(`/api/posts/${postId}/like`, {
+        method: "PATCH",
+      });
+
+      if (!res.ok) {
+        // Rollback on failure
+        setIsLiked(prevLiked);
+        setLikes(prevCount);
+        onLikeAction?.(prevLiked, prevCount);
+        return;
+      }
+
+      const data = await res.json();
+      setIsLiked(data.liked);
+      setLikes(data.likes);
+      onLikeAction?.(data.liked, data.likes);
+    } catch {
+      // Rollback on network error
+      setIsLiked(prevLiked);
+      setLikes(prevCount);
+      onLikeAction?.(prevLiked, prevCount);
+    } finally {
+      setLikeLoading(false);
+    }
   };
 
   const handleBookmark = () => {
     const next = !isBookmarked;
     setIsBookmarked(next);
-    if (onBookmarkAction) onBookmarkAction(next);
+    onBookmarkAction?.(next);
   };
 
   const handleCopyLink = async () => {
@@ -65,7 +95,6 @@ export default function VerticalActionBar({
       if (navigator?.clipboard?.writeText) {
         await navigator.clipboard.writeText(postUrl);
       } else {
-        // fallback
         const tmp = document.createElement("textarea");
         tmp.value = postUrl;
         document.body.appendChild(tmp);
@@ -76,7 +105,6 @@ export default function VerticalActionBar({
       setCopied(true);
       setTimeout(() => setCopied(false), 1800);
     } catch (err) {
-      // silently ignore - don't crash the UI
       console.error("copy failed", err);
     }
   };
@@ -84,38 +112,43 @@ export default function VerticalActionBar({
   return (
     <aside
       aria-label="Post actions"
-      className="hidden fixed left-0 top-[60px] h-[calc(100vh-60px)] md:flex select-none flex-col items-center gap-10 pt-20 p-3 text-white bg-black"
-      style={{ minWidth: 80 }}
+      className="hidden fixed left-0 top-[60px] h-[calc(100vh-60px)] md:flex select-none flex-col items-center gap-8 pt-20 p-3 text-white bg-black border-r border-white/5"
+      style={{ minWidth: 83 }}
     >
       {/* Like */}
       <button
         aria-pressed={isLiked}
         aria-label={isLiked ? "Unlike post" : "Like post"}
         onClick={handleLike}
-        className="flex flex-col items-center gap-1 transition-transform transform hover:-translate-y-1 focus:outline-none"
+        disabled={likeLoading}
+        className={`flex flex-col items-center gap-1.5 px-3 py-2 rounded-xl transition-all
+          ${
+            isLiked
+              ? "bg-red-500/10 text-red-400 hover:bg-red-500/20"
+              : "text-white/60 hover:bg-white/5 hover:text-white"
+          }
+          disabled:opacity-50 disabled:cursor-not-allowed`}
         title={isLiked ? "Unlike" : "Like"}
       >
-        <div className="text-white">
-          {isLiked ? (
-            <BiSolidLike size={26} className="text-red-500" />
-          ) : (
-            <BiLike size={26} />
-          )}
-        </div>
-        <span className="text-sm">{formatCount(likes)}</span>
+        {isLiked ? (
+          <BiSolidLike size={24} className="text-red-400" />
+        ) : (
+          <BiLike size={24} />
+        )}
+        <span className="text-xs font-medium">{formatCount(likes)}</span>
       </button>
 
       {/* Comment */}
       <button
         aria-label="Open comments"
         onClick={() => onCommentClickAction?.()}
-        className="flex flex-col items-center gap-1 transition-transform transform hover:-translate-y-1 focus:outline-none"
+        className="flex flex-col items-center gap-1.5 px-3 py-2 rounded-xl text-white/60 hover:bg-white/5 hover:text-white transition-all"
         title="Comments"
       >
-        <div className="text-white">
-          <MdOutlineModeComment size={26} />
-        </div>
-        <span className="text-sm">{formatCount(commentsCount)}</span>
+        <MdOutlineModeComment size={24} />
+        <span className="text-xs font-medium">
+          {formatCount(commentsCount)}
+        </span>
       </button>
 
       {/* Bookmark */}
@@ -123,30 +156,40 @@ export default function VerticalActionBar({
         aria-pressed={isBookmarked}
         aria-label={isBookmarked ? "Remove bookmark" : "Save to bookmarks"}
         onClick={handleBookmark}
-        className="flex flex-col items-center gap-1 transition-transform transform hover:-translate-y-1 focus:outline-none"
+        className={`flex flex-col items-center gap-1.5 px-3 py-2 rounded-xl transition-all
+          ${
+            isBookmarked
+              ? "bg-blue-500/10 text-blue-400 hover:bg-blue-500/20"
+              : "text-white/60 hover:bg-white/5 hover:text-white"
+          }`}
         title={isBookmarked ? "Bookmarked" : "Save"}
       >
-        <div className="text-white">
-          {isBookmarked ? (
-            <BsBookmarkFill size={24} />
-          ) : (
-            <BsBookmark size={24} />
-          )}
-        </div>
-        <span className="text-sm">{isBookmarked ? "Saved" : "Save"}</span>
+        {isBookmarked ? (
+          <BsBookmarkFill size={22} className="text-blue-400" />
+        ) : (
+          <BsBookmark size={22} />
+        )}
+        <span className="text-xs font-medium">
+          {isBookmarked ? "Saved" : "Save"}
+        </span>
       </button>
 
       {/* Copy Link / Share */}
       <button
         aria-label="Copy post link"
         onClick={handleCopyLink}
-        className="flex flex-col items-center gap-1 transition-transform transform hover:-translate-y-1 focus:outline-none"
+        className={`flex flex-col items-center gap-1.5 px-3 py-2 rounded-xl transition-all
+          ${
+            copied
+              ? "bg-green-500/10 text-green-400"
+              : "text-white/60 hover:bg-white/5 hover:text-white"
+          }`}
         title="Copy link"
       >
-        <div className="text-white">
-          <HiOutlineLink size={24} />
-        </div>
-        <span className="text-sm">{copied ? "Copied!" : "Share"}</span>
+        <HiOutlineLink size={22} />
+        <span className="text-xs font-medium">
+          {copied ? "Copied!" : "Share"}
+        </span>
       </button>
     </aside>
   );

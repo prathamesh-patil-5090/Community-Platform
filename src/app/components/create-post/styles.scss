@@ -1,133 +1,236 @@
-/* Basic editor styles */
-.ProseMirror {
-  outline: none;
-  padding: 1rem;
-  min-height: 200px;
-  background: #0a0a0a; /* bg-gray-300 equivalent */
-  color: white;
+/* ── TipTap / ProseMirror editor + rendered post content styles ─────────────── */
 
-  :first-child {
+/*
+ * .ProseMirror   — the live editor DOM node (TipTap writes here)
+ * .tiptap-content — any div that renders saved TipTap HTML (post detail view, etc.)
+ * Both share identical typography rules so write-time and read-time look the same.
+ */
+.ProseMirror,
+.tiptap-content {
+  outline: none;
+  color: #e5e7eb;
+  line-height: 1.7;
+
+  > :first-child {
     margin-top: 0;
   }
 
-  /* List styles */
-  ul,
-  ol {
-    padding: 0 1rem;
-    margin: 1.25rem 1rem 1.25rem 0.4rem;
+  /* ── Paragraph ──────────────────────────────────────────────────────────── */
+  p {
+    margin: 0.75rem 0;
+    line-height: 1.75;
+  }
+
+  /* ── Lists ──────────────────────────────────────────────────────────────── */
+  ul {
+    list-style-type: disc;
+    padding-left: 1.75rem;
+    margin: 1rem 0;
 
     li p {
-      margin-top: 0.25em;
-      margin-bottom: 0.25em;
+      margin: 0.2em 0;
     }
   }
 
-  /* Heading styles */
+  ol {
+    list-style-type: decimal;
+    padding-left: 1.75rem;
+    margin: 1rem 0;
+
+    li p {
+      margin: 0.2em 0;
+    }
+  }
+
+  /* Nested list variants */
+  ul ul            { list-style-type: circle;       margin: 0.25rem 0; }
+  ul ul ul         { list-style-type: square;       margin: 0.25rem 0; }
+  ol ol            { list-style-type: lower-alpha;  margin: 0.25rem 0; }
+  ol ol ol         { list-style-type: lower-roman;  margin: 0.25rem 0; }
+
+  li {
+    margin: 0.3rem 0;
+  }
+
+  /* ── Headings ───────────────────────────────────────────────────────────── */
   h1,
   h2,
   h3,
   h4,
   h5,
   h6 {
-    line-height: 1.1;
-    margin-top: 2.5rem;
+    font-weight: 700;
+    line-height: 1.25;
+    color: #f9fafb;
     text-wrap: pretty;
   }
 
-  h1,
-  h2 {
-    margin-top: 3.5rem;
-    margin-bottom: 1.5rem;
-  }
-
   h1 {
-    font-size: 1.4rem;
+    font-size: 2rem;
+    margin: 2rem 0 1rem;
   }
 
   h2 {
-    font-size: 1.2rem;
+    font-size: 1.6rem;
+    margin: 1.75rem 0 0.875rem;
   }
 
   h3 {
-    font-size: 1.1rem;
+    font-size: 1.3rem;
+    margin: 1.5rem 0 0.75rem;
   }
 
-  h4,
+  h4 {
+    font-size: 1.1rem;
+    margin: 1.25rem 0 0.625rem;
+  }
+
   h5,
   h6 {
     font-size: 1rem;
+    margin: 1rem 0 0.5rem;
   }
 
-  /* Code and preformatted text styles */
+  /* ── Inline code ────────────────────────────────────────────────────────── */
   code {
-    background-color: var(--purple-light);
-    border-radius: 0.4rem;
-    color: var(--black);
-    font-size: 0.85rem;
-    padding: 0.25em 0.3em;
+    background-color: rgba(139, 92, 246, 0.15);
+    border: 1px solid rgba(139, 92, 246, 0.25);
+    border-radius: 0.3rem;
+    color: #c4b5fd;
+    font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', ui-monospace, monospace;
+    font-size: 0.85em;
+    padding: 0.15em 0.4em;
   }
 
+  /* ── Code block ─────────────────────────────────────────────────────────── */
   pre {
-    background: var(--black);
-    border-radius: 0.5rem;
-    color: var(--white);
-    font-family: 'JetBrainsMono', monospace;
+    background: #161b22;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 0.6rem;
+    color: #e5e7eb;
+    font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', ui-monospace, monospace;
+    font-size: 0.875rem;
+    line-height: 1.7;
     margin: 1.5rem 0;
-    padding: 0.75rem 1rem;
+    overflow-x: auto;
+    padding: 1rem 1.25rem;
 
     code {
+      /* Reset inline-code overrides inside a block */
       background: none;
+      border: none;
+      border-radius: 0;
       color: inherit;
-      font-size: 0.8rem;
+      font-size: inherit;
       padding: 0;
     }
   }
 
+  /* ── Blockquote ─────────────────────────────────────────────────────────── */
   blockquote {
-    border-left: 3px solid var(--gray-3);
+    border-left: 4px solid #4f46e5;
+    background: rgba(79, 70, 229, 0.06);
+    border-radius: 0 0.4rem 0.4rem 0;
+    color: #a1a1aa;
+    font-style: italic;
     margin: 1.5rem 0;
-    padding-left: 1rem;
+    padding: 0.75rem 1.25rem;
+
+    p {
+      margin: 0;
+    }
   }
 
+  /* ── Horizontal rule ────────────────────────────────────────────────────── */
   hr {
     border: none;
-    border-top: 1px solid var(--gray-2);
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
     margin: 2rem 0;
+  }
+
+  /* ── Links ──────────────────────────────────────────────────────────────── */
+  a {
+    color: #60a5fa;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+
+    &:hover {
+      color: #93c5fd;
+    }
+  }
+
+  /* ── Images ─────────────────────────────────────────────────────────────── */
+  img {
+    border-radius: 0.5rem;
+    max-width: 100%;
+    height: auto;
+    margin: 1rem 0;
+  }
+
+  /* ── Strong / Em ────────────────────────────────────────────────────────── */
+  strong {
+    color: #f9fafb;
+    font-weight: 700;
+  }
+
+  em {
+    color: #d1d5db;
   }
 }
 
-/* Editor controls styling */
-.control-group {
-  margin-bottom: 1rem;
+/* ── Editor-only styles (not needed for static read-only view) ─────────────── */
+.ProseMirror {
+  padding: 1rem;
+  min-height: 200px;
+  background: #0a0a0a;
+
+  /* Empty-state placeholder */
+  p.is-editor-empty:first-child::before {
+    color: #6b7280;
+    content: attr(data-placeholder);
+    float: left;
+    height: 0;
+    pointer-events: none;
+  }
 }
 
+/* ── Toolbar button group ──────────────────────────────────────────────────── */
 .button-group {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  
+  gap: 0.25rem;
+
   button {
-    padding: 0.5rem 1rem;
-    border-radius: 0.25rem;
+    align-items: center;
     background: transparent;
+    border-radius: 0.375rem;
+    color: #9ca3af;
     cursor: pointer;
+    display: inline-flex;
     font-size: 0.875rem;
-    color: #e5e7eb;
-    
-    &:hover {
-      background: #374151;
-      color: #ffffff;
+    justify-content: center;
+    min-width: 2rem;
+    padding: 0.375rem 0.5rem;
+    transition: background 0.15s ease, color 0.15s ease;
+
+    &:hover:not(:disabled) {
+      background: #1f2937;
+      color: #f9fafb;
     }
-    
+
     &.is-active {
       background: #1e293b;
-      color: #ffffff;
-      border-color: #1e293b;
+      color: #818cf8;
     }
-    
+
     &:disabled {
-      opacity: 0.5;
       cursor: not-allowed;
+      opacity: 0.35;
     }
   }
+}
+
+/* ── Control group wrapper ─────────────────────────────────────────────────── */
+.control-group {
+  margin-bottom: 1rem;
 }

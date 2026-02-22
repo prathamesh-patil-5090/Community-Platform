@@ -1,3 +1,12 @@
+export interface CommentType {
+  id: string;
+  text: string;
+  authorId: string;
+  authorName?: string;
+  authorImage?: string;
+  createdAt: string;
+}
+
 export interface PostInfoType {
   authorName: string;
   authorPic?: string;
@@ -11,6 +20,8 @@ export interface PostInfoType {
   postLikes?: number;
   postComments?: string[];
   postId?: string;
+  initialIsLiked?: boolean;
+  commentObjects?: CommentType[];
 }
 
 export type PostsInfoType = PostInfoType[];

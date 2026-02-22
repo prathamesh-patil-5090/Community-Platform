@@ -93,6 +93,9 @@ function validate() {
   const GITHUB_CLIENT_SECRET = requireString("GITHUB_CLIENT_SECRET", errors);
   const GITHUB_CALLBACK_URL = requireUrl("GITHUB_CALLBACK_URL", errors);
 
+  // ── Cloudinary ────────────────────────────────────────────────────────────
+  const CLOUDINARY_URL = requireString("CLOUDINARY_URL", errors);
+
   if (errors.length > 0) {
     throw new Error(
       `\n\n❌  Missing or invalid environment variables:\n\n${errors.join("\n")}\n\n` +
@@ -120,6 +123,9 @@ function validate() {
     GITHUB_CLIENT_ID,
     GITHUB_CLIENT_SECRET,
     GITHUB_CALLBACK_URL,
+
+    // Cloudinary
+    CLOUDINARY_URL,
 
     IS_PRODUCTION: process.env.NODE_ENV === "production",
     IS_DEVELOPMENT: process.env.NODE_ENV === "development",
