@@ -4,13 +4,6 @@ import Post from "@/models/Post";
 import mongoose from "mongoose";
 import { NextRequest, NextResponse } from "next/server";
 
-// ── PATCH /api/posts/[id]/like ────────────────────────────────────────────────
-// Toggles the current user's like on a post.
-// If already liked  → removes like  (returns liked: false)
-// If not yet liked  → adds like     (returns liked: true)
-//
-// Response 200:
-//   { liked: boolean; likes: number }
 export async function PATCH(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
@@ -35,7 +28,6 @@ export async function PATCH(
 
     const userId = session.user.id;
 
-    // Check current like state
     const post = await Post.findById(id).select("likedBy likes").lean();
 
     if (!post) {
@@ -49,7 +41,6 @@ export async function PATCH(
     let updatedPost;
 
     if (alreadyLiked) {
-      // Remove like
       updatedPost = await Post.findByIdAndUpdate(
         id,
         {
@@ -59,7 +50,6 @@ export async function PATCH(
         { new: true, select: "likes likedBy" },
       ).lean();
     } else {
-      // Add like
       updatedPost = await Post.findByIdAndUpdate(
         id,
         {
@@ -74,7 +64,6 @@ export async function PATCH(
       return NextResponse.json({ error: "Post not found." }, { status: 404 });
     }
 
-    // Clamp likes to zero (should never be negative, but be safe)
     const safeLikes = Math.max(0, updatedPost.likes ?? 0);
 
     return NextResponse.json(

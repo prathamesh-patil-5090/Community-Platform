@@ -4,14 +4,6 @@ import Post from "@/models/Post";
 import mongoose from "mongoose";
 import { NextRequest, NextResponse } from "next/server";
 
-// ── POST /api/posts/[id]/comments ─────────────────────────────────────────────
-// Adds a comment to a post. Requires an authenticated session.
-//
-// Body (JSON):
-//   text   string   required  (max 2000 chars)
-//
-// Response 201:
-//   { comment: { id, text, authorId, authorName, authorImage, createdAt }; commentsCount: number }
 export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
@@ -68,7 +60,6 @@ export async function POST(
       return NextResponse.json({ error: "Post not found." }, { status: 404 });
     }
 
-    // The newly added comment is now at index 0 (we pushed to front)
     const saved = updatedPost.commentList?.[0];
 
     return NextResponse.json(
@@ -94,8 +85,6 @@ export async function POST(
   }
 }
 
-// ── GET /api/posts/[id]/comments ──────────────────────────────────────────────
-// Returns all comments for a post, newest first.
 export async function GET(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> },

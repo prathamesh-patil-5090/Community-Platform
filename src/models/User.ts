@@ -29,7 +29,7 @@ const UserSchema = new Schema<IUser>(
     password: {
       type: String,
       minlength: [8, "Password must be at least 8 characters"],
-      select: false, // Never return password by default
+      select: false,
     },
     image: {
       type: String,
@@ -45,10 +45,9 @@ const UserSchema = new Schema<IUser>(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
-// Prevent duplicate model registration in Next.js hot reload
 const User: Model<IUser> =
   mongoose.models.User || mongoose.model<IUser>("User", UserSchema);
 

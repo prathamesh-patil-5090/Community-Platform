@@ -3,13 +3,6 @@ import connectDB from "@/lib/mongodb";
 import Post from "@/models/Post";
 import { NextRequest, NextResponse } from "next/server";
 
-// ── GET /api/posts ────────────────────────────────────────────────────────────
-// Returns a paginated list of posts, newest first.
-// Query params:
-//   page    (default 1)
-//   limit   (default 20, max 50)
-//   author  (optional userId filter)
-//   tag     (optional tag filter)
 export async function GET(req: NextRequest) {
   try {
     const session = await auth();
@@ -48,7 +41,6 @@ export async function GET(req: NextRequest) {
       Post.countDocuments(filter),
     ]);
 
-    // Annotate each post with whether the current user has liked it
     const annotatedPosts = posts.map((post) => ({
       ...post,
       userHasLiked: Array.isArray(post.likedBy)
@@ -79,15 +71,6 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// ── POST /api/posts ───────────────────────────────────────────────────────────
-// Creates a new post. Requires an authenticated session.
-//
-// Body (JSON):
-//   title       string   required
-//   content     string   required  (HTML from TipTap)
-//   tags        string[] optional  max 4
-//   coverImage  string   optional  (Cloudinary URL from /api/upload)
-//   postType    "Post" | "Article"  optional  default "Post"
 export async function POST(req: NextRequest) {
   try {
     const session = await auth();
@@ -102,7 +85,6 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { title, content, tags, coverImage, postType } = body;
 
-    // ── Validation ──────────────────────────────────────────────────────────
     if (!title || typeof title !== "string" || title.trim().length === 0) {
       return NextResponse.json(
         { error: "Post title is required." },
@@ -128,7 +110,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Sanitise tags
     let parsedTags: string[] = [];
     if (tags !== undefined) {
       if (!Array.isArray(tags)) {
@@ -149,7 +130,6 @@ export async function POST(req: NextRequest) {
         ? (postType as "Post" | "Article")
         : "Post";
 
-    // ── Persist ─────────────────────────────────────────────────────────────
     await connectDB();
 
     const post = await Post.create({

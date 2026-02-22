@@ -8,10 +8,10 @@ import { useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 import { FaImage, FaTimes } from "react-icons/fa";
 import { toast } from "react-toastify";
+import DesktopMenuBar from "../create-post/DesktopMenuBar";
+import MobileMenuBar from "../create-post/MobileMenuBar";
+import "../create-post/styles.scss";
 import CustomAlert from "../ui/Alert/CustomAlert";
-import DesktopMenuBar from "./DesktopMenuBar";
-import MobileMenuBar from "./MobileMenuBar";
-import "./styles.scss";
 
 const extensions = [
   TextStyle,
@@ -28,7 +28,7 @@ interface TagAndTitleInputProps {
   tags: string[];
   onRemoveTag: (tag: string) => void;
   postType: "Post" | "Article";
-  onPostTypeChange: (v: "Post" | "Article") => void;
+  onPostTypeChange: (t: "Post" | "Article") => void;
 }
 
 function TagAndTitleInput({
@@ -73,7 +73,7 @@ function TagAndTitleInput({
 
       {/* Title */}
       <input
-        placeholder="New title here…"
+        placeholder="Post title…"
         value={title}
         onChange={(e) => onTitleChange(e.target.value)}
         maxLength={300}
@@ -202,14 +202,32 @@ function CoverImageUpload({
   );
 }
 
-const CreatePostComponent = () => {
+interface EditPostComponentProps {
+  postId: string;
+  initialTitle: string;
+  initialContent: string;
+  initialTags: string[];
+  initialCoverImage?: string | null;
+  initialPostType: "Post" | "Article";
+}
+
+export default function EditPostComponent({
+  postId,
+  initialTitle,
+  initialContent,
+  initialTags,
+  initialCoverImage,
+  initialPostType,
+}: EditPostComponentProps) {
   const router = useRouter();
 
-  const [title, setTitle] = useState("");
+  const [title, setTitle] = useState(initialTitle);
   const [tagInput, setTagInput] = useState("");
-  const [tags, setTags] = useState<string[]>([]);
-  const [postType, setPostType] = useState<"Post" | "Article">("Post");
-  const [coverImage, setCoverImage] = useState<string | null>(null);
+  const [tags, setTags] = useState<string[]>(initialTags);
+  const [postType, setPostType] = useState<"Post" | "Article">(initialPostType);
+  const [coverImage, setCoverImage] = useState<string | null>(
+    initialCoverImage ?? null,
+  );
 
   const [isCoverUploading, setIsCoverUploading] = useState(false);
   const [isEditorImageUploading, setIsEditorImageUploading] = useState(false);
@@ -230,16 +248,10 @@ const CreatePostComponent = () => {
   });
 
   useEffect(() => {
-    if (!editor) return;
-    const draft = sessionStorage.getItem("quickpost_draft");
-    if (!draft) return;
-    sessionStorage.removeItem("quickpost_draft");
-    const html = draft
-      .split("\n")
-      .map((line) => `<p>${line.trim() === "" ? "<br>" : line}</p>`)
-      .join("");
-    editor.commands.setContent(html);
+    if (!editor || !initialContent) return;
+    editor.commands.setContent(initialContent);
     editor.commands.focus("end");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editor]);
 
   function handleTagInputChange(value: string) {
@@ -276,18 +288,9 @@ const CreatePostComponent = () => {
   async function uploadImageToCloudinary(file: File): Promise<string> {
     const formData = new FormData();
     formData.append("file", file);
-
-    const res = await fetch("/api/upload", {
-      method: "POST",
-      body: formData,
-    });
-
+    const res = await fetch("/api/upload", { method: "POST", body: formData });
     const data = await res.json();
-
-    if (!res.ok) {
-      throw new Error(data.error ?? "Upload failed");
-    }
-
+    if (!res.ok) throw new Error(data.error ?? "Upload failed");
     return data.url as string;
   }
 
@@ -307,7 +310,6 @@ const CreatePostComponent = () => {
 
   function handleOpenAlert(type: "image" | "link") {
     if (type === "image") {
-      // Trigger file picker instead of URL dialog
       editorImageInputRef.current?.click();
     } else {
       setAlertState({ isOpen: true, type, title: "Insert Link" });
@@ -320,7 +322,6 @@ const CreatePostComponent = () => {
     const file = e.target.files?.[0];
     e.target.value = "";
     if (!file || !editor) return;
-
     setIsEditorImageUploading(true);
     try {
       const url = await uploadImageToCloudinary(file);
@@ -340,7 +341,6 @@ const CreatePostComponent = () => {
 
   function handleConfirmAlert(data: { url: string; text?: string }) {
     if (!editor) return;
-
     editor
       .chain()
       .focus()
@@ -350,28 +350,28 @@ const CreatePostComponent = () => {
       .run();
   }
 
-  async function handlePublish() {
+  async function handleSave() {
     if (!title.trim()) {
-      toast.error("Please add a title before publishing.");
+      toast.error("Please add a title before saving.");
       return;
     }
 
     const content = editor?.getHTML() ?? "";
     if (!content || content === "<p></p>") {
-      toast.error("Please write some content before publishing.");
+      toast.error("Please write some content before saving.");
       return;
     }
 
     setIsSubmitting(true);
     try {
-      const res = await fetch("/api/posts", {
-        method: "POST",
+      const res = await fetch(`/api/posts/${postId}`, {
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           title: title.trim(),
           content,
           tags,
-          coverImage: coverImage ?? undefined,
+          coverImage: coverImage ?? null,
           postType,
         }),
       });
@@ -379,12 +379,12 @@ const CreatePostComponent = () => {
       const data = await res.json();
 
       if (!res.ok) {
-        toast.error(data.error ?? "Failed to publish. Please try again.");
+        toast.error(data.error ?? "Failed to save. Please try again.");
         return;
       }
 
-      toast.success("Post published successfully!");
-      router.push("/");
+      toast.success("Post updated successfully!");
+      router.push(`/posts/${postId}`);
       router.refresh();
     } catch {
       toast.error("Something went wrong. Please try again.");
@@ -404,9 +404,8 @@ const CreatePostComponent = () => {
         onChange={handleEditorImageFileSelect}
       />
 
-      {/* Main Editor Section */}
+      {/* Main editor section */}
       <div className="md:w-[60%]">
-        {/* Cover image */}
         <CoverImageUpload
           coverImage={coverImage}
           isUploading={isCoverUploading}
@@ -414,7 +413,6 @@ const CreatePostComponent = () => {
           onRemove={() => setCoverImage(null)}
         />
 
-        {/* Title + Tags */}
         <TagAndTitleInput
           title={title}
           onTitleChange={setTitle}
@@ -466,11 +464,11 @@ const CreatePostComponent = () => {
           className="border border-white/10 border-t-0 min-h-[300px]"
         />
 
-        {/* Publish / Save draft */}
+        {/* Action buttons */}
         <div className="flex items-center gap-3 mt-4">
           <button
             type="button"
-            onClick={handlePublish}
+            onClick={handleSave}
             disabled={
               isSubmitting || isCoverUploading || isEditorImageUploading
             }
@@ -497,10 +495,10 @@ const CreatePostComponent = () => {
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
                   />
                 </svg>
-                Publishing…
+                Saving…
               </>
             ) : (
-              "Publish"
+              "Save Changes"
             )}
           </button>
           <button
@@ -514,49 +512,21 @@ const CreatePostComponent = () => {
         </div>
       </div>
 
-      {/* Desktop Sidebar */}
+      {/* Desktop sidebar – preview */}
       <div className="hidden md:block md:w-1/2">
         <div className="rounded-md p-4">
-          <h3 className="text-4xl font-extrabold text-white mb-4">
-            Writing a Great Post Title – Extra Tips
+          <h3 className="text-3xl font-extrabold text-white mb-4">
+            Editing Post
           </h3>
-          <ul className="text-gray-300 text-lg space-y-2 list-disc list-inside">
-            <li>
-              <strong>Keep it short &amp; punchy</strong> — Aim for 6–12 words.
-            </li>
-            <li>
-              <strong>Clarity beats cleverness</strong> — Be clear about what
-              the post is about.
-            </li>
-            <li>
-              <strong>Use numbers or lists</strong> — e.g., &ldquo;5 Ways to
-              Boost Your Community Engagement&rdquo;.
-            </li>
-            <li>
-              <strong>Ask a question</strong> — e.g., &ldquo;Is Remote Work the
-              Future of Tech?&rdquo;.
-            </li>
-            <li>
-              <strong>Highlight benefits</strong> — Show the reader what
-              they&apos;ll get.
-            </li>
-            <li>
-              <strong>Use power words</strong> — proven, ultimate, easy,
-              essential, guide, surprising.
-            </li>
-            <li>
-              <strong>Include your keyword early</strong> — Helps SEO and
-              searchability.
-            </li>
-            <li>
-              <strong>Test variations</strong> — Try 2–3 versions before
-              posting.
-            </li>
-          </ul>
+          <p className="text-gray-400 text-sm mb-6">
+            Make your changes and click{" "}
+            <span className="text-white font-semibold">Save Changes</span> when
+            you&apos;re done. The post will be updated immediately.
+          </p>
 
           {/* Live preview card */}
           {title && (
-            <div className="mt-8 p-4 border border-white/10 rounded-lg bg-[#111]">
+            <div className="mt-4 p-4 border border-white/10 rounded-lg bg-[#111]">
               <p className="text-xs text-gray-500 mb-2 uppercase tracking-widest">
                 Preview
               </p>
@@ -591,7 +561,7 @@ const CreatePostComponent = () => {
         </div>
       </div>
 
-      {/* Link alert modal (image uses file picker, only link uses this) */}
+      {/* Link alert modal */}
       <CustomAlert
         isOpen={alertState.isOpen}
         onClose={handleCloseAlert}
@@ -601,7 +571,4 @@ const CreatePostComponent = () => {
       />
     </div>
   );
-};
-
-CreatePostComponent.displayName = "CreatePostComponent";
-export default CreatePostComponent;
+}

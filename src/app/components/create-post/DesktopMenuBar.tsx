@@ -1,21 +1,20 @@
 "use client";
-import "./styles.scss";
 import type { Editor } from "@tiptap/react";
 import { useEditorState } from "@tiptap/react";
-import React from "react";
 import {
   FaBold,
-  FaItalic,
-  FaListUl,
-  FaListOl,
   FaCode,
-  FaQuoteRight,
-  FaMinus,
-  FaUndo,
-  FaRedo,
   FaImage,
+  FaItalic,
   FaLink,
+  FaListOl,
+  FaListUl,
+  FaMinus,
+  FaQuoteRight,
+  FaRedo,
+  FaUndo,
 } from "react-icons/fa";
+import "./styles.scss";
 
 import { BsTypeH1, BsTypeH2 } from "react-icons/bs";
 
@@ -26,11 +25,9 @@ export default function MenuBar({
   editor: Editor | null;
   onOpenAlert: (type: "image" | "link") => void;
 }) {
-  // Moved: Call hooks before any conditional returns to follow React hooks rules
   const editorState = useEditorState({
     editor,
     selector: (ctx) => {
-      // Changed: Return default object instead of null to ensure editorState is never null
       if (!ctx.editor) {
         return {
           isBold: false,
@@ -84,7 +81,6 @@ export default function MenuBar({
     },
   });
 
-  // Moved: Conditional return after hooks to avoid violating hooks rules
   if (!editor || !editorState) return null;
 
   return (

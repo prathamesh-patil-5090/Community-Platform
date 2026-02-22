@@ -5,12 +5,6 @@ import User from "@/models/User";
 import mongoose from "mongoose";
 import { NextRequest, NextResponse } from "next/server";
 
-// ── GET /api/users/[id] ───────────────────────────────────────────────────────
-// Returns a user's public profile along with their post count.
-// Requires an authenticated session.
-//
-// Response 200:
-//   { user: { id, name, email, image, createdAt, postsCount } }
 export async function GET(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
@@ -33,15 +27,20 @@ export async function GET(
 
     await connectDB();
 
-    const user = await User.findById(id)
-      .select("-password")
-      .lean();
+    const user = await User.findById(id).select("-password").lean();
 
     if (!user) {
       return NextResponse.json({ error: "User not found." }, { status: 404 });
     }
 
     const postsCount = await Post.countDocuments({ authorId: id });
+
+    const commentsAgg = await Post.aggregate([
+      { $unwind: "$commentList" },
+      { $match: { "commentList.authorId": id } },
+      { $count: "total" },
+    ]);
+    const commentsCount: number = commentsAgg[0]?.total ?? 0;
 
     return NextResponse.json(
       {
@@ -53,6 +52,7 @@ export async function GET(
           provider: user.provider,
           createdAt: user.createdAt,
           postsCount,
+          commentsCount,
         },
       },
       { status: 200 },

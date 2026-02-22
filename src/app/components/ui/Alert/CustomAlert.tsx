@@ -28,7 +28,6 @@ const CustomAlert: React.FC<CustomAlertProps> = ({
       text: type === "link" ? text.trim() || url.trim() : undefined,
     });
 
-    // Reset form
     setUrl("");
     setText("");
     onClose();

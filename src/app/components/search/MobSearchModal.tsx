@@ -10,7 +10,6 @@ interface MobSearchModalProps {
 function MobSearchModal({ onSelect, onClose, buttonRef }: MobSearchModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
 
-  // Close modal on outside click
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -26,7 +25,6 @@ function MobSearchModal({ onSelect, onClose, buttonRef }: MobSearchModalProps) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [onClose, buttonRef]);
 
-  // Close modal on Escape key
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {

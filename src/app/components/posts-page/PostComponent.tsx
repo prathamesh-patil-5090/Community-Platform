@@ -1,6 +1,7 @@
 "use client";
 import "@/app/components/create-post/styles.scss";
 import { CommentType } from "@/lib/types";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -27,7 +28,6 @@ export type PostData = {
   tags?: string[];
   postType?: string;
   postTitle?: string;
-  /** Plain-text excerpt OR full TipTap HTML — PostComponent renders it as HTML */
   postDesc?: string;
   postImage?: string;
   postLikes?: number;
@@ -42,7 +42,6 @@ export type PostComponentRef = {
 
 type Props = {
   postData: PostData;
-  /** Callback so the parent page can sync likes with VerticalActionBar */
   onLikeChange?: (liked: boolean, newCount: number) => void;
   onCommentsCountChange?: (count: number) => void;
 };
@@ -50,6 +49,7 @@ type Props = {
 const PostComponent = forwardRef<PostComponentRef, Props>(
   ({ postData, onLikeChange, onCommentsCountChange }, ref) => {
     const router = useRouter();
+    const { data: session } = useSession();
     const commentsRef = useRef<HTMLDivElement>(null);
 
     const [isLiked, setIsLiked] = useState(postData.initialIsLiked ?? false);
@@ -66,7 +66,12 @@ const PostComponent = forwardRef<PostComponentRef, Props>(
     const [openMenuId, setOpenMenuId] = useState<string | null>(null);
     const [isReport, setIsReport] = useState(false);
 
-    // Sync initialIsLiked if parent refetches and passes a new value
+    const [editingCommentId, setEditingCommentId] = useState<string | null>(
+      null,
+    );
+    const [editCommentText, setEditCommentText] = useState("");
+    const [editCommentSubmitting, setEditCommentSubmitting] = useState(false);
+
     useEffect(() => {
       if (postData.initialIsLiked !== undefined) {
         setIsLiked(postData.initialIsLiked);
@@ -81,7 +86,6 @@ const PostComponent = forwardRef<PostComponentRef, Props>(
       setComments(postData.commentObjects ?? []);
     }, [postData.commentObjects]);
 
-    // Lock body scroll when report modal is open
     useEffect(() => {
       document.body.style.overflow = isReport ? "hidden" : "unset";
       return () => {
@@ -109,10 +113,8 @@ const PostComponent = forwardRef<PostComponentRef, Props>(
       return String(num);
     };
 
-    // ── Like toggle ────────────────────────────────────────────────────────────
     const handleLike = async () => {
       if (likeLoading) return;
-      // Optimistic update
       const prevLiked = isLiked;
       const prevCount = likes;
       const nextLiked = !isLiked;
@@ -127,7 +129,6 @@ const PostComponent = forwardRef<PostComponentRef, Props>(
           method: "PATCH",
         });
         if (!res.ok) {
-          // Rollback
           setIsLiked(prevLiked);
           setLikes(prevCount);
           onLikeChange?.(prevLiked, prevCount);
@@ -146,7 +147,6 @@ const PostComponent = forwardRef<PostComponentRef, Props>(
       }
     };
 
-    // ── Submit comment ─────────────────────────────────────────────────────────
     const handleSubmitComment = async () => {
       const text = commentInput.trim();
       if (!text || commentSubmitting) return;
@@ -164,13 +164,11 @@ const PostComponent = forwardRef<PostComponentRef, Props>(
         setCommentInput("");
         onCommentsCountChange?.(data.commentsCount);
       } catch {
-        // silently ignore
       } finally {
         setCommentSubmitting(false);
       }
     };
 
-    // ── Delete comment ─────────────────────────────────────────────────────────
     const handleDeleteComment = async (commentId: string) => {
       try {
         const res = await fetch(
@@ -182,9 +180,44 @@ const PostComponent = forwardRef<PostComponentRef, Props>(
         setComments((prev) => prev.filter((c) => c.id !== commentId));
         onCommentsCountChange?.(data.commentsCount);
       } catch {
-        // silently ignore
       } finally {
         setOpenMenuId(null);
+      }
+    };
+
+    const handleStartEditComment = (commentId: string, currentText: string) => {
+      setEditingCommentId(commentId);
+      setEditCommentText(currentText);
+      setOpenMenuId(null);
+    };
+
+    const handleSaveEditComment = async (commentId: string) => {
+      const text = editCommentText.trim();
+      if (!text || editCommentSubmitting || !postData.postId) return;
+
+      setEditCommentSubmitting(true);
+      try {
+        const res = await fetch(
+          `/api/posts/${postData.postId}/comments/${commentId}`,
+          {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text }),
+          },
+        );
+        if (!res.ok) return;
+        const data = await res.json();
+        setComments((prev) =>
+          prev.map((c) =>
+            c.id === commentId ? { ...c, text: data.comment.text } : c,
+          ),
+        );
+        setEditingCommentId(null);
+        setEditCommentText("");
+      } catch {
+        // silently ignore
+      } finally {
+        setEditCommentSubmitting(false);
       }
     };
 
@@ -192,7 +225,6 @@ const PostComponent = forwardRef<PostComponentRef, Props>(
 
     return (
       <article className="bg-[#0A0A0A] relative w-full border border-white/10 md:rounded-xl p-5 mt-2 max-w-3xl mx-auto">
-        {/* ── Author row ─────────────────────────────────────────────────────── */}
         <div className="flex items-center gap-3 mb-4">
           <Link href={`/author/${postData.authorId}`} className="flex-shrink-0">
             {postData.authorPic ? (
@@ -233,12 +265,10 @@ const PostComponent = forwardRef<PostComponentRef, Props>(
           )}
         </div>
 
-        {/* ── Title ──────────────────────────────────────────────────────────── */}
         <h1 className="font-bold text-2xl md:text-4xl text-white mb-3 leading-snug">
           {postData.postTitle}
         </h1>
 
-        {/* ── Tags ───────────────────────────────────────────────────────────── */}
         {tags.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-4">
             {tags.map((tag, i) => (
@@ -253,7 +283,6 @@ const PostComponent = forwardRef<PostComponentRef, Props>(
           </div>
         )}
 
-        {/* ── Cover image ────────────────────────────────────────────────────── */}
         {postData.postImage && (
           <div className="mb-6 rounded-xl overflow-hidden">
             <Image
@@ -266,7 +295,6 @@ const PostComponent = forwardRef<PostComponentRef, Props>(
           </div>
         )}
 
-        {/* ── Full post content (HTML from TipTap) ───────────────────────────── */}
         {postData.postDesc && (
           <div
             className="tiptap-content mb-6"
@@ -274,7 +302,6 @@ const PostComponent = forwardRef<PostComponentRef, Props>(
           />
         )}
 
-        {/* ── Action row ─────────────────────────────────────────────────────── */}
         <div className="flex items-center gap-5 py-3 border-t border-white/10">
           {/* Like */}
           <button
@@ -319,7 +346,6 @@ const PostComponent = forwardRef<PostComponentRef, Props>(
           </button>
         </div>
 
-        {/* ── Comments section ───────────────────────────────────────────────── */}
         <div ref={commentsRef}>
           {isCommentOpen && (
             <div className="pt-4 space-y-4">
@@ -409,6 +435,16 @@ const PostComponent = forwardRef<PostComponentRef, Props>(
                                   className="absolute right-0 top-7 bg-[#1a1a1a] border border-white/10 rounded-lg shadow-xl z-50 min-w-[110px] overflow-hidden"
                                   onClick={(e) => e.stopPropagation()}
                                 >
+                                  {c.authorId === session?.user?.id && (
+                                    <button
+                                      onClick={() =>
+                                        handleStartEditComment(c.id, c.text)
+                                      }
+                                      className="w-full text-left px-4 py-2.5 text-sm text-blue-400 hover:bg-white/5 transition-colors"
+                                    >
+                                      Edit
+                                    </button>
+                                  )}
                                   <button
                                     onClick={() => handleDeleteComment(c.id)}
                                     className="w-full text-left px-4 py-2.5 text-sm text-red-400 hover:bg-white/5 transition-colors"
@@ -420,9 +456,57 @@ const PostComponent = forwardRef<PostComponentRef, Props>(
                             </div>
                           </div>
                         </div>
-                        <p className="text-white/80 text-sm leading-relaxed break-words">
-                          {c.text}
-                        </p>
+                        {/* Inline edit mode */}
+                        {editingCommentId === c.id ? (
+                          <div className="space-y-2 mt-1">
+                            <textarea
+                              className="w-full bg-white/5 border border-white/10 text-white placeholder-white/30 rounded-lg p-2.5 text-sm resize-none focus:outline-none focus:border-blue-500/50 transition-all"
+                              rows={3}
+                              value={editCommentText}
+                              onChange={(e) =>
+                                setEditCommentText(e.target.value)
+                              }
+                              onKeyDown={(e) => {
+                                if (
+                                  e.key === "Enter" &&
+                                  (e.ctrlKey || e.metaKey)
+                                ) {
+                                  handleSaveEditComment(c.id);
+                                }
+                                if (e.key === "Escape") {
+                                  setEditingCommentId(null);
+                                  setEditCommentText("");
+                                }
+                              }}
+                              autoFocus
+                            />
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => handleSaveEditComment(c.id)}
+                                disabled={
+                                  !editCommentText.trim() ||
+                                  editCommentSubmitting
+                                }
+                                className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs rounded-lg transition-colors"
+                              >
+                                {editCommentSubmitting ? "Saving…" : "Save"}
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setEditingCommentId(null);
+                                  setEditCommentText("");
+                                }}
+                                className="px-3 py-1.5 text-white/40 hover:text-white text-xs transition-colors"
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <p className="text-white/80 text-sm leading-relaxed break-words">
+                            {c.text}
+                          </p>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -432,7 +516,6 @@ const PostComponent = forwardRef<PostComponentRef, Props>(
           )}
         </div>
 
-        {/* ── Report modal ───────────────────────────────────────────────────── */}
         {isReport &&
           createPortal(
             <div className="fixed inset-0 bg-black/60 flex justify-center items-center z-50">

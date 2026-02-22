@@ -40,7 +40,6 @@ interface ApiPost {
   updatedAt: string;
 }
 
-/** Map an API post object to the PostInfoType shape used by the Post card */
 function mapApiPost(apiPost: ApiPost): PostInfoType {
   const commentObjects: CommentType[] = (apiPost.commentList ?? []).map(
     (c) => ({
@@ -152,7 +151,6 @@ export default function DisplayPosts() {
     fetchPosts(1, true);
   };
 
-  // ── Skeleton loader ────────────────────────────────────────────────────────
   if (status === "loading" || initialLoading) {
     return (
       <div className="space-y-2 mt-2">
@@ -185,7 +183,6 @@ export default function DisplayPosts() {
     );
   }
 
-  // ── Error state ────────────────────────────────────────────────────────────
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center px-4">
@@ -202,7 +199,6 @@ export default function DisplayPosts() {
     );
   }
 
-  // ── Empty state ────────────────────────────────────────────────────────────
   if (!initialLoading && posts.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center px-4">
@@ -221,7 +217,6 @@ export default function DisplayPosts() {
     );
   }
 
-  // ── Post list + Load More ──────────────────────────────────────────────────
   return (
     <div>
       {posts.map((post) => (

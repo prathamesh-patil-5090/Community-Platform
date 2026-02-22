@@ -83,7 +83,6 @@ export default function PostsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Lifted like state so VerticalActionBar and PostComponent stay in sync
   const [isLiked, setIsLiked] = useState(false);
   const [likes, setLikes] = useState(0);
   const [commentsCount, setCommentsCount] = useState(0);
@@ -135,7 +134,6 @@ export default function PostsPage() {
     postComponentRef.current?.openCommentsAndScroll();
   };
 
-  // Called by both VerticalActionBar and PostComponent when a like is toggled
   const handleLikeToggle = (liked: boolean, newCount: number) => {
     setIsLiked(liked);
     setLikes(newCount);
@@ -173,7 +171,6 @@ export default function PostsPage() {
     tags: post.tags,
     postType: post.postType,
     postTitle: post.title,
-    // Pass full HTML content as postDesc — PostComponent renders it as HTML
     postDesc: post.content,
     postImage: post.coverImage ?? undefined,
     postLikes: likes,

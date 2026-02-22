@@ -13,16 +13,16 @@ export interface IPost extends Document {
   _id: mongoose.Types.ObjectId;
   title: string;
   tags: string[];
-  content: string; // HTML from TipTap
-  coverImage?: string; // Cloudinary URL
+  content: string;
+  coverImage?: string;
   authorId: string;
   authorName?: string;
   authorImage?: string;
   postType: "Article" | "Post";
   likes: number;
-  likedBy: string[]; // array of user IDs
-  comments: string[]; // legacy plain-text comments (kept for compat)
-  commentList: IComment[]; // structured comments with author info
+  likedBy: string[];
+  comments: string[];
+  commentList: IComment[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -114,7 +114,6 @@ const PostSchema = new Schema<IPost>(
   },
 );
 
-// Text index for search
 PostSchema.index({ title: "text", tags: "text" });
 
 const Post: Model<IPost> =

@@ -18,7 +18,6 @@ const PageLoader = () => {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    // Simulate loading progress
     const interval = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 100) {
@@ -33,7 +32,6 @@ const PageLoader = () => {
       });
     }, 100);
 
-    // Ensure loading completes within 2 seconds
     const timeout = setTimeout(() => {
       setProgress(100);
       setTimeout(() => {

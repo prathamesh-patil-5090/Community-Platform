@@ -29,19 +29,20 @@ export default function Post({ postData }: { postData: PostInfoType }) {
   );
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
 
-  // ── Report modal ────────────────────────────────────────────────────────────
+  const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
+  const [editCommentText, setEditCommentText] = useState("");
+  const [editCommentSubmitting, setEditCommentSubmitting] = useState(false);
+
   const [isReport, setIsReport] = useState(false);
 
   const commentsRef = useRef<HTMLDivElement>(null);
 
-  // Sync if parent provides updated initialIsLiked (e.g., after refetch)
   useEffect(() => {
     if (postData.initialIsLiked !== undefined) {
       setIsLiked(postData.initialIsLiked);
     }
   }, [postData.initialIsLiked]);
 
-  // Lock body scroll while report modal is open
   useEffect(() => {
     document.body.style.overflow = isReport ? "hidden" : "unset";
     return () => {
@@ -49,7 +50,6 @@ export default function Post({ postData }: { postData: PostInfoType }) {
     };
   }, [isReport]);
 
-  // ── Helpers ─────────────────────────────────────────────────────────────────
   const formatCount = (num: number): string => {
     if (num >= 1_000_000)
       return (num / 1_000_000).toFixed(1).replace(/\.0$/, "") + "M";
@@ -57,7 +57,6 @@ export default function Post({ postData }: { postData: PostInfoType }) {
     return String(num);
   };
 
-  // ── Like toggle ──────────────────────────────────────────────────────────────
   const handleLike = async () => {
     if (likeLoading || !postData.postId) return;
 
@@ -66,7 +65,6 @@ export default function Post({ postData }: { postData: PostInfoType }) {
     const nextLiked = !isLiked;
     const nextCount = nextLiked ? likes + 1 : Math.max(0, likes - 1);
 
-    // Optimistic update
     setIsLiked(nextLiked);
     setLikes(nextCount);
 
@@ -91,7 +89,6 @@ export default function Post({ postData }: { postData: PostInfoType }) {
     }
   };
 
-  // ── Submit comment ───────────────────────────────────────────────────────────
   const handleSubmitComment = async () => {
     const text = commentInput.trim();
     if (!text || commentSubmitting || !postData.postId) return;
@@ -108,13 +105,11 @@ export default function Post({ postData }: { postData: PostInfoType }) {
       setComments((prev) => [data.comment, ...prev]);
       setCommentInput("");
     } catch {
-      // silently ignore
     } finally {
       setCommentSubmitting(false);
     }
   };
 
-  // ── Delete comment ───────────────────────────────────────────────────────────
   const handleDeleteComment = async (commentId: string) => {
     if (!postData.postId) return;
     try {
@@ -125,9 +120,43 @@ export default function Post({ postData }: { postData: PostInfoType }) {
       if (!res.ok) return;
       setComments((prev) => prev.filter((c) => c.id !== commentId));
     } catch {
-      // silently ignore
     } finally {
       setOpenMenuId(null);
+    }
+  };
+
+  const handleStartEditComment = (commentId: string, currentText: string) => {
+    setEditingCommentId(commentId);
+    setEditCommentText(currentText);
+    setOpenMenuId(null);
+  };
+
+  const handleSaveEditComment = async (commentId: string) => {
+    const text = editCommentText.trim();
+    if (!text || editCommentSubmitting || !postData.postId) return;
+
+    setEditCommentSubmitting(true);
+    try {
+      const res = await fetch(
+        `/api/posts/${postData.postId}/comments/${commentId}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text }),
+        },
+      );
+      if (!res.ok) return;
+      const data = await res.json();
+      setComments((prev) =>
+        prev.map((c) =>
+          c.id === commentId ? { ...c, text: data.comment.text } : c,
+        ),
+      );
+      setEditingCommentId(null);
+      setEditCommentText("");
+    } catch {
+    } finally {
+      setEditCommentSubmitting(false);
     }
   };
 
@@ -136,7 +165,6 @@ export default function Post({ postData }: { postData: PostInfoType }) {
 
   return (
     <article className="bg-[#0A0A0A] relative w-full border border-white/10 md:rounded-xl p-4 md:p-5 mt-2">
-      {/* ── Author row ──────────────────────────────────────────────────────── */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-3">
           <Link href={`/author/${postData.authorId}`} className="flex-shrink-0">
@@ -179,7 +207,6 @@ export default function Post({ postData }: { postData: PostInfoType }) {
         )}
       </div>
 
-      {/* ── Title ───────────────────────────────────────────────────────────── */}
       <h2
         className="font-bold text-lg md:text-2xl text-white mb-2 cursor-pointer hover:text-blue-300 transition-colors leading-snug"
         onClick={() => router.push(`/posts/${postId}`)}
@@ -187,7 +214,6 @@ export default function Post({ postData }: { postData: PostInfoType }) {
         {postData.postTitle}
       </h2>
 
-      {/* ── Cover image ─────────────────────────────────────────────────────── */}
       {postData.postImage && (
         <div
           className="mb-3 rounded-xl overflow-hidden cursor-pointer"
@@ -203,7 +229,6 @@ export default function Post({ postData }: { postData: PostInfoType }) {
         </div>
       )}
 
-      {/* ── Excerpt (TipTap rendered preview) ───────────────────────────────── */}
       {postData.postDesc && (
         <div className="mb-3">
           <div
@@ -226,7 +251,6 @@ export default function Post({ postData }: { postData: PostInfoType }) {
         </div>
       )}
 
-      {/* ── Tags ────────────────────────────────────────────────────────────── */}
       {tags.length > 0 && (
         <div className="flex flex-wrap gap-1.5 mb-3">
           {tags.map((tag, i) => (
@@ -241,7 +265,6 @@ export default function Post({ postData }: { postData: PostInfoType }) {
         </div>
       )}
 
-      {/* ── Action bar ──────────────────────────────────────────────────────── */}
       <div className="flex items-center gap-2 pt-1 border-t border-white/5">
         {/* Like */}
         <button
@@ -290,7 +313,6 @@ export default function Post({ postData }: { postData: PostInfoType }) {
         </button>
       </div>
 
-      {/* ── Comments section ────────────────────────────────────────────────── */}
       <div ref={commentsRef}>
         {isCommentOpen && (
           <div className="pt-4 space-y-3 border-t border-white/5 mt-2">
@@ -393,6 +415,16 @@ export default function Post({ postData }: { postData: PostInfoType }) {
                                 className="absolute right-0 top-6 bg-[#1a1a1a] border border-white/10 rounded-lg shadow-xl z-50 min-w-[100px] overflow-hidden"
                                 onClick={(e) => e.stopPropagation()}
                               >
+                                {c.authorId === session?.user?.id && (
+                                  <button
+                                    onClick={() =>
+                                      handleStartEditComment(c.id, c.text)
+                                    }
+                                    className="w-full text-left px-3 py-2 text-xs text-blue-400 hover:bg-white/5 transition-colors"
+                                  >
+                                    Edit
+                                  </button>
+                                )}
                                 <button
                                   onClick={() => handleDeleteComment(c.id)}
                                   className="w-full text-left px-3 py-2 text-xs text-red-400 hover:bg-white/5 transition-colors"
@@ -404,9 +436,55 @@ export default function Post({ postData }: { postData: PostInfoType }) {
                           </div>
                         </div>
                       </div>
-                      <p className="text-white/70 text-sm leading-relaxed break-words">
-                        {c.text}
-                      </p>
+
+                      {/* Inline edit mode */}
+                      {editingCommentId === c.id ? (
+                        <div className="space-y-2 mt-1">
+                          <textarea
+                            className="w-full bg-white/5 border border-white/10 text-white placeholder-white/30 rounded-lg p-2 text-sm resize-none focus:outline-none focus:border-blue-500/50 transition-all"
+                            rows={3}
+                            value={editCommentText}
+                            onChange={(e) => setEditCommentText(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (
+                                e.key === "Enter" &&
+                                (e.ctrlKey || e.metaKey)
+                              ) {
+                                handleSaveEditComment(c.id);
+                              }
+                              if (e.key === "Escape") {
+                                setEditingCommentId(null);
+                                setEditCommentText("");
+                              }
+                            }}
+                            autoFocus
+                          />
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => handleSaveEditComment(c.id)}
+                              disabled={
+                                !editCommentText.trim() || editCommentSubmitting
+                              }
+                              className="px-3 py-1 bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs rounded-lg transition-colors"
+                            >
+                              {editCommentSubmitting ? "Saving…" : "Save"}
+                            </button>
+                            <button
+                              onClick={() => {
+                                setEditingCommentId(null);
+                                setEditCommentText("");
+                              }}
+                              className="px-3 py-1 text-white/40 hover:text-white text-xs transition-colors"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <p className="text-white/70 text-sm leading-relaxed break-words">
+                          {c.text}
+                        </p>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -416,7 +494,6 @@ export default function Post({ postData }: { postData: PostInfoType }) {
         )}
       </div>
 
-      {/* ── Report modal portal ──────────────────────────────────────────────── */}
       {isReport &&
         createPortal(
           <div className="fixed inset-0 bg-black/60 flex justify-center items-center z-50">

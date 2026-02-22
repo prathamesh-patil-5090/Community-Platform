@@ -7,7 +7,6 @@ const Tiptap = () => {
   const editor = useEditor({
     extensions: [StarterKit],
     content: "<p>Hello World! 🌎️</p>",
-    // Don't render immediately on the server to avoid SSR issues
     immediatelyRender: false,
   });
 

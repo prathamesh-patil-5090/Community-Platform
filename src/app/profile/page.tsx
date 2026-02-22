@@ -1,11 +1,9 @@
 import Profile from "../components/profile/Profile";
 
-function ProfilePage() {
+export default async function ProfilePage() {
   return (
     <div>
       <Profile />
     </div>
   );
 }
-
-export default ProfilePage;

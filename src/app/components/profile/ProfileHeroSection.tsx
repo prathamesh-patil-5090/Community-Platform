@@ -27,42 +27,58 @@ function ProfileHeroSection({
       })
     : null;
 
+  const initials = displayName.charAt(0).toUpperCase();
+
   return (
-    <div className="w-full flex-col md:w-[1100px] bg-[#0a0a0a] md:rounded-lg flex items-center justify-start">
-      {/* Avatar */}
-      <div className="relative w-50 h-50 rounded-full bg-black bottom-25 flex items-center justify-center">
-        {image ? (
-          <Image
-            src={image}
-            width={180}
-            height={180}
-            alt={displayName}
-            className="absolute rounded-full ml-2.5 mt-2 object-cover"
-          />
-        ) : (
-          <IoPersonCircle
-            size={180}
-            className="text-white/60 absolute ml-2.5 mt-2"
-          />
-        )}
+    <div className="w-full bg-[#0a0a0a] rounded-xl overflow-hidden border border-white/10">
+      {/* Banner */}
+      <div className="h-32 md:h-44 w-full bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460] relative">
+        {/* subtle pattern overlay */}
+        <div className="absolute inset-0 opacity-20 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-500 via-transparent to-transparent" />
       </div>
 
-      {/* Info */}
-      <div className="relative flex flex-col justify-center items-center px-4 md:px-3 text-wrap -top-22">
-        <h1 className="text-white text-2xl md:text-4xl font-bold">
-          {displayName}
-        </h1>
+      {/* Avatar – overlapping the banner */}
+      <div className="px-6 md:px-10">
+        <div className="relative -mt-12 md:-mt-16 mb-4">
+          <div className="w-24 h-24 md:w-32 md:h-32 rounded-full ring-4 ring-[#0a0a0a] overflow-hidden bg-[#1a1a1a] flex items-center justify-center flex-shrink-0">
+            {image ? (
+              <Image
+                src={image}
+                width={128}
+                height={128}
+                alt={displayName}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full bg-blue-700 flex items-center justify-center text-white text-3xl md:text-4xl font-bold select-none">
+                {initials}
+              </div>
+            )}
+          </div>
+        </div>
 
-        {email && (
-          <p className="text-gray-400 text-sm md:text-base mt-1">{email}</p>
-        )}
+        {/* Info */}
+        <div className="pb-6 md:pb-8">
+          <h1 className="text-white text-2xl md:text-3xl font-bold leading-tight">
+            {displayName}
+          </h1>
 
-        {formattedDate && (
-          <h3 className="flex items-center gap-2 text-white text-lg mt-5">
-            <FaBirthdayCake />
-            Joined on {formattedDate}
-          </h3>
-        )}
+          {email && <p className="text-white/40 text-sm mt-1">{email}</p>}
+
+          {formattedDate && (
+            <p className="flex items-center gap-1.5 text-white/40 text-sm mt-3">
+              <FaBirthdayCake size={13} className="text-white/30" />
+              Joined {formattedDate}
+            </p>
+          )}
+
+          {!formattedDate && !email && (
+            <div className="flex items-center gap-1.5 mt-2">
+              <IoPersonCircle size={16} className="text-white/20" />
+              <span className="text-white/30 text-sm">Community Member</span>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

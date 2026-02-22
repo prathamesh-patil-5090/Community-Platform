@@ -96,7 +96,6 @@ export default function AuthorPage() {
       const data = await res.json();
       setPosts(data.posts ?? []);
     } catch {
-      // silently fail — posts section just stays empty
     } finally {
       setLoadingPosts(false);
     }

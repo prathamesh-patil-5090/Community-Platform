@@ -85,10 +85,8 @@ export default function CommunityPage() {
   const params = useParams();
   const slug = params.slug as string;
 
-  // Find the matching route
   const currentRoute = sidebarRoutes.find((route) => route.slug === slug);
 
-  // If route doesn't exist, show 404
   if (!currentRoute) {
     notFound();
   }

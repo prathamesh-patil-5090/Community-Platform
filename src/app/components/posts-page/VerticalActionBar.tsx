@@ -42,7 +42,6 @@ export default function VerticalActionBar({
   const handleLike = async () => {
     if (likeLoading) return;
 
-    // Optimistic update
     const prevLiked = isLiked;
     const prevCount = likes;
     const nextLiked = !isLiked;
@@ -59,7 +58,6 @@ export default function VerticalActionBar({
       });
 
       if (!res.ok) {
-        // Rollback on failure
         setIsLiked(prevLiked);
         setLikes(prevCount);
         onLikeAction?.(prevLiked, prevCount);
@@ -71,7 +69,6 @@ export default function VerticalActionBar({
       setLikes(data.likes);
       onLikeAction?.(data.liked, data.likes);
     } catch {
-      // Rollback on network error
       setIsLiked(prevLiked);
       setLikes(prevCount);
       onLikeAction?.(prevLiked, prevCount);
