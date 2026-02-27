@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { CiSearch } from "react-icons/ci";
 import { HiMenuAlt2 } from "react-icons/hi";
 import { IoIosClose, IoIosNotificationsOutline } from "react-icons/io";
-import { IoPersonCircle } from "react-icons/io5";
+import { IoPersonCircle, IoShieldCheckmarkOutline } from "react-icons/io5";
 import "./css/CreatePostButton.css";
 import Button from "./ui/Button";
 import Logo from "./ui/Logo";
@@ -163,6 +163,22 @@ function Navbar() {
                     <IoPersonCircle size={18} className="text-gray-400" />
                     View Profile
                   </button>
+
+                  {user?.role === "admin" && (
+                    <button
+                      onClick={() => {
+                        setIsProfileOpen(false);
+                        router.push("/admin-panel");
+                      }}
+                      className="w-full text-left px-4 py-2.5 text-sm text-purple-300 hover:bg-purple-500/10 transition-colors flex items-center gap-3 cursor-pointer"
+                    >
+                      <IoShieldCheckmarkOutline
+                        size={18}
+                        className="text-purple-400"
+                      />
+                      Admin Panel
+                    </button>
+                  )}
 
                   <div className="border-t border-white/10 my-1" />
 

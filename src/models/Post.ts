@@ -23,6 +23,11 @@ export interface IPost extends Document {
   likedBy: string[];
   comments: string[];
   commentList: IComment[];
+  isHidden: boolean;
+  hiddenBy?: string;
+  hiddenByName?: string;
+  hiddenReason?: string;
+  hiddenAt?: Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -107,6 +112,24 @@ const PostSchema = new Schema<IPost>(
     commentList: {
       type: [CommentSchema],
       default: [],
+    },
+    isHidden: {
+      type: Boolean,
+      default: false,
+    },
+    hiddenBy: {
+      type: String,
+    },
+    hiddenByName: {
+      type: String,
+      trim: true,
+    },
+    hiddenReason: {
+      type: String,
+      trim: true,
+    },
+    hiddenAt: {
+      type: Date,
     },
   },
   {

@@ -7,6 +7,13 @@ export interface IUser extends Document {
   password?: string;
   image?: string;
   provider: "credentials" | "github" | "google";
+  role: "user" | "admin";
+  isBanned: boolean;
+  banReason?: string;
+  bannedAt?: Date;
+  bannedBy?: string;
+  bannedByName?: string;
+  blockedIPs: string[];
   emailVerified?: Date;
   createdAt: Date;
   updatedAt: Date;
@@ -38,6 +45,33 @@ const UserSchema = new Schema<IUser>(
       type: String,
       enum: ["credentials", "github", "google"],
       default: "credentials",
+    },
+    role: {
+      type: String,
+      enum: ["user", "admin"],
+      default: "user",
+    },
+    isBanned: {
+      type: Boolean,
+      default: false,
+    },
+    banReason: {
+      type: String,
+      trim: true,
+    },
+    bannedAt: {
+      type: Date,
+    },
+    bannedBy: {
+      type: String,
+    },
+    bannedByName: {
+      type: String,
+      trim: true,
+    },
+    blockedIPs: {
+      type: [String],
+      default: [],
     },
     emailVerified: {
       type: Date,

@@ -9,7 +9,9 @@ function CheckIfLogin({
   children: React.ReactNode;
 }>) {
   const pathName = usePathname();
-  const showNavbar = pathName !== "/login" && pathName !== "/register";
+  const isAuthPage = pathName === "/login" || pathName === "/register";
+  const isAdminPanel = pathName.startsWith("/admin-panel");
+  const showNavbar = !isAuthPage && !isAdminPanel;
 
   return (
     <div className="min-h-screen">
@@ -18,9 +20,7 @@ function CheckIfLogin({
           <Navbar />
         </div>
       )}
-      <div className={showNavbar ? "pt-[60px]" : ""}>
-        {children}
-      </div>
+      <div className={showNavbar ? "pt-[60px]" : ""}>{children}</div>
     </div>
   );
 }

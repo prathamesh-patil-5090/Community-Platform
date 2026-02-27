@@ -93,6 +93,42 @@ function LoginForm() {
               Your session has expired. Please sign in again.
             </div>
           )}
+          {sessionError === "AccessDenied" && (
+            <div className="mb-4 px-4 py-3 bg-red-900/40 border border-red-700 rounded-xl text-sm">
+              <div className="flex items-start gap-3">
+                <svg
+                  className="w-5 h-5 text-red-400 shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"
+                  />
+                </svg>
+                <div className="space-y-1">
+                  <p className="text-red-300 font-semibold">
+                    Account suspended
+                  </p>
+                  <p className="text-red-400/80 leading-relaxed">
+                    Your account has been suspended due to a violation of our
+                    community guidelines. If you believe this is a mistake or
+                    would like to appeal, please{" "}
+                    <a
+                      href="mailto:admin@community.com"
+                      className="text-red-300 underline underline-offset-2 hover:text-red-200 transition-colors"
+                    >
+                      contact the admins
+                    </a>
+                    .
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
           {error && (
             <div className="mb-4 px-4 py-3 bg-red-900/40 border border-red-700 rounded-md text-red-300 text-sm text-center">
               {error}

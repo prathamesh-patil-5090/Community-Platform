@@ -1,6 +1,7 @@
 import { auth } from "@/auth";
 import connectDB from "@/lib/mongodb";
 import Post from "@/models/Post";
+import User from "@/models/User";
 import mongoose from "mongoose";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -232,6 +233,25 @@ export async function GET(
 
     if (!post) {
       return NextResponse.json({ error: "Post not found." }, { status: 404 });
+    }
+
+    // Check if the post is hidden — only admins may view hidden posts
+    if (post.isHidden) {
+      const currentUser = await User.findById(session.user.id)
+        .select("role")
+        .lean();
+      const isAdmin = currentUser?.role === "admin";
+
+      if (!isAdmin) {
+        return NextResponse.json(
+          {
+            error:
+              "This post has been removed by an administrator for violating community guidelines.",
+            code: "POST_HIDDEN",
+          },
+          { status: 403 },
+        );
+      }
     }
 
     const currentUserId = session.user.id;

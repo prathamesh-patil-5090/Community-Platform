@@ -77,12 +77,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async signIn({ user, account }) {
       if (!account) return false;
 
-      if (account.provider !== "credentials") {
-        try {
-          await connectDB();
+      try {
+        await connectDB();
 
-          const userEmail = user.email ?? undefined;
+        const userEmail = (user.email ?? "").toLowerCase().trim();
 
+        if (account.provider !== "credentials") {
           const existing = await User.findOne({ email: userEmail });
 
           if (!existing) {
@@ -92,18 +92,37 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
               image: user.image ?? undefined,
               provider: account.provider as "github" | "google",
             });
-          } else if (
-            existing.provider !== account.provider &&
-            existing.provider === "credentials"
-          ) {
-            existing.provider = account.provider as "github" | "google";
-            existing.image = user.image ?? existing.image;
-            await existing.save();
+          } else {
+            // Deny login if the user is banned
+            if (existing.isBanned) {
+              console.warn(
+                `[NextAuth] Banned user attempted sign-in: ${userEmail}`,
+              );
+              return false;
+            }
+
+            if (
+              existing.provider !== account.provider &&
+              existing.provider === "credentials"
+            ) {
+              existing.provider = account.provider as "github" | "google";
+              existing.image = user.image ?? existing.image;
+              await existing.save();
+            }
           }
-        } catch (error) {
-          console.error("[NextAuth] signIn callback error:", error);
-          return false;
+        } else {
+          // Credentials provider — check ban status
+          const existing = await User.findOne({ email: userEmail });
+          if (existing?.isBanned) {
+            console.warn(
+              `[NextAuth] Banned user attempted sign-in: ${userEmail}`,
+            );
+            return false;
+          }
         }
+      } catch (error) {
+        console.error("[NextAuth] signIn callback error:", error);
+        return false;
       }
 
       return true;
@@ -125,6 +144,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           return {
             ...token,
             userId,
+            role: dbUser?.role ?? "user",
             name: user.name ?? token.name,
             email: user.email ?? token.email,
             picture: user.image ?? token.picture,
@@ -161,9 +181,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           userId,
         );
 
+        // Re-fetch role on token refresh so admin status stays current
+        await connectDB();
+        const refreshedUser = await User.findById(userId).select("role").lean();
+
         return {
           ...token,
           userId,
+          role: refreshedUser?.role ?? token.role ?? "user",
           accessTokenExpires: nowSeconds + ACCESS_TOKEN_TTL_SECONDS,
           refreshToken: newRefreshToken,
           error: undefined,
@@ -183,6 +208,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           name: token.name ?? session.user?.name,
           email: token.email ?? session.user?.email,
           image: token.picture ?? session.user?.image,
+          role: (token.role as string) ?? "user",
         },
         accessTokenExpires: token.accessTokenExpires as number | undefined,
         error: token.error as string | undefined,

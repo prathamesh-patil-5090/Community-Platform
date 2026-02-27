@@ -224,7 +224,7 @@ const PostComponent = forwardRef<PostComponentRef, Props>(
     const tags = postData.tags ?? [];
 
     return (
-      <article className="bg-[#0A0A0A] relative w-full border border-white/10 md:rounded-xl p-5 mt-2 max-w-3xl mx-auto">
+      <article className="bg-[#0A0A0A] relative w-full p-5 mt-2 max-w-7xl mx-auto">
         <div className="flex items-center gap-3 mb-4">
           <Link href={`/author/${postData.authorId}`} className="flex-shrink-0">
             {postData.authorPic ? (

@@ -1,6 +1,7 @@
 import { auth } from "@/auth";
 import connectDB from "@/lib/mongodb";
 import Post from "@/models/Post";
+import User from "@/models/User";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -29,6 +30,15 @@ export async function GET(req: NextRequest) {
     const filter: Record<string, any> = {};
     if (author) filter.authorId = author;
     if (tag) filter.tags = tag;
+
+    // Check if the current user is an admin — only admins see hidden posts
+    const dbUser = await User.findById(session.user.id).select("role").lean();
+    const isAdmin = dbUser?.role === "admin";
+
+    // Non-admin users should never see hidden posts
+    if (!isAdmin) {
+      filter.isHidden = { $ne: true };
+    }
 
     const currentUserId = session.user.id;
 
