@@ -164,7 +164,7 @@ export default function Post({ postData }: { postData: PostInfoType }) {
   const postId = postData.postId;
 
   return (
-    <article className="bg-[#0A0A0A] relative w-full border border-white/10 md:rounded-xl p-4 md:p-5 mt-2">
+    <article className="bg-[#0A0A0A] relative w-full overflow-x-hidden border border-white/10 md:rounded-xl p-4 md:p-5 mt-2">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-3">
           <Link href={`/author/${postData.authorId}`} className="flex-shrink-0">

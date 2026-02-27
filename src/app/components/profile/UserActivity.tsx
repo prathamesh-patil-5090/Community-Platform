@@ -1,6 +1,6 @@
 "use client";
 
-import { FaHashtag, FaRegNewspaper } from "react-icons/fa";
+import { FaRegNewspaper } from "react-icons/fa";
 import { MdOutlineInsertComment } from "react-icons/md";
 
 type View = "posts" | "comments";
@@ -82,14 +82,6 @@ export default function UserActivity({
             <span className="ml-auto w-1.5 h-1.5 rounded-full bg-blue-400 flex-shrink-0" />
           )}
         </button>
-
-        {/* Tags – non-interactive stat */}
-        <div className="flex items-center gap-3 px-3 py-2.5 text-white/40 border border-transparent">
-          <FaHashtag size={14} className="text-white/20 flex-shrink-0" />
-          <span className="text-sm">
-            <span className="font-semibold text-white/50">3</span> tags followed
-          </span>
-        </div>
       </div>
     </div>
   );

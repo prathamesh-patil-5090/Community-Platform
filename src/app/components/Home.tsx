@@ -13,7 +13,7 @@ function Home() {
 
       {/* Main Content - Center (scrollable) */}
       <div className="md:ml-[250px] min-h-screen flex justify-center lg:justify-start lg:gap-10">
-        <div className="flex-1 max-w-4xl">
+        <div className="flex-1 min-w-0 max-w-4xl">
           <PostBar />
           <DisplayPosts />
         </div>

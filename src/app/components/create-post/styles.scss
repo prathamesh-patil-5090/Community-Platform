@@ -43,10 +43,22 @@
   }
 
   /* Nested list variants */
-  ul ul            { list-style-type: circle;       margin: 0.25rem 0; }
-  ul ul ul         { list-style-type: square;       margin: 0.25rem 0; }
-  ol ol            { list-style-type: lower-alpha;  margin: 0.25rem 0; }
-  ol ol ol         { list-style-type: lower-roman;  margin: 0.25rem 0; }
+  ul ul {
+    list-style-type: circle;
+    margin: 0.25rem 0;
+  }
+  ul ul ul {
+    list-style-type: square;
+    margin: 0.25rem 0;
+  }
+  ol ol {
+    list-style-type: lower-alpha;
+    margin: 0.25rem 0;
+  }
+  ol ol ol {
+    list-style-type: lower-roman;
+    margin: 0.25rem 0;
+  }
 
   li {
     margin: 0.3rem 0;
@@ -97,7 +109,8 @@
     border: 1px solid rgba(139, 92, 246, 0.25);
     border-radius: 0.3rem;
     color: #c4b5fd;
-    font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', ui-monospace, monospace;
+    font-family:
+      "JetBrains Mono", "Fira Code", "Cascadia Code", ui-monospace, monospace;
     font-size: 0.85em;
     padding: 0.15em 0.4em;
   }
@@ -108,10 +121,12 @@
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 0.6rem;
     color: #e5e7eb;
-    font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', ui-monospace, monospace;
+    font-family:
+      "JetBrains Mono", "Fira Code", "Cascadia Code", ui-monospace, monospace;
     font-size: 0.875rem;
     line-height: 1.7;
     margin: 1.5rem 0;
+    max-width: 100%;
     overflow-x: auto;
     padding: 1rem 1.25rem;
 
@@ -211,7 +226,9 @@
     justify-content: center;
     min-width: 2rem;
     padding: 0.375rem 0.5rem;
-    transition: background 0.15s ease, color 0.15s ease;
+    transition:
+      background 0.15s ease,
+      color 0.15s ease;
 
     &:hover:not(:disabled) {
       background: #1f2937;

@@ -1,6 +1,5 @@
-import { MdOutlineInsertComment } from "react-icons/md";
 import { FaRegNewspaper } from "react-icons/fa6";
-import { FaHashtag } from "react-icons/fa";
+import { MdOutlineInsertComment } from "react-icons/md";
 
 function UserActivity() {
   return (
@@ -10,9 +9,6 @@ function UserActivity() {
       </div>
       <div className="flex items-center gap-3 text-white text-lg md:text-2xl font-light">
         <MdOutlineInsertComment className="text-gray-400" />0 comments written
-      </div>
-      <div className="flex items-center gap-3 text-white text-lg md:text-2xl font-light">
-        <FaHashtag className="text-gray-400" />3 tags followed
       </div>
     </div>
   );
