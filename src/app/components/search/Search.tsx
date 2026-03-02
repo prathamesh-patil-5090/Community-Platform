@@ -1,11 +1,11 @@
 "use client";
-import { useState } from "react";
-import { useWindowSize } from "../hooks/useWindowSize";
-import SearchSidebar from "./SearchSidebar";
-import SearchDetails from "./SearchDetails";
 import { useSearchParams } from "next/navigation";
-import EmptySearch from "./EmptySearch";
+import { useCallback, useState } from "react";
+import { useWindowSize } from "../hooks/useWindowSize";
 import Button from "../ui/Button";
+import EmptySearch from "./EmptySearch";
+import SearchDetails from "./SearchDetails";
+import SearchSidebar, { SearchType } from "./SearchSidebar";
 
 interface SearchProps {
   sortOptions: "Most Relevant" | "Newest" | "Oldest";
@@ -14,16 +14,39 @@ interface SearchProps {
 
 export default function Search({ sortOptions, setSortOptions }: SearchProps) {
   const { width } = useWindowSize();
-  const [notiType, setNotiType] = useState<
-    "posts" | "people" | "channels" | "tags" | "comments" | "my posts only"
-  >("posts");
   const searchParams = useSearchParams();
   const params = searchParams?.get("q") || "";
+
+  // Initialize type from URL if present, otherwise default to "posts"
+  const typeFromUrl = (searchParams?.get("type") ?? "posts") as SearchType;
+  const validTypes: SearchType[] = [
+    "posts",
+    "people",
+    "channels",
+    "tags",
+    "comments",
+    "my posts only",
+  ];
+  const initialType = validTypes.includes(typeFromUrl) ? typeFromUrl : "posts";
+
+  const [notiType, setNotiType] = useState<SearchType>(initialType);
+  const [resultCounts, setResultCounts] = useState<
+    Partial<Record<SearchType, number>>
+  >({});
+
+  // Callback to receive total counts from SearchDetails
+  const handleTotalChange = useCallback((type: SearchType, total: number) => {
+    setResultCounts((prev) => {
+      if (prev[type] === total) return prev;
+      return { ...prev, [type]: total };
+    });
+  }, []);
+
   return (
     <div className="justify-center">
       {/* Mobile and Desktop Layout */}
       <div className="hidden md:flex flex-row items-center justify-between">
-        <h1 className="hidden md:block flex-row gap-1 f ont-extrabold text-5xl p-2">
+        <h1 className="hidden md:block flex-row gap-1 font-extrabold text-5xl p-2">
           Search Results {params && <span> - {params}</span>}
         </h1>
         {params && (
@@ -56,14 +79,18 @@ export default function Search({ sortOptions, setSortOptions }: SearchProps) {
         {/* Sidebar */}
         {params && (
           <div className={width < 768 ? "w-full" : "w-64 flex-shrink-0"}>
-            <SearchSidebar setType={setNotiType} />
+            <SearchSidebar setType={setNotiType} resultCounts={resultCounts} />
           </div>
         )}
 
         {/* Search Results */}
         {params ? (
           <div className="flex-1 min-w-0">
-            <SearchDetails searchType={notiType} sortOptions={sortOptions} />
+            <SearchDetails
+              searchType={notiType}
+              sortOptions={sortOptions}
+              onTotalChange={handleTotalChange}
+            />
           </div>
         ) : (
           <div className="flex items-center justify-center flex-1 min-w-0">

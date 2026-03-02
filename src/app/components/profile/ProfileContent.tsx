@@ -9,12 +9,14 @@ type View = "posts" | "comments";
 
 interface ProfileContentProps {
   userId: string;
+  userEmail?: string;
   postsCount: number;
   commentsCount: number;
 }
 
 export default function ProfileContent({
   userId,
+  userEmail,
   postsCount,
   commentsCount,
 }: ProfileContentProps) {
@@ -33,7 +35,7 @@ export default function ProfileContent({
 
       <div className="flex-1 min-w-0">
         {view === "posts" ? (
-          <UserPosts userId={userId} />
+          <UserPosts userId={userId} userEmail={userEmail} />
         ) : (
           <UserComments userId={userId} />
         )}

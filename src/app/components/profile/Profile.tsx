@@ -46,6 +46,7 @@ async function Profile() {
       <div className="w-full max-w-[1100px]">
         <ProfileContent
           userId={userId}
+          userEmail={session.user?.email ?? undefined}
           postsCount={postsCount}
           commentsCount={commentsCount}
         />

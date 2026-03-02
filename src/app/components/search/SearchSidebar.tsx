@@ -1,17 +1,23 @@
 "use client";
 
-import { Dispatch, SetStateAction, useState, useRef, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { useWindowSize } from "../hooks/useWindowSize";
 
+export type SearchType =
+  | "posts"
+  | "people"
+  | "channels"
+  | "tags"
+  | "comments"
+  | "my posts only";
+
 interface SearchSidebarProps {
-  setType: Dispatch<
-    SetStateAction<
-      "posts" | "people" | "channels" | "tags" | "comments" | "my posts only"
-    >
-  >;
+  setType: Dispatch<SetStateAction<SearchType>>;
+  resultCounts?: Partial<Record<SearchType, number>>;
 }
 
-const SearchOptions = [
+const SearchOptions: SearchType[] = [
   "posts",
   "people",
   "channels",
@@ -20,67 +26,87 @@ const SearchOptions = [
   "my posts only",
 ];
 
-export default function SearchSidebar({ setType }: SearchSidebarProps) {
-  const [selected, setSelected] = useState<string>("posts");
+export default function SearchSidebar({
+  setType,
+  resultCounts,
+}: SearchSidebarProps) {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  // Initialize from URL param if present
+  const typeFromUrl = (searchParams?.get("type") ?? "posts") as SearchType;
+  const isValidType = SearchOptions.includes(typeFromUrl);
+  const initialType = isValidType ? typeFromUrl : "posts";
+
+  const [selected, setSelected] = useState<string>(initialType);
   const { width } = useWindowSize();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(false);
 
-  const handleOption = (option: string) => {
+  // Sync with URL changes (e.g. browser back/forward)
+  useEffect(() => {
+    const urlType = (searchParams?.get("type") ?? "posts") as SearchType;
+    const valid = SearchOptions.includes(urlType);
+    const resolved = valid ? urlType : "posts";
+    setSelected(resolved);
+    setType(resolved);
+  }, [searchParams, setType]);
+
+  const handleOption = (option: SearchType) => {
     setSelected(option);
-    const type:
-      | "posts"
-      | "people"
-      | "channels"
-      | "tags"
-      | "comments"
-      | "my posts only" =
-      option === "posts"
-        ? "posts"
-        : option === "comments"
-        ? "comments"
-        : option === "people"
-        ? "people"
-        : option === "channels"
-        ? "channels"
-        : option === "tags"
-        ? "tags"
-        : "my posts only";
-    setType(type);
+    setType(option);
+
+    // Update URL to include the type param (preserving q and sort)
+    const params = new URLSearchParams(searchParams?.toString() ?? "");
+    if (option === "posts") {
+      params.delete("type"); // "posts" is the default, keep URL clean
+    } else {
+      params.set("type", option);
+    }
+    // Reset page to 1 when changing type
+    params.delete("page");
+    router.push(`/search?${params.toString()}`, { scroll: false });
   };
 
   const checkArrows = () => {
     if (scrollRef.current) {
       const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
       setShowLeftArrow(scrollLeft > 0);
-      setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 1); // -1 for precision
+      setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 1);
     }
   };
 
   useEffect(() => {
-    // Set initial type on mount
-    setType("posts");
     checkArrows();
     const handleResize = () => checkArrows();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, [setType]);
+  }, []);
 
-  const scrollLeft = () => {
+  const scrollLeftFn = () => {
     if (scrollRef.current) {
       scrollRef.current.scrollBy({ left: -200, behavior: "smooth" });
     }
   };
 
-  const scrollRight = () => {
+  const scrollRightFn = () => {
     if (scrollRef.current) {
       scrollRef.current.scrollBy({ left: 200, behavior: "smooth" });
     }
   };
 
+  const getLabel = (option: string) => {
+    const label = option.charAt(0).toUpperCase() + option.slice(1);
+    const count = resultCounts?.[option as SearchType];
+    if (count !== undefined && count >= 0) {
+      return `${label} (${count})`;
+    }
+    return label;
+  };
+
   if (width >= 768) {
-    // Desktop view: no changes
+    // Desktop view
     return (
       <div className="space-y-2 my-2 py-5">
         {SearchOptions.map((option, idx) => (
@@ -91,12 +117,12 @@ export default function SearchSidebar({ setType }: SearchSidebarProps) {
                   ? "bg-gray-600 text-white"
                   : "bg-transparent hover:bg-gray-600 hover:border hover:border-gray-400"
               } text-nowrap`}
-              aria-label={`Filter notification by - ${option}`}
+              aria-label={`Filter search by - ${option}`}
               aria-pressed={selected === option}
               value={selected}
               onClick={() => handleOption(option)}
             >
-              {option.charAt(0).toUpperCase() + option.slice(1)}
+              {getLabel(option)}
             </button>
           </div>
         ))}
@@ -110,7 +136,7 @@ export default function SearchSidebar({ setType }: SearchSidebarProps) {
       {/* Left Arrow */}
       {showLeftArrow && (
         <button
-          onClick={scrollLeft}
+          onClick={scrollLeftFn}
           className="absolute left-0 top-1/2 transform -translate-y-1/2 z-20 bg-black/70 text-white p-2 rounded-full shadow-lg hover:bg-black/90 transition-colors"
           aria-label="Scroll left"
         >
@@ -152,7 +178,7 @@ export default function SearchSidebar({ setType }: SearchSidebarProps) {
             aria-pressed={selected === option}
             onClick={() => handleOption(option)}
           >
-            {option.charAt(0).toUpperCase() + option.slice(1)}
+            {getLabel(option)}
           </button>
         ))}
       </div>
@@ -160,7 +186,7 @@ export default function SearchSidebar({ setType }: SearchSidebarProps) {
       {/* Right Arrow */}
       {showRightArrow && (
         <button
-          onClick={scrollRight}
+          onClick={scrollRightFn}
           className="absolute right-0 top-1/2 transform -translate-y-1/2 z-20 bg-black/70 text-white p-2 rounded-full shadow-lg hover:bg-black/90 transition-colors"
           aria-label="Scroll right"
         >

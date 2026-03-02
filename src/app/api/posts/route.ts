@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
 import connectDB from "@/lib/mongodb";
+import { notifyNewPost } from "@/lib/notifications";
 import Post from "@/models/Post";
 import User from "@/models/User";
 import { NextRequest, NextResponse } from "next/server";
@@ -28,7 +29,40 @@ export async function GET(req: NextRequest) {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const filter: Record<string, any> = {};
-    if (author) filter.authorId = author;
+
+    if (author) {
+      // Accept either a MongoDB ObjectId string or an email address.
+      // If the value looks like an email, resolve it to the matching userId first.
+      const isEmail = author.includes("@");
+      if (isEmail) {
+        const authorUser = await User.findOne({
+          email: author.toLowerCase().trim(),
+        })
+          .select("_id")
+          .lean();
+        // If no user found for that email, return an empty result set immediately.
+        if (!authorUser) {
+          return NextResponse.json(
+            {
+              posts: [],
+              pagination: {
+                page,
+                limit,
+                total: 0,
+                totalPages: 0,
+                hasNextPage: false,
+                hasPrevPage: false,
+              },
+            },
+            { status: 200 },
+          );
+        }
+        filter.authorId = authorUser._id.toString();
+      } else {
+        filter.authorId = author;
+      }
+    }
+
     if (tag) filter.tags = tag;
 
     // Check if the current user is an admin — only admins see hidden posts
@@ -151,6 +185,16 @@ export async function POST(req: NextRequest) {
       authorId: session.user.id,
       authorName: session.user.name ?? session.user.email ?? "Anonymous",
       authorImage: session.user.image ?? undefined,
+    });
+
+    // Fire-and-forget: notify all other users about the new post
+    notifyNewPost({
+      postId: post._id.toString(),
+      postTitle: post.title,
+      postTags: post.tags,
+      authorId: post.authorId,
+      authorName: post.authorName,
+      authorImage: post.authorImage,
     });
 
     return NextResponse.json(

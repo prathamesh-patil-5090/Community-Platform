@@ -44,7 +44,13 @@ function PostCardSkeleton() {
   );
 }
 
-export default function UserPosts({ userId }: { userId: string }) {
+export default function UserPosts({
+  userId,
+  userEmail,
+}: {
+  userId: string;
+  userEmail?: string;
+}) {
   const router = useRouter();
 
   const [posts, setPosts] = useState<UserPost[]>([]);
@@ -65,8 +71,9 @@ export default function UserPosts({ userId }: { userId: string }) {
       }
 
       try {
+        const authorParam = userEmail ? encodeURIComponent(userEmail) : userId;
         const res = await fetch(
-          `/api/posts?author=${userId}&page=${page}&limit=10`,
+          `/api/posts?author=${authorParam}&page=${page}&limit=10`,
         );
 
         if (res.status === 401) {
@@ -94,7 +101,7 @@ export default function UserPosts({ userId }: { userId: string }) {
         setLoadingMore(false);
       }
     },
-    [userId, router],
+    [userId, userEmail, router],
   );
 
   useEffect(() => {

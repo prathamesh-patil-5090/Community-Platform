@@ -6,9 +6,11 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import {
+  IoChatbubblesOutline,
   IoChevronDown,
   IoGridOutline,
   IoHomeOutline,
+  IoLayersOutline,
   IoLogOutOutline,
   IoMegaphoneOutline,
   IoMenuOutline,
@@ -40,6 +42,16 @@ const sidebarItems = [
     name: "Ads",
     href: "/admin-panel/ads",
     icon: IoMegaphoneOutline,
+  },
+  {
+    name: "Top Discussions",
+    href: "/admin-panel/top-discussions",
+    icon: IoChatbubblesOutline,
+  },
+  {
+    name: "Community Pages",
+    href: "/admin-panel/community-pages",
+    icon: IoLayersOutline,
   },
 ];
 
@@ -165,6 +177,10 @@ function AdminNavbar({ onMenuToggle }: { onMenuToggle: () => void }) {
     if (pathname.startsWith("/admin-panel/posts")) return "Post Management";
     if (pathname.startsWith("/admin-panel/users")) return "User Management";
     if (pathname.startsWith("/admin-panel/ads")) return "Ad Management";
+    if (pathname.startsWith("/admin-panel/top-discussions"))
+      return "Top Discussions";
+    if (pathname.startsWith("/admin-panel/community-pages"))
+      return "Community Pages";
     return "Admin Panel";
   };
 

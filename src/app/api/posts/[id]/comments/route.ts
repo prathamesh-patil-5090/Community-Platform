@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
 import connectDB from "@/lib/mongodb";
+import { notifyCommentOnPost } from "@/lib/notifications";
 import Post from "@/models/Post";
 import mongoose from "mongoose";
 import { NextRequest, NextResponse } from "next/server";
@@ -61,6 +62,16 @@ export async function POST(
     }
 
     const saved = updatedPost.commentList?.[0];
+
+    // Fire-and-forget: notify the post author about the new comment
+    notifyCommentOnPost({
+      postId: id,
+      commentId: saved?._id?.toString() ?? "",
+      commentText: saved?.text ?? newComment.text,
+      commentAuthorId: newComment.authorId,
+      commentAuthorName: newComment.authorName,
+      commentAuthorImage: newComment.authorImage,
+    });
 
     return NextResponse.json(
       {

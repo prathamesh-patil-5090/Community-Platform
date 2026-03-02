@@ -2,7 +2,7 @@
 import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { CiSearch } from "react-icons/ci";
 import { HiMenuAlt2 } from "react-icons/hi";
 import { IoIosClose, IoIosNotificationsOutline } from "react-icons/io";
@@ -13,19 +13,56 @@ import Logo from "./ui/Logo";
 import SearchBar from "./ui/SearchBar";
 import SideBar from "./ui/SideBar";
 
+const NOTIFICATION_POLL_INTERVAL_MS = 30_000; // 30 seconds
+
 function Navbar() {
   const router = useRouter();
   const pathName = usePathname();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
 
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [isProfileOpen, setIsProfileOpen] = useState<boolean>(false);
   const [isLoggingOut, setIsLoggingOut] = useState<boolean>(false);
+  const [unreadCount, setUnreadCount] = useState<number>(0);
 
   const profileRef = useRef<HTMLDivElement>(null);
 
   const toggleMenu = () => setIsMenuOpen((v) => !v);
   const handleSidebarItemClick = () => setIsMenuOpen(false);
+
+  // ─── Poll for unread notification count ──────────────────────────────────
+  const fetchUnreadCount = useCallback(async () => {
+    try {
+      const res = await fetch("/api/notifications/count");
+      if (res.ok) {
+        const data = await res.json();
+        setUnreadCount(data.unreadCount ?? 0);
+      }
+    } catch {
+      // silently ignore — will retry on next poll
+    }
+  }, []);
+
+  useEffect(() => {
+    if (status !== "authenticated") return;
+
+    // Fetch immediately on mount
+    fetchUnreadCount();
+
+    // Then poll every 30 seconds
+    const interval = setInterval(
+      fetchUnreadCount,
+      NOTIFICATION_POLL_INTERVAL_MS,
+    );
+    return () => clearInterval(interval);
+  }, [status, fetchUnreadCount]);
+
+  // Re-fetch when navigating back from the notifications page
+  useEffect(() => {
+    if (status === "authenticated" && pathName !== "/notifications") {
+      fetchUnreadCount();
+    }
+  }, [pathName, status, fetchUnreadCount]);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -70,7 +107,9 @@ function Navbar() {
           <div className="flex gap-4 pl-3">
             <Logo onClick={() => router.push("/")} />
             <div className="hidden md:block items-center">
-              <SearchBar />
+              <Suspense fallback={null}>
+                <SearchBar />
+              </Suspense>
             </div>
           </div>
         </div>
@@ -91,12 +130,19 @@ function Navbar() {
               onClick={() => router.push("/search")}
             />
           </div>
-          <IoIosNotificationsOutline
-            size={40}
-            className="cursor-pointer rounded-full border border-white/10 p-1"
-            aria-label="Notifications"
-            onClick={() => router.push("/notifications")}
-          />
+          <div className="relative">
+            <IoIosNotificationsOutline
+              size={40}
+              className="cursor-pointer rounded-full border border-white/10 p-1"
+              aria-label="Notifications"
+              onClick={() => router.push("/notifications")}
+            />
+            {unreadCount > 0 && (
+              <span className="absolute -top-1 -right-1 flex items-center justify-center min-w-[20px] h-5 px-1 text-xs font-bold text-white bg-red-500 rounded-full leading-none pointer-events-none">
+                {unreadCount > 99 ? "99+" : unreadCount}
+              </span>
+            )}
+          </div>
 
           {/* Profile avatar + dropdown */}
           <div className="relative" ref={profileRef}>
