@@ -95,7 +95,7 @@ function SideBar() {
             className={`group flex items-center justify-left gap-2 py-3 p-2 cursor-pointer rounded transition-all ${
               isActive
                 ? "border border-amber-50/30 bg-white/[0.03]"
-                : "hover:border hover:border-amber-50 hover:bg-transparent"
+                : "hover:border hover:border-amber-50 hover:bg-transparent my-1"
             }`}
             onClick={() => router.push(obj.link)}
           >
