@@ -7,6 +7,7 @@ export interface ICommunityPage extends Document {
   icon: string;
   description: string;
   content: string;
+  craftData?: string;
   coverImage?: string;
   isActive: boolean;
   order: number;
@@ -52,6 +53,10 @@ const CommunityPageSchema = new Schema<ICommunityPage>(
     content: {
       type: String,
       default: "",
+    },
+    craftData: {
+      type: String,
+      default: "{}",
     },
     coverImage: {
       type: String,

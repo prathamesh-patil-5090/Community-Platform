@@ -49,6 +49,7 @@ export async function GET(
           icon: page.icon,
           description: page.description,
           content: page.content ?? "",
+          craftData: page.craftData ?? "{}",
           coverImage: page.coverImage ?? null,
           isActive: page.isActive,
           order: page.order,
@@ -80,7 +81,7 @@ export async function GET(
  *    Body: { action: "toggle_active" }
  *
  * 2. General update:
- *    Body: { name?, slug?, icon?, description?, content?, coverImage?, isActive?, order? }
+ *    Body: { name?, slug?, icon?, description?, content?, craftData?, coverImage?, isActive?, order? }
  */
 export async function PATCH(
   req: NextRequest,
@@ -151,6 +152,7 @@ export async function PATCH(
       icon,
       description,
       content,
+      craftData,
       coverImage,
       isActive,
       order,
@@ -280,6 +282,17 @@ export async function PATCH(
       page.content = content;
     }
 
+    // Apply craftData
+    if (craftData !== undefined) {
+      if (typeof craftData !== "string") {
+        return NextResponse.json(
+          { error: "craftData must be a string." },
+          { status: 400 },
+        );
+      }
+      page.craftData = craftData;
+    }
+
     // Apply cover image
     if (coverImage !== undefined) {
       if (coverImage === null || coverImage === "") {
@@ -327,6 +340,7 @@ export async function PATCH(
           icon: page.icon,
           description: page.description,
           content: page.content ?? "",
+          craftData: page.craftData ?? "{}",
           coverImage: page.coverImage ?? null,
           isActive: page.isActive,
           order: page.order,

@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { notFound, useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { CraftViewer } from "../components/craft";
 import SideBar from "../components/ui/SideBar";
 
 /* ─── Types ────────────────────────────────────────────────────────────────── */
@@ -14,6 +15,7 @@ interface CommunityPageData {
   icon: string;
   description: string;
   content: string;
+  craftData?: string;
   coverImage: string | null;
   order: number;
   createdAt: string;
@@ -204,6 +206,8 @@ export default function CommunityPage() {
   /* ── Has content check ───────────────────────────────────────────────────── */
   const hasContent =
     page.content && page.content !== "" && page.content !== "<p></p>";
+  const hasCraftData =
+    page.craftData && page.craftData !== "{}" && page.craftData !== '""';
 
   return (
     <div className="min-h-screen flex bg-[#0A0A0A] text-white">
@@ -244,8 +248,15 @@ export default function CommunityPage() {
 
           {/* Content Section */}
           <div className="space-y-6">
-            {/* Rich Content from TipTap */}
-            {hasContent && (
+            {/* Craft Builder Content */}
+            {hasCraftData && (
+              <div className="bg-white/5 border border-white/10 rounded-lg p-6 md:p-8 overflow-hidden">
+                <CraftViewer data={page.craftData} />
+              </div>
+            )}
+
+            {/* Rich Content from TipTap (Legacy) */}
+            {!hasCraftData && hasContent && (
               <div className="bg-white/5 border border-white/10 rounded-lg p-6 md:p-8">
                 <div
                   className="prose prose-invert max-w-none
@@ -269,7 +280,7 @@ export default function CommunityPage() {
             )}
 
             {/* Welcome Card (shown when there's no rich content) */}
-            {!hasContent && (
+            {!hasCraftData && !hasContent && (
               <div className="bg-white/5 border border-white/10 rounded-lg p-6">
                 <h2 className="text-2xl font-semibold mb-3">
                   Welcome to {page.name}!

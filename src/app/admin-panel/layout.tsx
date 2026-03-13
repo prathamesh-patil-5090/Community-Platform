@@ -59,9 +59,13 @@ const sidebarItems = [
 function AdminSidebar({
   isOpen,
   onClose,
+  isCollapsed,
+  toggleCollapse,
 }: {
   isOpen: boolean;
   onClose: () => void;
+  isCollapsed: boolean;
+  toggleCollapse: () => void;
 }) {
   const pathname = usePathname();
 
@@ -82,16 +86,42 @@ function AdminSidebar({
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 h-full w-64 bg-[#0c0c0f] border-r border-white/10 z-50 transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${
+        className={`fixed top-0 left-0 h-full bg-[#0c0c0f] border-r border-white/10 z-50 transform transition-all duration-300 ease-in-out lg:translate-x-0 flex flex-col ${
           isOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
+        } ${isCollapsed ? "w-64 lg:w-20" : "w-64"}`}
       >
         {/* Sidebar header / branding */}
-        <div className="flex items-center gap-3 px-5 h-16 border-b border-white/10">
-          <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-gradient-to-br from-purple-600 to-indigo-600">
+        <div
+          className={`flex items-center h-16 border-b border-white/10 transition-all flex-shrink-0 ${
+            isCollapsed
+              ? "px-5 lg:px-0 lg:justify-center gap-3 lg:gap-0"
+              : "gap-3 px-5"
+          }`}
+        >
+          <button
+            onClick={toggleCollapse}
+            className={`hidden lg:flex items-center justify-center rounded-lg hover:bg-white/10 text-white transition-colors cursor-pointer flex-shrink-0 ${
+              isCollapsed
+                ? "w-11 h-11 bg-gradient-to-br from-purple-600 to-indigo-600"
+                : "w-9 h-9 bg-white/5"
+            }`}
+          >
+            <IoMenuOutline size={isCollapsed ? 26 : 20} />
+          </button>
+
+          <div
+            className={`flex items-center justify-center w-9 h-9 rounded-lg bg-gradient-to-br from-purple-600 to-indigo-600 flex-shrink-0 ${
+              isCollapsed ? "lg:hidden" : ""
+            }`}
+          >
             <IoShieldCheckmarkOutline size={20} className="text-white" />
           </div>
-          <div>
+
+          <div
+            className={`overflow-hidden whitespace-nowrap transition-all duration-300 ${
+              isCollapsed ? "lg:w-0 lg:opacity-0" : "w-auto opacity-100"
+            }`}
+          >
             <h1 className="text-white font-semibold text-base leading-tight">
               Admin Panel
             </h1>
@@ -100,7 +130,7 @@ function AdminSidebar({
         </div>
 
         {/* Navigation */}
-        <nav className="px-3 py-4 flex flex-col gap-1">
+        <nav className="px-3 py-4 flex flex-col gap-2 flex-1 overflow-y-auto scrollbar-hide">
           {sidebarItems.map((item) => {
             const Icon = item.icon;
             const active = isActive(item.href);
@@ -108,28 +138,59 @@ function AdminSidebar({
               <Link
                 key={item.href}
                 href={item.href}
-                onClick={onClose}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                onClick={() => {
+                  if (window.innerWidth < 1024) onClose();
+                }}
+                title={isCollapsed ? item.name : undefined}
+                className={`flex items-center px-3 py-3 rounded-lg text-sm font-medium transition-all group ${
+                  isCollapsed
+                    ? "lg:justify-center gap-3 lg:gap-0 lg:px-0"
+                    : "gap-3"
+                } ${
                   active
                     ? "bg-gradient-to-r from-purple-600/20 to-indigo-600/20 text-purple-300 border border-purple-500/20"
-                    : "text-gray-400 hover:bg-white/5 hover:text-gray-200"
+                    : "text-gray-400 hover:bg-white/5 hover:text-gray-200 border border-transparent"
                 }`}
               >
-                <Icon size={20} className={active ? "text-purple-400" : ""} />
-                {item.name}
+                <Icon
+                  size={22}
+                  className={`flex-shrink-0 ${
+                    active
+                      ? "text-purple-400"
+                      : "text-gray-400 group-hover:text-gray-200"
+                  }`}
+                />
+                <span
+                  className={`whitespace-nowrap transition-all duration-300 ${
+                    isCollapsed ? "lg:hidden" : "w-auto opacity-100"
+                  }`}
+                >
+                  {item.name}
+                </span>
               </Link>
             );
           })}
         </nav>
 
         {/* Sidebar footer — back to site */}
-        <div className="absolute bottom-0 left-0 right-0 p-3 border-t border-white/10">
+        <div className="p-3 border-t border-white/10 bg-[#0c0c0f] flex-shrink-0">
           <Link
             href="/"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:bg-white/5 hover:text-gray-200 transition-all"
+            className={`flex items-center px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:bg-white/5 hover:text-gray-200 transition-all ${
+              isCollapsed ? "lg:justify-center gap-3 lg:gap-0 lg:px-0" : "gap-3"
+            }`}
+            title={isCollapsed ? "Back to Site" : undefined}
           >
-            <IoHomeOutline size={20} />
-            Back to Site
+            <IoHomeOutline size={20} className="flex-shrink-0" />
+            <span
+              className={`truncate transition-all duration-300 ${
+                isCollapsed
+                  ? "lg:w-0 lg:opacity-0 lg:hidden"
+                  : "block w-auto opacity-100"
+              }`}
+            >
+              Back to Site
+            </span>
           </Link>
         </div>
       </aside>
@@ -138,7 +199,13 @@ function AdminSidebar({
 }
 
 /* ─── Admin Navbar ─────────────────────────────────────────────────────────── */
-function AdminNavbar({ onMenuToggle }: { onMenuToggle: () => void }) {
+function AdminNavbar({
+  onMenuToggle,
+  onToggleCollapse,
+}: {
+  onMenuToggle: () => void;
+  onToggleCollapse: () => void;
+}) {
   const { data: session } = useSession();
   const router = useRouter();
   const pathname = usePathname();
@@ -191,7 +258,14 @@ function AdminNavbar({ onMenuToggle }: { onMenuToggle: () => void }) {
         <button
           onClick={onMenuToggle}
           className="lg:hidden text-gray-400 hover:text-white transition-colors p-1"
-          aria-label="Toggle sidebar"
+          aria-label="Toggle sidebar (mobile)"
+        >
+          <IoMenuOutline size={24} />
+        </button>
+        <button
+          onClick={onToggleCollapse}
+          className="hidden lg:block text-gray-400 hover:text-white transition-colors p-1"
+          aria-label="Toggle sidebar collapse (desktop)"
         >
           <IoMenuOutline size={24} />
         </button>
@@ -313,6 +387,7 @@ export default function AdminPanelLayout({
   children: React.ReactNode;
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   return (
     <div className="min-h-screen bg-[#08080b] text-gray-100">
@@ -320,10 +395,16 @@ export default function AdminPanelLayout({
       <AdminSidebar
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
+        isCollapsed={isCollapsed}
+        toggleCollapse={() => setIsCollapsed(!isCollapsed)}
       />
 
       {/* Main content area — offset by sidebar width on desktop */}
-      <div className="lg:ml-64 flex flex-col min-h-screen">
+      <div
+        className={`flex flex-col min-h-screen transition-all duration-300 ease-in-out ${
+          isCollapsed ? "lg:ml-20" : "lg:ml-64"
+        }`}
+      >
         {/* Navbar */}
         <AdminNavbar onMenuToggle={() => setSidebarOpen((v) => !v)} />
 

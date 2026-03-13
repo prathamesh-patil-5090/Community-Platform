@@ -20,10 +20,7 @@ export async function GET(
     const { slug } = await params;
 
     if (!slug || typeof slug !== "string") {
-      return NextResponse.json(
-        { error: "Slug is required." },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: "Slug is required." }, { status: 400 });
     }
 
     const normalizedSlug = slug.trim().toLowerCase();
@@ -33,7 +30,7 @@ export async function GET(
       isActive: true,
     })
       .select(
-        "name slug icon description content coverImage order createdAt updatedAt",
+        "name slug icon description content craftData coverImage order createdAt updatedAt",
       )
       .lean();
 
@@ -53,6 +50,7 @@ export async function GET(
           icon: page.icon,
           description: page.description,
           content: page.content ?? "",
+          craftData: page.craftData ?? "{}",
           coverImage: page.coverImage ?? null,
           order: page.order,
           createdAt: page.createdAt.toISOString(),

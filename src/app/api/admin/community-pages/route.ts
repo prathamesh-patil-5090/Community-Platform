@@ -70,11 +70,7 @@ export async function GET(req: NextRequest) {
 
     const skip = (page - 1) * limit;
     const [pages, total] = await Promise.all([
-      CommunityPage.find(filter)
-        .sort(sortObj)
-        .skip(skip)
-        .limit(limit)
-        .lean(),
+      CommunityPage.find(filter).sort(sortObj).skip(skip).limit(limit).lean(),
       CommunityPage.countDocuments(filter),
     ]);
 
@@ -87,6 +83,7 @@ export async function GET(req: NextRequest) {
       icon: p.icon,
       description: p.description,
       content: p.content ?? "",
+      craftData: p.craftData ?? "{}",
       coverImage: p.coverImage ?? null,
       isActive: p.isActive,
       order: p.order,
@@ -132,6 +129,7 @@ export async function GET(req: NextRequest) {
  *   icon          string   (required — emoji)
  *   description   string   (required)
  *   content       string   (optional — TipTap HTML content)
+ *   craftData     string   (optional — Craft.js JSON)
  *   coverImage    string   (optional — URL)
  *   isActive      boolean  (optional — default true)
  *   order         number   (optional — default 0)
@@ -153,6 +151,7 @@ export async function POST(req: NextRequest) {
       icon,
       description,
       content,
+      craftData,
       coverImage,
       isActive,
       order,
@@ -167,10 +166,7 @@ export async function POST(req: NextRequest) {
     }
 
     if (!slug || typeof slug !== "string" || !slug.trim()) {
-      return NextResponse.json(
-        { error: "Slug is required." },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: "Slug is required." }, { status: 400 });
     }
 
     const normalizedSlug = slug.trim().toLowerCase();
@@ -215,7 +211,11 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (!description || typeof description !== "string" || !description.trim()) {
+    if (
+      !description ||
+      typeof description !== "string" ||
+      !description.trim()
+    ) {
       return NextResponse.json(
         { error: "Description is required." },
         { status: 400 },
@@ -226,7 +226,9 @@ export async function POST(req: NextRequest) {
     const existing = await CommunityPage.findOne({ slug: normalizedSlug });
     if (existing) {
       return NextResponse.json(
-        { error: `A community page with slug "${normalizedSlug}" already exists.` },
+        {
+          error: `A community page with slug "${normalizedSlug}" already exists.`,
+        },
         { status: 409 },
       );
     }
@@ -241,7 +243,11 @@ export async function POST(req: NextRequest) {
       icon: icon.trim(),
       description: description.trim(),
       content: typeof content === "string" ? content : "",
-      coverImage: typeof coverImage === "string" && coverImage.trim() ? coverImage.trim() : undefined,
+      craftData: typeof craftData === "string" ? craftData : "{}",
+      coverImage:
+        typeof coverImage === "string" && coverImage.trim()
+          ? coverImage.trim()
+          : undefined,
       isActive: typeof isActive === "boolean" ? isActive : true,
       order: typeof order === "number" ? Math.max(0, Math.floor(order)) : 0,
       createdBy: adminId,
@@ -258,6 +264,7 @@ export async function POST(req: NextRequest) {
           icon: page.icon,
           description: page.description,
           content: page.content,
+          craftData: page.craftData ?? "{}",
           coverImage: page.coverImage ?? null,
           isActive: page.isActive,
           order: page.order,

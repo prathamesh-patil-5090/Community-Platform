@@ -1,13 +1,8 @@
 "use client";
 
-import { Image as TiptapImage } from "@tiptap/extension-image";
-import { Link as TiptapLink } from "@tiptap/extension-link";
-import { TextStyle } from "@tiptap/extension-text-style";
-import { EditorContent, useEditor } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FaImage, FaTimes } from "react-icons/fa";
 import {
   IoAlertCircleOutline,
@@ -18,19 +13,8 @@ import {
   IoLayersOutline,
   IoSaveOutline,
 } from "react-icons/io5";
-import DesktopMenuBar from "../../../components/create-post/DesktopMenuBar";
-import MobileMenuBar from "../../../components/create-post/MobileMenuBar";
+import { CraftBuilder } from "../../../components/craft";
 import "../../../components/create-post/styles.scss";
-import CustomAlert from "../../../components/ui/Alert/CustomAlert";
-
-const extensions = [
-  TextStyle,
-  StarterKit,
-  TiptapImage.configure({ inline: false, allowBase64: false }),
-  TiptapLink.configure({ openOnClick: false }),
-];
-
-/* ─── Cover Image Upload ──────────────────────────────────────────────────── */
 
 function CoverImageUpload({
   coverImage,
@@ -146,15 +130,7 @@ export default function CreateCommunityPagePage() {
   const [isUploading, setIsUploading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
-  const [isEditorImageUploading, setIsEditorImageUploading] = useState(false);
-  const editorImageInputRef = useRef<HTMLInputElement>(null);
-
-  // Alert state for link insertion
-  const [alertState, setAlertState] = useState<{
-    isOpen: boolean;
-    type: "link" | "image";
-    title: string;
-  }>({ isOpen: false, type: "link", title: "" });
+  const [craftData, setCraftData] = useState("{}");
 
   // Toast
   const [toast, setToast] = useState<{
@@ -176,19 +152,6 @@ export default function CreateCommunityPagePage() {
       router.replace("/");
     }
   }, [session, status, router]);
-
-  /* ── TipTap editor ───────────────────────────────────────────────────────── */
-  const editor = useEditor({
-    extensions,
-    immediatelyRender: false,
-    content: "",
-    editorProps: {
-      attributes: {
-        class:
-          "prose prose-invert max-w-none min-h-[300px] px-4 py-3 focus:outline-none text-white",
-      },
-    },
-  });
 
   /* ── Auto-generate slug from name ────────────────────────────────────────── */
   useEffect(() => {
@@ -227,51 +190,6 @@ export default function CreateCommunityPagePage() {
     } finally {
       setIsUploading(false);
     }
-  }
-
-  /* ── Editor toolbar handlers ─────────────────────────────────────────────── */
-  function handleOpenAlert(type: "image" | "link") {
-    if (type === "image") {
-      editorImageInputRef.current?.click();
-    } else {
-      setAlertState({ isOpen: true, type, title: "Insert Link" });
-    }
-  }
-
-  async function handleEditorImageFileSelect(
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) {
-    const file = e.target.files?.[0];
-    e.target.value = "";
-    if (!file || !editor) return;
-
-    setIsEditorImageUploading(true);
-    try {
-      const url = await uploadImageToCloudinary(file);
-      editor.chain().focus().setImage({ src: url, alt: file.name }).run();
-    } catch {
-      setToast({ message: "Editor image upload failed", type: "error" });
-    } finally {
-      setIsEditorImageUploading(false);
-    }
-  }
-
-  function handleCloseAlert() {
-    setAlertState((prev) => ({ ...prev, isOpen: false }));
-  }
-
-  function handleConfirmAlert(data: { url: string; text?: string }) {
-    if (!editor) return;
-
-    editor
-      .chain()
-      .focus()
-      .insertContent(
-        `<a href="${data.url}" target="_blank" rel="noopener noreferrer" style="color: #60a5fa; text-decoration: underline;">${data.text ?? data.url}</a>`,
-      )
-      .run();
-
-    handleCloseAlert();
   }
 
   /* ── Validate ────────────────────────────────────────────────────────────── */
@@ -313,8 +231,6 @@ export default function CreateCommunityPagePage() {
 
     setIsSubmitting(true);
     try {
-      const content = editor?.getHTML() ?? "";
-
       const res = await fetch("/api/admin/community-pages", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -323,7 +239,8 @@ export default function CreateCommunityPagePage() {
           slug: slug.trim().toLowerCase(),
           icon: icon.trim(),
           description: description.trim(),
-          content,
+          content: "", // Deprecated, we rely on craftData now
+          craftData,
           coverImage: coverImage || undefined,
           isActive,
           order,
@@ -448,11 +365,11 @@ export default function CreateCommunityPagePage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* ── Left: Main Editor ─────────────────────────────────────────────── */}
-        <div className="lg:col-span-2 space-y-4">
+      <div className="flex flex-col gap-6">
+        {/* ── Top Info Row ────────────────────────────────────────────────── */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* Name */}
-          <div>
+          <div className="lg:col-span-1">
             <label className="block text-gray-400 text-xs uppercase tracking-wider mb-1.5 font-medium">
               Page Name *
             </label>
@@ -466,115 +383,65 @@ export default function CreateCommunityPagePage() {
             />
           </div>
 
-          {/* Cover Image */}
-          <CoverImageUpload
-            coverImage={coverImage}
-            isUploading={isUploading}
-            onFileSelect={handleCoverUpload}
-            onRemove={() => setCoverImage(null)}
-          />
-
-          {/* TipTap Editor */}
-          <div className="rounded-lg border border-white/10 bg-[#0a0a0a] overflow-hidden">
-            <div className="border-b border-white/10">
-              {editor && (
-                <>
-                  <div className="hidden md:block">
-                    <DesktopMenuBar
-                      editor={editor}
-                      onOpenAlert={handleOpenAlert}
-                    />
-                  </div>
-                  <div className="md:hidden">
-                    <MobileMenuBar
-                      editor={editor}
-                      onOpenAlert={handleOpenAlert}
-                    />
-                  </div>
-                </>
-              )}
-            </div>
-            {isEditorImageUploading && (
-              <div className="flex items-center gap-2 px-4 py-2 bg-purple-600/10 border-b border-white/10 text-xs text-purple-300">
-                <div className="w-3 h-3 border-2 border-purple-400 border-t-transparent rounded-full animate-spin" />
-                Uploading image…
-              </div>
-            )}
-            <EditorContent editor={editor} />
-          </div>
-
-          {/* Hidden file input for editor images */}
-          <input
-            ref={editorImageInputRef}
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={handleEditorImageFileSelect}
-          />
-        </div>
-
-        {/* ── Right: Settings Panel ────────────────────────────────────────── */}
-        <div className="space-y-5">
           {/* Slug */}
-          <div className="rounded-xl border border-white/10 bg-white/[0.02] p-5 space-y-4">
-            <h3 className="text-white font-semibold text-sm">Page Settings</h3>
-
-            <div>
-              <label className="block text-gray-400 text-xs uppercase tracking-wider mb-1.5 font-medium">
-                URL Slug *
-              </label>
-              <div className="flex items-center gap-0">
-                <span className="px-3 py-2.5 rounded-l-lg bg-white/10 border border-r-0 border-white/10 text-gray-500 text-sm">
-                  /
-                </span>
-                <input
-                  type="text"
-                  value={slug}
-                  onChange={(e) => {
-                    setSlugManuallyEdited(true);
-                    setSlug(
-                      e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""),
-                    );
-                  }}
-                  placeholder="tech-talk"
-                  maxLength={120}
-                  className="flex-1 px-3 py-2.5 rounded-r-lg bg-white/5 border border-white/10 text-white text-sm font-mono placeholder:text-gray-600 outline-none focus:border-purple-500/50 transition-colors"
-                />
-              </div>
-              {slug && !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) && (
-                <p className="text-red-400 text-xs mt-1">
-                  Slug must be lowercase letters, numbers, and hyphens only
+          <div className="lg:col-span-1">
+            <label className="block text-gray-400 text-xs uppercase tracking-wider mb-1.5 font-medium">
+              URL Slug *
+            </label>
+            <div className="flex items-center gap-0 h-[50px]">
+              <span className="px-3 py-3 rounded-l-lg bg-white/10 border border-r-0 border-white/10 text-gray-500 text-sm h-full flex items-center">
+                /
+              </span>
+              <input
+                type="text"
+                value={slug}
+                onChange={(e) => {
+                  setSlugManuallyEdited(true);
+                  setSlug(
+                    e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""),
+                  );
+                }}
+                placeholder="tech-talk"
+                maxLength={120}
+                className="flex-1 px-3 py-3 rounded-r-lg bg-white/5 border border-white/10 text-white text-sm font-mono placeholder:text-gray-600 outline-none focus:border-purple-500/50 transition-colors h-full"
+              />
+            </div>
+            <div className="min-h-[20px] mt-1">
+              {slug && !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) ? (
+                <p className="text-red-400 text-xs">
+                  Lowercase letters, numbers, hyphens only
                 </p>
-              )}
-              {!slugManuallyEdited && slug && (
-                <p className="text-gray-600 text-xs mt-1">
+              ) : !slugManuallyEdited && slug ? (
+                <p className="text-gray-600 text-xs">
                   Auto-generated from name
                 </p>
-              )}
+              ) : null}
             </div>
+          </div>
 
-            {/* Icon */}
-            <div>
-              <label className="block text-gray-400 text-xs uppercase tracking-wider mb-1.5 font-medium">
-                Icon (Emoji) *
-              </label>
+          {/* Icon */}
+          <div className="lg:col-span-1">
+            <label className="block text-gray-400 text-xs uppercase tracking-wider mb-1.5 font-medium">
+              Icon (Emoji) *
+            </label>
+            <div className="flex gap-2 h-[50px]">
               <input
                 type="text"
                 value={icon}
                 onChange={(e) => setIcon(e.target.value)}
                 maxLength={10}
-                className="w-full px-3 py-2.5 rounded-lg bg-white/5 border border-white/10 text-white text-2xl text-center outline-none focus:border-purple-500/50 transition-colors"
+                className="w-16 px-2 py-3 rounded-lg bg-white/5 border border-white/10 text-white text-xl text-center outline-none focus:border-purple-500/50 transition-colors h-full"
               />
-              <div className="flex flex-wrap gap-1.5 mt-2">
-                {commonEmojis.map((emoji) => (
+              <div className="flex-1 flex items-center overflow-x-auto gap-1.5 scrollbar-hide px-2 border border-white/10 rounded-lg bg-white/[0.02]">
+                {commonEmojis.slice(0, 15).map((emoji) => (
                   <button
                     key={emoji}
                     type="button"
                     onClick={() => setIcon(emoji)}
-                    className={`w-8 h-8 rounded-md flex items-center justify-center text-lg hover:bg-white/10 transition-colors cursor-pointer ${
+                    className={`flex-shrink-0 w-8 h-8 rounded-md flex items-center justify-center text-lg hover:bg-white/10 transition-colors cursor-pointer ${
                       icon === emoji
                         ? "bg-purple-600/20 border border-purple-500/30"
-                        : "bg-white/5 border border-transparent"
+                        : "bg-transparent border border-transparent"
                     }`}
                   >
                     {emoji}
@@ -582,9 +449,14 @@ export default function CreateCommunityPagePage() {
                 ))}
               </div>
             </div>
+          </div>
+        </div>
 
+        {/* ── Middle Row ──────────────────────────────────────────────────── */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="space-y-6 flex flex-col">
             {/* Description */}
-            <div>
+            <div className="flex-1 flex flex-col">
               <label className="block text-gray-400 text-xs uppercase tracking-wider mb-1.5 font-medium">
                 Description *{" "}
                 <span className="text-gray-600">
@@ -596,70 +468,98 @@ export default function CreateCommunityPagePage() {
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="A short description of this community page..."
                 maxLength={500}
-                rows={3}
-                className="w-full px-3 py-2.5 rounded-lg bg-white/5 border border-white/10 text-white text-sm placeholder:text-gray-600 outline-none focus:border-purple-500/50 transition-colors resize-none"
+                className="w-full flex-1 min-h-[100px] px-3 py-2.5 rounded-lg bg-white/5 border border-white/10 text-white text-sm placeholder:text-gray-600 outline-none focus:border-purple-500/50 transition-colors resize-none"
               />
             </div>
 
-            {/* Order */}
-            <div>
-              <label className="block text-gray-400 text-xs uppercase tracking-wider mb-1.5 font-medium">
-                Sidebar Order
-              </label>
-              <input
-                type="number"
-                value={order}
-                onChange={(e) =>
-                  setOrder(Math.max(0, parseInt(e.target.value) || 0))
-                }
-                min={0}
-                className="w-full px-3 py-2.5 rounded-lg bg-white/5 border border-white/10 text-white text-sm outline-none focus:border-purple-500/50 transition-colors"
-              />
-              <p className="text-gray-600 text-xs mt-1">
-                Lower number = appears higher in sidebar
-              </p>
-            </div>
-
-            {/* Active Toggle */}
-            <div className="flex items-center justify-between py-2">
+            <div className="grid grid-cols-2 gap-6">
+              {/* Order */}
               <div>
-                <p className="text-white text-sm font-medium">Active</p>
-                <p className="text-gray-500 text-xs">
-                  Show in sidebar and make URL accessible
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setIsActive((v) => !v)}
-                className={`relative w-11 h-6 rounded-full transition-colors cursor-pointer ${
-                  isActive ? "bg-green-600" : "bg-white/10"
-                }`}
-              >
-                <span
-                  className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform ${
-                    isActive ? "translate-x-5" : "translate-x-0"
-                  }`}
+                <label className="block text-gray-400 text-xs uppercase tracking-wider mb-1.5 font-medium">
+                  Sidebar Order
+                </label>
+                <input
+                  type="number"
+                  value={order}
+                  onChange={(e) =>
+                    setOrder(Math.max(0, parseInt(e.target.value) || 0))
+                  }
+                  min={0}
+                  className="w-full px-3 py-2.5 rounded-lg bg-white/5 border border-white/10 text-white text-sm outline-none focus:border-purple-500/50 transition-colors"
                 />
-              </button>
+              </div>
+
+              {/* Active Toggle */}
+              <div className="flex items-center justify-between h-full pt-6">
+                <div>
+                  <p className="text-white text-sm font-medium">
+                    Active Status
+                  </p>
+                  <p className="text-gray-500 text-xs hidden sm:block">
+                    Show in sidebar & URL
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsActive((v) => !v)}
+                  className={`relative w-11 h-6 rounded-full transition-colors cursor-pointer flex-shrink-0 ${
+                    isActive ? "bg-green-600" : "bg-white/10"
+                  }`}
+                >
+                  <span
+                    className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform ${
+                      isActive ? "translate-x-5" : "translate-x-0"
+                    }`}
+                  />
+                </button>
+              </div>
             </div>
           </div>
 
-          {/* Actions */}
-          <div className="rounded-xl border border-white/10 bg-white/[0.02] p-5 space-y-3">
-            <h3 className="text-white font-semibold text-sm">Actions</h3>
+          {/* Cover Image */}
+          <div>
+            <CoverImageUpload
+              coverImage={coverImage}
+              isUploading={isUploading}
+              onFileSelect={handleCoverUpload}
+              onRemove={() => setCoverImage(null)}
+            />
+          </div>
+        </div>
 
+        {/* ── Actions Row ─────────────────────────────────────────────────── */}
+        <div className="flex flex-col sm:flex-row gap-4 items-center justify-between p-4 rounded-xl border border-white/10 bg-white/[0.02]">
+          <div className="flex items-center gap-4">
+            <span className="text-3xl">{icon || "📄"}</span>
+            <div>
+              <p className="text-white font-medium">{name || "Untitled"}</p>
+              <div className="flex items-center gap-2 text-xs">
+                <span className="text-gray-500 font-mono">
+                  /{slug || "slug"}
+                </span>
+                <span className="text-gray-600">•</span>
+                <span
+                  className={`${isActive ? "text-green-400" : "text-gray-400"}`}
+                >
+                  {isActive ? "Active" : "Inactive"}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex gap-3 w-full sm:w-auto">
             <button
               onClick={() => setShowPreview((v) => !v)}
-              className="flex items-center justify-center gap-2 w-full px-4 py-2.5 rounded-lg bg-white/5 border border-white/10 text-sm text-gray-300 hover:bg-white/10 transition-colors cursor-pointer"
+              className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-white/5 border border-white/10 text-sm text-gray-300 hover:bg-white/10 transition-colors cursor-pointer"
             >
               <IoEyeOutline size={16} />
-              {showPreview ? "Hide Preview" : "Preview Page"}
+              {showPreview ? "Hide Preview" : "Preview"}
             </button>
 
             <button
               onClick={handleSubmit}
               disabled={isSubmitting || isUploading}
-              className="flex items-center justify-center gap-2 w-full px-4 py-2.5 rounded-lg bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-sm font-medium hover:from-purple-500 hover:to-indigo-500 transition-all shadow-lg shadow-purple-500/20 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-sm font-medium hover:from-purple-500 hover:to-indigo-500 transition-all shadow-lg shadow-purple-500/20 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               {isSubmitting ? (
                 <>
@@ -674,40 +574,21 @@ export default function CreateCommunityPagePage() {
               )}
             </button>
           </div>
-
-          {/* Summary */}
-          <div className="rounded-xl border border-white/10 bg-white/[0.02] p-5">
-            <h3 className="text-white font-semibold text-sm mb-3">Summary</h3>
-            <div className="space-y-2">
-              <div className="flex items-center gap-3 text-sm">
-                <span className="text-2xl">{icon || "📄"}</span>
-                <div>
-                  <p className="text-white font-medium">{name || "Untitled"}</p>
-                  <p className="text-gray-500 text-xs font-mono">
-                    /{slug || "slug"}
-                  </p>
-                </div>
-              </div>
-              {description && (
-                <p className="text-gray-400 text-xs line-clamp-2">
-                  {description}
-                </p>
-              )}
-              <div className="flex items-center gap-3 text-xs">
-                <span
-                  className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full ${
-                    isActive
-                      ? "bg-green-600/15 text-green-400"
-                      : "bg-gray-600/15 text-gray-400"
-                  }`}
-                >
-                  {isActive ? "Active" : "Inactive"}
-                </span>
-                <span className="text-gray-500">Order: {order}</span>
-              </div>
-            </div>
-          </div>
         </div>
+      </div>
+
+      {/* ── Craft.js Page Builder (Full Width) ────────────────────────────── */}
+      <div className="rounded-lg border border-white/10 bg-[#0a0a0a] overflow-hidden p-2 mt-6">
+        <CraftBuilder
+          initialData={craftData}
+          onSave={(data) => {
+            setCraftData(data);
+            setToast({
+              message: "Layout saved to memory. Don't forget to Create Page.",
+              type: "success",
+            });
+          }}
+        />
       </div>
 
       {/* ── Preview Panel ──────────────────────────────────────────────────── */}
@@ -752,41 +633,18 @@ export default function CreateCommunityPagePage() {
               </div>
             )}
 
-            {/* Content */}
-            {editor && editor.getHTML() !== "<p></p>" && (
-              <div className="bg-white/5 border border-white/10 rounded-lg p-6">
-                <div
-                  className="prose prose-invert max-w-none
-                    [&_p]:my-2 [&_ul]:my-2 [&_ol]:my-2 [&_li]:my-0
-                    [&_h1]:text-3xl [&_h2]:text-2xl [&_h3]:text-xl
-                    [&_strong]:text-white [&_em]:text-gray-300 [&_a]:text-purple-400
-                    [&_img]:rounded-lg [&_img]:max-w-full [&_blockquote]:border-l-purple-500"
-                  dangerouslySetInnerHTML={{ __html: editor.getHTML() }}
-                />
-              </div>
-            )}
-
-            {/* Empty content placeholder */}
-            {(!editor || editor.getHTML() === "<p></p>") && (
-              <div className="bg-white/5 border border-white/10 rounded-lg p-6 text-center">
-                <p className="text-gray-500 text-sm">
-                  Page content will appear here. Use the editor above to add
-                  content.
-                </p>
-              </div>
-            )}
+            {/* Content Preview */}
+            <div className="bg-white/5 border border-white/10 rounded-lg p-6 text-center">
+              <p className="text-gray-400 text-sm mb-2">
+                Page layout built with Craft.js builder.
+              </p>
+              <p className="text-gray-500 text-xs">
+                To see the full rendered structure, view the live page.
+              </p>
+            </div>
           </div>
         </div>
       )}
-
-      {/* Link alert modal */}
-      <CustomAlert
-        isOpen={alertState.isOpen}
-        onClose={handleCloseAlert}
-        onConfirm={handleConfirmAlert}
-        title={alertState.title}
-        type={alertState.type}
-      />
     </div>
   );
 }
