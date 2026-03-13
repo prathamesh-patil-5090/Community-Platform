@@ -138,6 +138,7 @@ export default function EditCommunityPagePage() {
   /* ── Form state ──────────────────────────────────────────────────────────── */
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
+  const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
   const [icon, setIcon] = useState("📄");
   const [description, setDescription] = useState("");
   const [coverImage, setCoverImage] = useState<string | null>(null);

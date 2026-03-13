@@ -406,7 +406,10 @@ export default function AdminPanelLayout({
         }`}
       >
         {/* Navbar */}
-        <AdminNavbar onMenuToggle={() => setSidebarOpen((v) => !v)} />
+        <AdminNavbar
+          onMenuToggle={() => setSidebarOpen((v) => !v)}
+          onToggleCollapse={() => setIsCollapsed(!isCollapsed)}
+        />
 
         {/* Page content */}
         <main className="flex-1 p-4 lg:p-6">{children}</main>
