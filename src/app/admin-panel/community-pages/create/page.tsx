@@ -13,7 +13,7 @@ import {
   IoLayersOutline,
   IoSaveOutline,
 } from "react-icons/io5";
-import { CraftBuilder } from "../../../components/craft";
+import { CraftBuilder, craftStateRef } from "../../../components/craft";
 import "../../../components/create-post/styles.scss";
 
 function CoverImageUpload({
@@ -240,7 +240,7 @@ export default function CreateCommunityPagePage() {
           icon: icon.trim(),
           description: description.trim(),
           content: "", // Deprecated, we rely on craftData now
-          craftData,
+          craftData: craftStateRef.current,
           coverImage: coverImage || undefined,
           isActive,
           order,
@@ -321,7 +321,7 @@ export default function CreateCommunityPagePage() {
   ];
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto">
+    <div className="space-y-6 w-full">
       {/* Toast */}
       {toast && (
         <div

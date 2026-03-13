@@ -28,6 +28,8 @@ const darkTheme = createTheme({
   },
 });
 
+export const craftStateRef = { current: "{}" };
+
 export interface CraftBuilderProps {
   initialData?: string;
   onSave?: (data: string) => void;
@@ -128,6 +130,9 @@ export const CraftBuilder = ({ initialData, onSave }: CraftBuilderProps) => {
           CraftText,
           CraftButton,
           CraftCard,
+        }}
+        onNodesChange={(query) => {
+          craftStateRef.current = query.serialize();
         }}
       >
         <Box sx={{ display: "flex", flexDirection: "column", width: "100%" }}>

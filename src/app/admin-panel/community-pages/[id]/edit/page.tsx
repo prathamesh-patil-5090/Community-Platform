@@ -14,7 +14,7 @@ import {
   IoReloadOutline,
   IoSaveOutline,
 } from "react-icons/io5";
-import { CraftBuilder } from "../../../../components/craft";
+import { CraftBuilder, craftStateRef } from "../../../../components/craft";
 import "../../../../components/create-post/styles.scss";
 
 interface CommunityPageData {
@@ -201,6 +201,7 @@ export default function EditCommunityPagePage() {
           setOrder(p.order);
           if (p.craftData) {
             setCraftData(p.craftData);
+            craftStateRef.current = p.craftData;
           }
         }
       } catch (err) {
@@ -303,7 +304,7 @@ export default function EditCommunityPagePage() {
           icon: icon.trim(),
           description: description.trim(),
           content: "", // Deprecated, replaced by craftData
-          craftData,
+          craftData: craftStateRef.current,
           coverImage: coverImage || null,
           isActive,
           order,
@@ -419,7 +420,7 @@ export default function EditCommunityPagePage() {
   ];
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto">
+    <div className="space-y-6 w-full">
       {/* Toast */}
       {toastState && (
         <div

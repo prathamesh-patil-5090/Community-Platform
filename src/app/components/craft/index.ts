@@ -1,4 +1,5 @@
 export * from "./CraftBuilder";
+export { craftStateRef } from "./CraftBuilder";
 export * from "./CraftButton";
 export * from "./CraftCard";
 export * from "./CraftContainer";
