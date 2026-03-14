@@ -24,6 +24,7 @@ export interface CraftTextProps {
   color: string;
   variant: "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "body1" | "body2";
   margin: number;
+  customCss?: string;
 }
 
 export const CraftText = ({
@@ -34,6 +35,7 @@ export const CraftText = ({
   color,
   variant,
   margin,
+  customCss = "",
 }: CraftTextProps) => {
   const {
     connectors: { connect, drag },
@@ -46,6 +48,15 @@ export const CraftText = ({
   }));
 
   const textRef = useRef<HTMLSpanElement>(null);
+
+  let customStyles = {};
+  try {
+    if (customCss) {
+      customStyles = JSON.parse(customCss);
+    }
+  } catch {
+    // Ignore invalid JSON
+  }
 
   // Sync internal innerText if the prop changes from the outside (e.g. from Settings)
   useEffect(() => {
@@ -74,6 +85,7 @@ export const CraftText = ({
         outlineOffset: "2px",
         transition: "outline 0.2s",
         minHeight: "24px",
+        ...customStyles,
       }}
     >
       <span
@@ -108,6 +120,7 @@ export const CraftTextSettings = () => {
     color,
     variant,
     margin,
+    customCss,
     actions: { setProp },
   } = useNode((node) => ({
     text: node.data.props.text,
@@ -117,6 +130,7 @@ export const CraftTextSettings = () => {
     color: node.data.props.color,
     variant: node.data.props.variant,
     margin: node.data.props.margin,
+    customCss: node.data.props.customCss,
   }));
 
   return (
@@ -258,6 +272,24 @@ export const CraftTextSettings = () => {
           valueLabelDisplay="auto"
         />
       </FormControl>
+
+      <FormControl>
+        <FormLabel>Custom CSS (JSON for sx prop)</FormLabel>
+        <TextField
+          multiline
+          rows={4}
+          value={customCss || ""}
+          onChange={(e) =>
+            setProp(
+              (props: CraftTextProps) => (props.customCss = e.target.value),
+            )
+          }
+          size="small"
+          fullWidth
+          sx={{ mt: 1 }}
+          placeholder='{"borderRadius": "8px", "boxShadow": "0 4px 8px rgba(0,0,0,0.1)"}'
+        />
+      </FormControl>
     </Box>
   );
 };
@@ -272,6 +304,7 @@ CraftText.craft = {
     color: "#ffffff",
     variant: "body1",
     margin: 0,
+    customCss: "",
   },
   rules: {
     canDrag: () => true,

@@ -2,33 +2,29 @@
 
 import { useNode } from "@craftjs/core";
 import {
-  Box,
-  Card,
-  CardContent,
-  FormControl,
-  FormLabel,
-  Slider,
-  TextField,
+    Box,
+    FormControl,
+    FormLabel,
+    Slider,
+    TextField,
 } from "@mui/material";
 import React from "react";
 
-export interface CraftCardProps {
+export interface CraftSectionProps {
   background?: string;
   padding?: number;
   margin?: number;
-  elevation?: number;
   customCss?: string;
   children?: React.ReactNode;
 }
 
-export const CraftCard = ({
-  background = "#ffffff",
-  padding = 16,
-  margin = 8,
-  elevation = 1,
+export const CraftSection = ({
+  background = "transparent",
+  padding = 40,
+  margin = 0,
   customCss = "",
   children,
-}: CraftCardProps) => {
+}: CraftSectionProps) => {
   const {
     connectors: { connect, drag },
     selected,
@@ -49,56 +45,42 @@ export const CraftCard = ({
 
   return (
     <Box
-      ref={(ref: HTMLDivElement | null) => {
+      component="section"
+      ref={(ref: HTMLElement | null) => {
         if (ref) connect(drag(ref));
       }}
       sx={{
+        background,
+        padding: `${padding}px`,
         margin: `${margin}px`,
-        outline: selected
+        width: "100%",
+        minHeight: "50px",
+        border: selected
           ? "2px solid #2196f3"
           : hovered
             ? "1px dashed #2196f3"
-            : "transparent",
-        outlineOffset: "2px",
-        transition: "outline 0.2s",
-        position: "relative",
+            : "1px dashed transparent",
+        transition: "border 0.2s ease-in-out",
+        boxSizing: "border-box",
+        ...customStyles,
       }}
     >
-      <Card
-        elevation={elevation}
-        sx={{
-          background,
-          minHeight: "50px", // to ensure it's droppable even when empty
-          height: "100%",
-          ...customStyles,
-        }}
-      >
-        <CardContent
-          sx={{
-            padding: `${padding}px !important`, // override MUI's default padding
-            height: "100%",
-          }}
-        >
-          {children}
-        </CardContent>
-      </Card>
+      {children}
     </Box>
   );
 };
 
-export const CraftCardSettings = () => {
+export const CraftSectionSettings = () => {
   const {
     background,
     padding,
     margin,
-    elevation,
     customCss,
     actions: { setProp },
   } = useNode((node) => ({
     background: node.data.props.background,
     padding: node.data.props.padding,
     margin: node.data.props.margin,
-    elevation: node.data.props.elevation,
     customCss: node.data.props.customCss,
   }));
 
@@ -108,10 +90,11 @@ export const CraftCardSettings = () => {
         <FormLabel>Background Color</FormLabel>
         <TextField
           type="color"
-          value={background || "#ffffff"}
+          value={background || "transparent"}
           onChange={(e) =>
             setProp(
-              (props: CraftCardProps) => (props.background = e.target.value),
+              (props: CraftSectionProps) =>
+                (props.background = e.target.value),
             )
           }
           size="small"
@@ -121,31 +104,16 @@ export const CraftCardSettings = () => {
       </FormControl>
 
       <FormControl>
-        <FormLabel>Elevation (Shadow)</FormLabel>
-        <Slider
-          value={elevation || 1}
-          onChange={(_, value) =>
-            setProp(
-              (props: CraftCardProps) => (props.elevation = value as number),
-            )
-          }
-          min={0}
-          max={24}
-          valueLabelDisplay="auto"
-        />
-      </FormControl>
-
-      <FormControl>
         <FormLabel>Padding (px)</FormLabel>
         <Slider
           value={padding || 0}
           onChange={(_, value) =>
             setProp(
-              (props: CraftCardProps) => (props.padding = value as number),
+              (props: CraftSectionProps) => (props.padding = value as number),
             )
           }
           min={0}
-          max={100}
+          max={200}
           valueLabelDisplay="auto"
         />
       </FormControl>
@@ -155,7 +123,9 @@ export const CraftCardSettings = () => {
         <Slider
           value={margin || 0}
           onChange={(_, value) =>
-            setProp((props: CraftCardProps) => (props.margin = value as number))
+            setProp(
+              (props: CraftSectionProps) => (props.margin = value as number),
+            )
           }
           min={0}
           max={100}
@@ -171,7 +141,7 @@ export const CraftCardSettings = () => {
           value={customCss || ""}
           onChange={(e) =>
             setProp(
-              (props: CraftCardProps) => (props.customCss = e.target.value),
+              (props: CraftSectionProps) => (props.customCss = e.target.value),
             )
           }
           size="small"
@@ -184,13 +154,12 @@ export const CraftCardSettings = () => {
   );
 };
 
-CraftCard.craft = {
-  displayName: "Card",
+CraftSection.craft = {
+  displayName: "Section",
   props: {
-    background: "#ffffff",
-    padding: 16,
-    margin: 8,
-    elevation: 1,
+    background: "transparent",
+    padding: 40,
+    margin: 0,
     customCss: "",
   },
   rules: {
@@ -198,6 +167,6 @@ CraftCard.craft = {
     canDrop: () => true,
   },
   related: {
-    settings: CraftCardSettings,
+    settings: CraftSectionSettings,
   },
 };

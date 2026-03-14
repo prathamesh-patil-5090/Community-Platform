@@ -4,6 +4,11 @@ import { Editor, Frame } from "@craftjs/core";
 import { CraftButton } from "./CraftButton";
 import { CraftCard } from "./CraftCard";
 import { CraftContainer } from "./CraftContainer";
+import { CraftDivider } from "./CraftDivider";
+import { CraftGrid } from "./CraftGrid";
+import { CraftImage } from "./CraftImage";
+import { CraftSection } from "./CraftSection";
+import { CraftSpacer } from "./CraftSpacer";
 import { CraftText } from "./CraftText";
 
 export interface CraftViewerProps {
@@ -27,6 +32,11 @@ export const CraftViewer = ({ data }: CraftViewerProps) => {
           CraftText,
           CraftButton,
           CraftCard,
+          CraftDivider,
+          CraftGrid,
+          CraftImage,
+          CraftSection,
+          CraftSpacer,
         }}
       >
         {/* The Frame component consumes the serialized JSON string and rebuilds the node tree */}

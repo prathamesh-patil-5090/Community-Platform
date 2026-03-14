@@ -2,33 +2,33 @@
 
 import { useNode } from "@craftjs/core";
 import {
-  Box,
-  Card,
-  CardContent,
-  FormControl,
-  FormLabel,
-  Slider,
-  TextField,
+    Box,
+    FormControl,
+    FormLabel,
+    Slider,
+    TextField,
 } from "@mui/material";
 import React from "react";
 
-export interface CraftCardProps {
-  background?: string;
+export interface CraftGridProps {
+  columns?: number;
+  gap?: number;
   padding?: number;
   margin?: number;
-  elevation?: number;
+  background?: string;
   customCss?: string;
   children?: React.ReactNode;
 }
 
-export const CraftCard = ({
-  background = "#ffffff",
-  padding = 16,
-  margin = 8,
-  elevation = 1,
+export const CraftGrid = ({
+  columns = 2,
+  gap = 16,
+  padding = 20,
+  margin = 0,
+  background = "transparent",
   customCss = "",
   children,
-}: CraftCardProps) => {
+}: CraftGridProps) => {
   const {
     connectors: { connect, drag },
     selected,
@@ -49,69 +49,90 @@ export const CraftCard = ({
 
   return (
     <Box
-      ref={(ref: HTMLDivElement | null) => {
+      ref={(ref: HTMLElement | null) => {
         if (ref) connect(drag(ref));
       }}
       sx={{
+        display: "grid",
+        gridTemplateColumns: `repeat(${columns}, 1fr)`,
+        gap: `${gap}px`,
+        background,
+        padding: `${padding}px`,
         margin: `${margin}px`,
-        outline: selected
+        minHeight: "50px",
+        border: selected
           ? "2px solid #2196f3"
           : hovered
             ? "1px dashed #2196f3"
-            : "transparent",
-        outlineOffset: "2px",
-        transition: "outline 0.2s",
-        position: "relative",
+            : "1px dashed #e0e0e0",
+        transition: "border 0.2s ease-in-out",
+        boxSizing: "border-box",
+        ...customStyles,
       }}
     >
-      <Card
-        elevation={elevation}
-        sx={{
-          background,
-          minHeight: "50px", // to ensure it's droppable even when empty
-          height: "100%",
-          ...customStyles,
-        }}
-      >
-        <CardContent
-          sx={{
-            padding: `${padding}px !important`, // override MUI's default padding
-            height: "100%",
-          }}
-        >
-          {children}
-        </CardContent>
-      </Card>
+      {children}
     </Box>
   );
 };
 
-export const CraftCardSettings = () => {
+export const CraftGridSettings = () => {
   const {
-    background,
+    columns,
+    gap,
     padding,
     margin,
-    elevation,
+    background,
     customCss,
     actions: { setProp },
   } = useNode((node) => ({
-    background: node.data.props.background,
+    columns: node.data.props.columns,
+    gap: node.data.props.gap,
     padding: node.data.props.padding,
     margin: node.data.props.margin,
-    elevation: node.data.props.elevation,
+    background: node.data.props.background,
     customCss: node.data.props.customCss,
   }));
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
       <FormControl>
+        <FormLabel>Columns</FormLabel>
+        <Slider
+          value={columns || 2}
+          onChange={(_, value) =>
+            setProp(
+              (props: CraftGridProps) => (props.columns = value as number),
+            )
+          }
+          min={1}
+          max={12}
+          step={1}
+          marks
+          valueLabelDisplay="auto"
+        />
+      </FormControl>
+
+      <FormControl>
+        <FormLabel>Grid Gap (px)</FormLabel>
+        <Slider
+          value={gap || 0}
+          onChange={(_, value) =>
+            setProp((props: CraftGridProps) => (props.gap = value as number))
+          }
+          min={0}
+          max={100}
+          valueLabelDisplay="auto"
+        />
+      </FormControl>
+
+      <FormControl>
         <FormLabel>Background Color</FormLabel>
         <TextField
           type="color"
-          value={background || "#ffffff"}
+          value={background || "transparent"}
           onChange={(e) =>
             setProp(
-              (props: CraftCardProps) => (props.background = e.target.value),
+              (props: CraftGridProps) => (props.background = e.target.value),
             )
           }
           size="small"
@@ -121,27 +142,12 @@ export const CraftCardSettings = () => {
       </FormControl>
 
       <FormControl>
-        <FormLabel>Elevation (Shadow)</FormLabel>
-        <Slider
-          value={elevation || 1}
-          onChange={(_, value) =>
-            setProp(
-              (props: CraftCardProps) => (props.elevation = value as number),
-            )
-          }
-          min={0}
-          max={24}
-          valueLabelDisplay="auto"
-        />
-      </FormControl>
-
-      <FormControl>
         <FormLabel>Padding (px)</FormLabel>
         <Slider
           value={padding || 0}
           onChange={(_, value) =>
             setProp(
-              (props: CraftCardProps) => (props.padding = value as number),
+              (props: CraftGridProps) => (props.padding = value as number),
             )
           }
           min={0}
@@ -155,7 +161,9 @@ export const CraftCardSettings = () => {
         <Slider
           value={margin || 0}
           onChange={(_, value) =>
-            setProp((props: CraftCardProps) => (props.margin = value as number))
+            setProp(
+              (props: CraftGridProps) => (props.margin = value as number),
+            )
           }
           min={0}
           max={100}
@@ -171,26 +179,27 @@ export const CraftCardSettings = () => {
           value={customCss || ""}
           onChange={(e) =>
             setProp(
-              (props: CraftCardProps) => (props.customCss = e.target.value),
+              (props: CraftGridProps) => (props.customCss = e.target.value),
             )
           }
           size="small"
           fullWidth
           sx={{ mt: 1 }}
-          placeholder='{"borderRadius": "8px", "boxShadow": "0 4px 8px rgba(0,0,0,0.1)"}'
+          placeholder='{"alignItems": "center"}'
         />
       </FormControl>
     </Box>
   );
 };
 
-CraftCard.craft = {
-  displayName: "Card",
+CraftGrid.craft = {
+  displayName: "Grid",
   props: {
-    background: "#ffffff",
-    padding: 16,
-    margin: 8,
-    elevation: 1,
+    columns: 2,
+    gap: 16,
+    padding: 20,
+    margin: 0,
+    background: "transparent",
     customCss: "",
   },
   rules: {
@@ -198,6 +207,6 @@ CraftCard.craft = {
     canDrop: () => true,
   },
   related: {
-    settings: CraftCardSettings,
+    settings: CraftGridSettings,
   },
 };

@@ -25,6 +25,7 @@ export interface CraftContainerProps {
     | "flex-end"
     | "space-between"
     | "space-around";
+  customCss?: string;
   children?: React.ReactNode;
 }
 
@@ -35,6 +36,7 @@ export const CraftContainer = ({
   flexDirection = "column",
   alignItems = "stretch",
   justifyContent = "flex-start",
+  customCss = "",
   children,
 }: CraftContainerProps) => {
   const {
@@ -45,6 +47,15 @@ export const CraftContainer = ({
     selected: state.events.selected,
     hovered: state.events.hovered,
   }));
+
+  let customStyles = {};
+  try {
+    if (customCss) {
+      customStyles = JSON.parse(customCss);
+    }
+  } catch {
+    // Ignore invalid JSON
+  }
 
   return (
     <Box
@@ -69,6 +80,7 @@ export const CraftContainer = ({
         borderRadius: "4px",
         transition: "border 0.2s ease-in-out",
         position: "relative",
+        ...customStyles,
       }}
     >
       {children}
@@ -84,6 +96,7 @@ export const CraftContainerSettings = () => {
     flexDirection,
     alignItems,
     justifyContent,
+    customCss,
     actions: { setProp },
   } = useNode((node) => ({
     background: node.data.props.background,
@@ -92,6 +105,7 @@ export const CraftContainerSettings = () => {
     flexDirection: node.data.props.flexDirection,
     alignItems: node.data.props.alignItems,
     justifyContent: node.data.props.justifyContent,
+    customCss: node.data.props.customCss,
   }));
 
   return (
@@ -235,6 +249,25 @@ export const CraftContainerSettings = () => {
           />
         </RadioGroup>
       </FormControl>
+
+      <FormControl>
+        <FormLabel>Custom CSS (JSON for sx prop)</FormLabel>
+        <TextField
+          multiline
+          rows={4}
+          value={customCss || ""}
+          onChange={(e) =>
+            setProp(
+              (props: CraftContainerProps) =>
+                (props.customCss = e.target.value),
+            )
+          }
+          size="small"
+          fullWidth
+          sx={{ mt: 1 }}
+          placeholder='{"borderRadius": "8px", "boxShadow": "0 4px 8px rgba(0,0,0,0.1)"}'
+        />
+      </FormControl>
     </Box>
   );
 };
@@ -248,6 +281,7 @@ CraftContainer.craft = {
     flexDirection: "column",
     alignItems: "stretch",
     justifyContent: "flex-start",
+    customCss: "",
   },
   rules: {
     canDrag: () => true,

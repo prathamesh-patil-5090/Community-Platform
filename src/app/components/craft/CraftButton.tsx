@@ -29,6 +29,7 @@ export interface CraftButtonProps {
   href: string;
   fullWidth: boolean;
   margin: number;
+  customCss?: string;
 }
 
 export const CraftButton = ({
@@ -39,6 +40,7 @@ export const CraftButton = ({
 
   fullWidth,
   margin,
+  customCss = "",
 }: CraftButtonProps) => {
   const {
     connectors: { connect, drag },
@@ -48,6 +50,15 @@ export const CraftButton = ({
     selected: state.events.selected,
     hovered: state.events.hovered,
   }));
+
+  let customStyles = {};
+  try {
+    if (customCss) {
+      customStyles = JSON.parse(customCss);
+    }
+  } catch {
+    // Ignore invalid JSON
+  }
 
   return (
     <Box
@@ -66,6 +77,7 @@ export const CraftButton = ({
         transition: "outline 0.2s",
         width: fullWidth ? "100%" : "auto",
         cursor: "grab",
+        ...customStyles,
       }}
     >
       <MuiButton
@@ -94,6 +106,7 @@ export const CraftButtonSettings = () => {
     href,
     fullWidth,
     margin,
+    customCss,
     actions: { setProp },
   } = useNode((node) => ({
     text: node.data.props.text,
@@ -103,6 +116,7 @@ export const CraftButtonSettings = () => {
     href: node.data.props.href,
     fullWidth: node.data.props.fullWidth,
     margin: node.data.props.margin,
+    customCss: node.data.props.customCss,
   }));
 
   return (
@@ -224,6 +238,24 @@ export const CraftButtonSettings = () => {
           valueLabelDisplay="auto"
         />
       </FormControl>
+
+      <FormControl>
+        <FormLabel>Custom CSS (JSON for sx prop)</FormLabel>
+        <TextField
+          multiline
+          rows={4}
+          value={customCss || ""}
+          onChange={(e) =>
+            setProp(
+              (props: CraftButtonProps) => (props.customCss = e.target.value),
+            )
+          }
+          size="small"
+          fullWidth
+          sx={{ mt: 1 }}
+          placeholder='{"borderRadius": "8px", "boxShadow": "0 4px 8px rgba(0,0,0,0.1)"}'
+        />
+      </FormControl>
     </Box>
   );
 };
@@ -238,6 +270,7 @@ CraftButton.craft = {
     href: "",
     fullWidth: false,
     margin: 0,
+    customCss: "",
   },
   rules: {
     canDrag: () => true,

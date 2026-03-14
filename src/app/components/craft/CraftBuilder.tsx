@@ -13,8 +13,13 @@ import {
 import { CraftButton } from "./CraftButton";
 import { CraftCard } from "./CraftCard";
 import { CraftContainer } from "./CraftContainer";
+import { CraftDivider } from "./CraftDivider";
 import { CraftEditorArea } from "./CraftEditorArea";
+import { CraftGrid } from "./CraftGrid";
+import { CraftImage } from "./CraftImage";
+import { CraftSection } from "./CraftSection";
 import { CraftSettingsPanel } from "./CraftSettingsPanel";
+import { CraftSpacer } from "./CraftSpacer";
 import { CraftText } from "./CraftText";
 import { CraftToolbox } from "./CraftToolbox";
 
@@ -130,6 +135,11 @@ export const CraftBuilder = ({ initialData, onSave }: CraftBuilderProps) => {
           CraftText,
           CraftButton,
           CraftCard,
+          CraftDivider,
+          CraftGrid,
+          CraftImage,
+          CraftSection,
+          CraftSpacer,
         }}
         onNodesChange={(query) => {
           craftStateRef.current = query.serialize();

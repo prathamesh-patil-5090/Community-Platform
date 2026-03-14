@@ -1,10 +1,15 @@
 export * from "./CraftBuilder";
-export { craftStateRef } from "./CraftBuilder";
+export { CraftBuilder } from "./CraftBuilder";
 export * from "./CraftButton";
 export * from "./CraftCard";
 export * from "./CraftContainer";
+export * from "./CraftDivider";
 export * from "./CraftEditorArea";
+export * from "./CraftGrid";
+export * from "./CraftImage";
+export * from "./CraftSection";
 export * from "./CraftSettingsPanel";
+export * from "./CraftSpacer";
 export * from "./CraftText";
 export * from "./CraftToolbox";
 export * from "./CraftViewer";
