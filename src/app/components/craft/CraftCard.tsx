@@ -11,6 +11,7 @@ import {
   TextField,
 } from "@mui/material";
 import React from "react";
+import { SettingsAccordion } from "./SettingsAccordion";
 
 export interface CraftCardProps {
   background?: string;
@@ -22,7 +23,7 @@ export interface CraftCardProps {
 }
 
 export const CraftCard = ({
-  background = "#ffffff",
+  background = "#000000",
   padding = 16,
   margin = 8,
   elevation = 1,
@@ -103,91 +104,97 @@ export const CraftCardSettings = () => {
   }));
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-      <FormControl>
-        <FormLabel>Background Color</FormLabel>
-        <TextField
-          type="color"
-          value={background || "#ffffff"}
-          onChange={(e) =>
-            setProp(
-              (props: CraftCardProps) => (props.background = e.target.value),
-            )
-          }
-          size="small"
-          fullWidth
-          sx={{ mt: 1 }}
-        />
-      </FormControl>
+    <>
+      <SettingsAccordion title="Appearance">
+        <FormControl fullWidth sx={{ mb: 2 }}>
+          <FormLabel>Background Color</FormLabel>
+          <TextField
+            type="color"
+            value={background || "#000000"}
+            onChange={(e) =>
+              setProp(
+                (props: CraftCardProps) => (props.background = e.target.value),
+              )
+            }
+            size="small"
+            fullWidth
+            sx={{ mt: 1 }}
+          />
+        </FormControl>
 
-      <FormControl>
-        <FormLabel>Elevation (Shadow)</FormLabel>
-        <Slider
-          value={elevation || 1}
-          onChange={(_, value) =>
-            setProp(
-              (props: CraftCardProps) => (props.elevation = value as number),
-            )
-          }
-          min={0}
-          max={24}
-          valueLabelDisplay="auto"
-        />
-      </FormControl>
+        <FormControl fullWidth sx={{ mb: 2 }}>
+          <FormLabel>Elevation (Shadow)</FormLabel>
+          <Slider
+            value={elevation || 1}
+            onChange={(_, value) =>
+              setProp(
+                (props: CraftCardProps) => (props.elevation = value as number),
+              )
+            }
+            min={0}
+            max={24}
+            valueLabelDisplay="auto"
+          />
+        </FormControl>
 
-      <FormControl>
-        <FormLabel>Padding (px)</FormLabel>
-        <Slider
-          value={padding || 0}
-          onChange={(_, value) =>
-            setProp(
-              (props: CraftCardProps) => (props.padding = value as number),
-            )
-          }
-          min={0}
-          max={100}
-          valueLabelDisplay="auto"
-        />
-      </FormControl>
+        <FormControl fullWidth>
+          <FormLabel>Custom CSS (JSON for sx prop)</FormLabel>
+          <TextField
+            multiline
+            rows={4}
+            value={customCss || ""}
+            onChange={(e) =>
+              setProp(
+                (props: CraftCardProps) => (props.customCss = e.target.value),
+              )
+            }
+            size="small"
+            fullWidth
+            sx={{ mt: 1 }}
+            placeholder='{"borderRadius": "8px", "boxShadow": "0 4px 8px rgba(0,0,0,0.1)"}'
+          />
+        </FormControl>
+      </SettingsAccordion>
 
-      <FormControl>
-        <FormLabel>Margin (px)</FormLabel>
-        <Slider
-          value={margin || 0}
-          onChange={(_, value) =>
-            setProp((props: CraftCardProps) => (props.margin = value as number))
-          }
-          min={0}
-          max={100}
-          valueLabelDisplay="auto"
-        />
-      </FormControl>
+      <SettingsAccordion title="Spacing">
+        <FormControl fullWidth sx={{ mb: 2 }}>
+          <FormLabel>Padding (px)</FormLabel>
+          <Slider
+            value={padding || 0}
+            onChange={(_, value) =>
+              setProp(
+                (props: CraftCardProps) => (props.padding = value as number),
+              )
+            }
+            min={0}
+            max={100}
+            valueLabelDisplay="auto"
+          />
+        </FormControl>
 
-      <FormControl>
-        <FormLabel>Custom CSS (JSON for sx prop)</FormLabel>
-        <TextField
-          multiline
-          rows={4}
-          value={customCss || ""}
-          onChange={(e) =>
-            setProp(
-              (props: CraftCardProps) => (props.customCss = e.target.value),
-            )
-          }
-          size="small"
-          fullWidth
-          sx={{ mt: 1 }}
-          placeholder='{"borderRadius": "8px", "boxShadow": "0 4px 8px rgba(0,0,0,0.1)"}'
-        />
-      </FormControl>
-    </Box>
+        <FormControl fullWidth>
+          <FormLabel>Margin (px)</FormLabel>
+          <Slider
+            value={margin || 0}
+            onChange={(_, value) =>
+              setProp(
+                (props: CraftCardProps) => (props.margin = value as number),
+              )
+            }
+            min={0}
+            max={100}
+            valueLabelDisplay="auto"
+          />
+        </FormControl>
+      </SettingsAccordion>
+    </>
   );
 };
 
 CraftCard.craft = {
   displayName: "Card",
   props: {
-    background: "#ffffff",
+    background: "#000000",
     padding: 16,
     margin: 8,
     elevation: 1,

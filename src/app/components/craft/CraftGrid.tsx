@@ -1,14 +1,9 @@
 "use client";
 
 import { useNode } from "@craftjs/core";
-import {
-    Box,
-    FormControl,
-    FormLabel,
-    Slider,
-    TextField,
-} from "@mui/material";
+import { Box, FormControl, FormLabel, Slider, TextField } from "@mui/material";
 import React from "react";
+import { SettingsAccordion } from "./SettingsAccordion";
 
 export interface CraftGridProps {
   columns?: number;
@@ -25,7 +20,7 @@ export const CraftGrid = ({
   gap = 16,
   padding = 20,
   margin = 0,
-  background = "transparent",
+  background = "#000000",
   customCss = "",
   children,
 }: CraftGridProps) => {
@@ -94,101 +89,107 @@ export const CraftGridSettings = () => {
   }));
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-      <FormControl>
-        <FormLabel>Columns</FormLabel>
-        <Slider
-          value={columns || 2}
-          onChange={(_, value) =>
-            setProp(
-              (props: CraftGridProps) => (props.columns = value as number),
-            )
-          }
-          min={1}
-          max={12}
-          step={1}
-          marks
-          valueLabelDisplay="auto"
-        />
-      </FormControl>
+    <>
+      <SettingsAccordion title="Layout">
+        <FormControl fullWidth sx={{ mb: 2 }}>
+          <FormLabel>Columns</FormLabel>
+          <Slider
+            value={columns || 2}
+            onChange={(_, value) =>
+              setProp(
+                (props: CraftGridProps) => (props.columns = value as number),
+              )
+            }
+            min={1}
+            max={12}
+            step={1}
+            marks
+            valueLabelDisplay="auto"
+          />
+        </FormControl>
 
-      <FormControl>
-        <FormLabel>Grid Gap (px)</FormLabel>
-        <Slider
-          value={gap || 0}
-          onChange={(_, value) =>
-            setProp((props: CraftGridProps) => (props.gap = value as number))
-          }
-          min={0}
-          max={100}
-          valueLabelDisplay="auto"
-        />
-      </FormControl>
+        <FormControl fullWidth>
+          <FormLabel>Grid Gap (px)</FormLabel>
+          <Slider
+            value={gap || 0}
+            onChange={(_, value) =>
+              setProp((props: CraftGridProps) => (props.gap = value as number))
+            }
+            min={0}
+            max={100}
+            valueLabelDisplay="auto"
+          />
+        </FormControl>
+      </SettingsAccordion>
 
-      <FormControl>
-        <FormLabel>Background Color</FormLabel>
-        <TextField
-          type="color"
-          value={background || "transparent"}
-          onChange={(e) =>
-            setProp(
-              (props: CraftGridProps) => (props.background = e.target.value),
-            )
-          }
-          size="small"
-          fullWidth
-          sx={{ mt: 1 }}
-        />
-      </FormControl>
+      <SettingsAccordion title="Appearance">
+        <FormControl fullWidth sx={{ mb: 2 }}>
+          <FormLabel>Background Color</FormLabel>
+          <TextField
+            type="color"
+            value={background || "#000000"}
+            onChange={(e) =>
+              setProp(
+                (props: CraftGridProps) => (props.background = e.target.value),
+              )
+            }
+            size="small"
+            fullWidth
+            sx={{ mt: 1 }}
+          />
+        </FormControl>
 
-      <FormControl>
-        <FormLabel>Padding (px)</FormLabel>
-        <Slider
-          value={padding || 0}
-          onChange={(_, value) =>
-            setProp(
-              (props: CraftGridProps) => (props.padding = value as number),
-            )
-          }
-          min={0}
-          max={100}
-          valueLabelDisplay="auto"
-        />
-      </FormControl>
+        <FormControl fullWidth>
+          <FormLabel>Custom CSS (JSON for sx prop)</FormLabel>
+          <TextField
+            multiline
+            rows={4}
+            value={customCss || ""}
+            onChange={(e) =>
+              setProp(
+                (props: CraftGridProps) => (props.customCss = e.target.value),
+              )
+            }
+            size="small"
+            fullWidth
+            sx={{ mt: 1 }}
+            placeholder='{"alignItems": "center"}'
+          />
+        </FormControl>
+      </SettingsAccordion>
 
-      <FormControl>
-        <FormLabel>Margin (px)</FormLabel>
-        <Slider
-          value={margin || 0}
-          onChange={(_, value) =>
-            setProp(
-              (props: CraftGridProps) => (props.margin = value as number),
-            )
-          }
-          min={0}
-          max={100}
-          valueLabelDisplay="auto"
-        />
-      </FormControl>
+      <SettingsAccordion title="Spacing">
+        <FormControl fullWidth sx={{ mb: 2 }}>
+          <FormLabel>Padding (px)</FormLabel>
+          <Slider
+            value={padding || 0}
+            onChange={(_, value) =>
+              setProp(
+                (props: CraftGridProps) => (props.padding = value as number),
+              )
+            }
+            min={0}
+            max={100}
+            valueLabelDisplay="auto"
+          />
+        </FormControl>
 
-      <FormControl>
-        <FormLabel>Custom CSS (JSON for sx prop)</FormLabel>
-        <TextField
-          multiline
-          rows={4}
-          value={customCss || ""}
-          onChange={(e) =>
-            setProp(
-              (props: CraftGridProps) => (props.customCss = e.target.value),
-            )
-          }
-          size="small"
-          fullWidth
-          sx={{ mt: 1 }}
-          placeholder='{"alignItems": "center"}'
-        />
-      </FormControl>
-    </Box>
+        <FormControl fullWidth>
+          <FormLabel>Margin (px)</FormLabel>
+          <Slider
+            value={margin || 0}
+            onChange={(_, value) =>
+              setProp(
+                (props: CraftGridProps) => (props.margin = value as number),
+              )
+            }
+            min={0}
+            max={100}
+            valueLabelDisplay="auto"
+          />
+        </FormControl>
+      </SettingsAccordion>
+    </>
   );
 };
 
@@ -199,7 +200,7 @@ CraftGrid.craft = {
     gap: 16,
     padding: 20,
     margin: 0,
-    background: "transparent",
+    background: "#000000",
     customCss: "",
   },
   rules: {

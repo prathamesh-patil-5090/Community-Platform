@@ -2,13 +2,14 @@
 
 import { useNode } from "@craftjs/core";
 import {
-    Box,
-    Divider,
-    FormControl,
-    FormLabel,
-    Slider,
-    TextField,
+  Box,
+  Divider,
+  FormControl,
+  FormLabel,
+  Slider,
+  TextField,
 } from "@mui/material";
+import { SettingsAccordion } from "./SettingsAccordion";
 
 export interface CraftDividerProps {
   margin?: number;
@@ -18,7 +19,7 @@ export interface CraftDividerProps {
 
 export const CraftDivider = ({
   margin = 16,
-  color = "rgba(0, 0, 0, 0.12)",
+  color = "rgba(255, 255, 255, 0.2)",
   customCss = "",
 }: CraftDividerProps) => {
   const {
@@ -47,6 +48,7 @@ export const CraftDivider = ({
       sx={{
         py: `${margin}px`,
         width: "100%",
+        flexShrink: 0,
         cursor: "pointer",
         outline: selected
           ? "2px solid #2196f3"
@@ -59,7 +61,7 @@ export const CraftDivider = ({
         ...customStyles,
       }}
     >
-      <Divider sx={{ borderColor: color }} />
+      <Divider sx={{ borderColor: color, borderBottomWidth: "1px" }} />
     </Box>
   );
 };
@@ -77,56 +79,61 @@ export const CraftDividerSettings = () => {
   }));
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-      <FormControl>
-        <FormLabel>Vertical Margin (px)</FormLabel>
-        <Slider
-          value={margin || 0}
-          onChange={(_, value) =>
-            setProp(
-              (props: CraftDividerProps) => (props.margin = value as number),
-            )
-          }
-          min={0}
-          max={100}
-          valueLabelDisplay="auto"
-        />
-      </FormControl>
+    <>
+      <SettingsAccordion title="Spacing">
+        <FormControl fullWidth>
+          <FormLabel>Vertical Margin (px)</FormLabel>
+          <Slider
+            value={margin || 0}
+            onChange={(_, value) =>
+              setProp(
+                (props: CraftDividerProps) => (props.margin = value as number),
+              )
+            }
+            min={0}
+            max={100}
+            valueLabelDisplay="auto"
+          />
+        </FormControl>
+      </SettingsAccordion>
 
-      <FormControl>
-        <FormLabel>Color</FormLabel>
-        <TextField
-          type="color"
-          value={color?.startsWith("rgba") ? "#000000" : color || "#000000"}
-          onChange={(e) =>
-            setProp(
-              (props: CraftDividerProps) => (props.color = e.target.value),
-            )
-          }
-          size="small"
-          fullWidth
-          sx={{ mt: 1 }}
-        />
-      </FormControl>
+      <SettingsAccordion title="Appearance">
+        <FormControl fullWidth sx={{ mb: 2 }}>
+          <FormLabel>Color</FormLabel>
+          <TextField
+            type="color"
+            value={color?.startsWith("rgba") ? "#ffffff" : color || "#ffffff"}
+            onChange={(e) =>
+              setProp(
+                (props: CraftDividerProps) => (props.color = e.target.value),
+              )
+            }
+            size="small"
+            fullWidth
+            sx={{ mt: 1 }}
+          />
+        </FormControl>
 
-      <FormControl>
-        <FormLabel>Custom CSS (JSON for sx prop)</FormLabel>
-        <TextField
-          multiline
-          rows={4}
-          value={customCss || ""}
-          onChange={(e) =>
-            setProp(
-              (props: CraftDividerProps) => (props.customCss = e.target.value),
-            )
-          }
-          size="small"
-          fullWidth
-          sx={{ mt: 1 }}
-          placeholder='{"borderBottomStyle": "dashed"}'
-        />
-      </FormControl>
-    </Box>
+        <FormControl fullWidth>
+          <FormLabel>Custom CSS (JSON for sx prop)</FormLabel>
+          <TextField
+            multiline
+            rows={4}
+            value={customCss || ""}
+            onChange={(e) =>
+              setProp(
+                (props: CraftDividerProps) =>
+                  (props.customCss = e.target.value),
+              )
+            }
+            size="small"
+            fullWidth
+            sx={{ mt: 1 }}
+            placeholder='{"borderBottomStyle": "dashed"}'
+          />
+        </FormControl>
+      </SettingsAccordion>
+    </>
   );
 };
 
@@ -134,7 +141,7 @@ CraftDivider.craft = {
   displayName: "Divider",
   props: {
     margin: 16,
-    color: "rgba(0, 0, 0, 0.12)",
+    color: "rgba(255, 255, 255, 0.2)",
     customCss: "",
   },
   rules: {

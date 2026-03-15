@@ -262,13 +262,6 @@ function AdminNavbar({
         >
           <IoMenuOutline size={24} />
         </button>
-        <button
-          onClick={onToggleCollapse}
-          className="hidden lg:block text-gray-400 hover:text-white transition-colors p-1"
-          aria-label="Toggle sidebar collapse (desktop)"
-        >
-          <IoMenuOutline size={24} />
-        </button>
         <div>
           <h2 className="text-white font-semibold text-lg">{getPageTitle()}</h2>
           <div className="flex items-center gap-1.5 text-xs text-gray-500">

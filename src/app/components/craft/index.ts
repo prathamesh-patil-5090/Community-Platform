@@ -13,3 +13,5 @@ export * from "./CraftSpacer";
 export * from "./CraftText";
 export * from "./CraftToolbox";
 export * from "./CraftViewer";
+export * from "./SettingsAccordion";
+export * from "./CraftKeyboardShortcuts";

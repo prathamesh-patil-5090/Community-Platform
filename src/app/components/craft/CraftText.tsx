@@ -2,7 +2,6 @@
 
 import { useNode } from "@craftjs/core";
 import {
-  Box,
   FormControl,
   FormControlLabel,
   FormLabel,
@@ -15,13 +14,14 @@ import {
   Typography,
 } from "@mui/material";
 import { useEffect, useRef } from "react";
+import { SettingsAccordion } from "./SettingsAccordion";
 
 export interface CraftTextProps {
   text: string;
   fontSize: number;
   textAlign: "left" | "center" | "right" | "justify";
   fontWeight: "normal" | "bold" | "500" | "600" | "700";
-  color: string;
+  color?: string;
   variant: "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "body1" | "body2";
   margin: number;
   customCss?: string;
@@ -32,7 +32,7 @@ export const CraftText = ({
   fontSize,
   textAlign,
   fontWeight,
-  color,
+  color = "#ffffff",
   variant,
   margin,
   customCss = "",
@@ -134,163 +134,171 @@ export const CraftTextSettings = () => {
   }));
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-      <FormControl>
-        <FormLabel>Text Content</FormLabel>
-        <TextField
-          multiline
-          minRows={2}
-          value={text || ""}
-          onChange={(e) =>
-            setProp((props: CraftTextProps) => (props.text = e.target.value))
-          }
-          size="small"
-          fullWidth
-          sx={{ mt: 1 }}
-        />
-      </FormControl>
-
-      <FormControl>
-        <FormLabel>Typography Variant</FormLabel>
-        <Select
-          size="small"
-          value={variant || "body1"}
-          onChange={(e) =>
-            setProp(
-              (props: CraftTextProps) =>
-                (props.variant = e.target.value as CraftTextProps["variant"]),
-            )
-          }
-          sx={{ mt: 1 }}
-        >
-          <MenuItem value="h1">Heading 1 (h1)</MenuItem>
-          <MenuItem value="h2">Heading 2 (h2)</MenuItem>
-          <MenuItem value="h3">Heading 3 (h3)</MenuItem>
-          <MenuItem value="h4">Heading 4 (h4)</MenuItem>
-          <MenuItem value="h5">Heading 5 (h5)</MenuItem>
-          <MenuItem value="h6">Heading 6 (h6)</MenuItem>
-          <MenuItem value="body1">Body 1</MenuItem>
-          <MenuItem value="body2">Body 2</MenuItem>
-        </Select>
-      </FormControl>
-
-      <FormControl>
-        <FormLabel>Color</FormLabel>
-        <TextField
-          type="color"
-          value={color || "#000000"}
-          onChange={(e) =>
-            setProp((props: CraftTextProps) => (props.color = e.target.value))
-          }
-          size="small"
-          fullWidth
-          sx={{ mt: 1 }}
-        />
-      </FormControl>
-
-      <FormControl>
-        <FormLabel>Font Size (px)</FormLabel>
-        <Slider
-          value={fontSize || 16}
-          onChange={(_, value) =>
-            setProp(
-              (props: CraftTextProps) => (props.fontSize = value as number),
-            )
-          }
-          min={8}
-          max={120}
-          valueLabelDisplay="auto"
-        />
-      </FormControl>
-
-      <FormControl>
-        <FormLabel>Font Weight</FormLabel>
-        <Select
-          size="small"
-          value={fontWeight || "normal"}
-          onChange={(e) =>
-            setProp(
-              (props: CraftTextProps) =>
-                (props.fontWeight = e.target
-                  .value as CraftTextProps["fontWeight"]),
-            )
-          }
-          sx={{ mt: 1 }}
-        >
-          <MenuItem value="normal">Normal</MenuItem>
-          <MenuItem value="500">Medium (500)</MenuItem>
-          <MenuItem value="600">Semi-Bold (600)</MenuItem>
-          <MenuItem value="bold">Bold (700)</MenuItem>
-        </Select>
-      </FormControl>
-
-      <FormControl>
-        <FormLabel>Text Align</FormLabel>
-        <RadioGroup
-          row
-          value={textAlign || "left"}
-          onChange={(e) =>
-            setProp(
-              (props: CraftTextProps) =>
-                (props.textAlign = e.target
-                  .value as CraftTextProps["textAlign"]),
-            )
-          }
-        >
-          <FormControlLabel
-            value="left"
-            control={<Radio size="small" />}
-            label="Left"
+    <>
+      <SettingsAccordion title="Typography">
+        <FormControl fullWidth sx={{ mb: 2 }}>
+          <FormLabel>Text Content</FormLabel>
+          <TextField
+            multiline
+            minRows={2}
+            value={text || ""}
+            onChange={(e) =>
+              setProp((props: CraftTextProps) => (props.text = e.target.value))
+            }
+            size="small"
+            fullWidth
+            sx={{ mt: 1 }}
           />
-          <FormControlLabel
-            value="center"
-            control={<Radio size="small" />}
-            label="Center"
-          />
-          <FormControlLabel
-            value="right"
-            control={<Radio size="small" />}
-            label="Right"
-          />
-          <FormControlLabel
-            value="justify"
-            control={<Radio size="small" />}
-            label="Justify"
-          />
-        </RadioGroup>
-      </FormControl>
+        </FormControl>
 
-      <FormControl>
-        <FormLabel>Margin (px)</FormLabel>
-        <Slider
-          value={margin || 0}
-          onChange={(_, value) =>
-            setProp((props: CraftTextProps) => (props.margin = value as number))
-          }
-          min={0}
-          max={100}
-          valueLabelDisplay="auto"
-        />
-      </FormControl>
+        <FormControl fullWidth sx={{ mb: 2 }}>
+          <FormLabel>Typography Variant</FormLabel>
+          <Select
+            size="small"
+            value={variant || "body1"}
+            onChange={(e) =>
+              setProp(
+                (props: CraftTextProps) =>
+                  (props.variant = e.target.value as CraftTextProps["variant"]),
+              )
+            }
+            sx={{ mt: 1 }}
+          >
+            <MenuItem value="h1">Heading 1 (h1)</MenuItem>
+            <MenuItem value="h2">Heading 2 (h2)</MenuItem>
+            <MenuItem value="h3">Heading 3 (h3)</MenuItem>
+            <MenuItem value="h4">Heading 4 (h4)</MenuItem>
+            <MenuItem value="h5">Heading 5 (h5)</MenuItem>
+            <MenuItem value="h6">Heading 6 (h6)</MenuItem>
+            <MenuItem value="body1">Body 1</MenuItem>
+            <MenuItem value="body2">Body 2</MenuItem>
+          </Select>
+        </FormControl>
 
-      <FormControl>
-        <FormLabel>Custom CSS (JSON for sx prop)</FormLabel>
-        <TextField
-          multiline
-          rows={4}
-          value={customCss || ""}
-          onChange={(e) =>
-            setProp(
-              (props: CraftTextProps) => (props.customCss = e.target.value),
-            )
-          }
-          size="small"
-          fullWidth
-          sx={{ mt: 1 }}
-          placeholder='{"borderRadius": "8px", "boxShadow": "0 4px 8px rgba(0,0,0,0.1)"}'
-        />
-      </FormControl>
-    </Box>
+        <FormControl fullWidth sx={{ mb: 2 }}>
+          <FormLabel>Font Size (px)</FormLabel>
+          <Slider
+            value={fontSize || 16}
+            onChange={(_, value) =>
+              setProp(
+                (props: CraftTextProps) => (props.fontSize = value as number),
+              )
+            }
+            min={8}
+            max={120}
+            valueLabelDisplay="auto"
+          />
+        </FormControl>
+
+        <FormControl fullWidth sx={{ mb: 2 }}>
+          <FormLabel>Font Weight</FormLabel>
+          <Select
+            size="small"
+            value={fontWeight || "normal"}
+            onChange={(e) =>
+              setProp(
+                (props: CraftTextProps) =>
+                  (props.fontWeight = e.target
+                    .value as CraftTextProps["fontWeight"]),
+              )
+            }
+            sx={{ mt: 1 }}
+          >
+            <MenuItem value="normal">Normal</MenuItem>
+            <MenuItem value="500">Medium (500)</MenuItem>
+            <MenuItem value="600">Semi-Bold (600)</MenuItem>
+            <MenuItem value="bold">Bold (700)</MenuItem>
+          </Select>
+        </FormControl>
+
+        <FormControl fullWidth>
+          <FormLabel>Text Align</FormLabel>
+          <RadioGroup
+            row
+            value={textAlign || "left"}
+            onChange={(e) =>
+              setProp(
+                (props: CraftTextProps) =>
+                  (props.textAlign = e.target
+                    .value as CraftTextProps["textAlign"]),
+              )
+            }
+          >
+            <FormControlLabel
+              value="left"
+              control={<Radio size="small" />}
+              label="Left"
+            />
+            <FormControlLabel
+              value="center"
+              control={<Radio size="small" />}
+              label="Center"
+            />
+            <FormControlLabel
+              value="right"
+              control={<Radio size="small" />}
+              label="Right"
+            />
+            <FormControlLabel
+              value="justify"
+              control={<Radio size="small" />}
+              label="Justify"
+            />
+          </RadioGroup>
+        </FormControl>
+      </SettingsAccordion>
+
+      <SettingsAccordion title="Appearance">
+        <FormControl fullWidth sx={{ mb: 2 }}>
+          <FormLabel>Color</FormLabel>
+          <TextField
+            type="color"
+            value={color || "#ffffff"}
+            onChange={(e) =>
+              setProp((props: CraftTextProps) => (props.color = e.target.value))
+            }
+            size="small"
+            fullWidth
+            sx={{ mt: 1 }}
+          />
+        </FormControl>
+
+        <FormControl fullWidth>
+          <FormLabel>Custom CSS (JSON for sx prop)</FormLabel>
+          <TextField
+            multiline
+            rows={4}
+            value={customCss || ""}
+            onChange={(e) =>
+              setProp(
+                (props: CraftTextProps) => (props.customCss = e.target.value),
+              )
+            }
+            size="small"
+            fullWidth
+            sx={{ mt: 1 }}
+            placeholder='{"borderRadius": "8px", "boxShadow": "0 4px 8px rgba(0,0,0,0.1)"}'
+          />
+        </FormControl>
+      </SettingsAccordion>
+
+      <SettingsAccordion title="Spacing">
+        <FormControl fullWidth>
+          <FormLabel>Margin (px)</FormLabel>
+          <Slider
+            value={margin || 0}
+            onChange={(_, value) =>
+              setProp(
+                (props: CraftTextProps) => (props.margin = value as number),
+              )
+            }
+            min={0}
+            max={100}
+            valueLabelDisplay="auto"
+          />
+        </FormControl>
+      </SettingsAccordion>
+    </>
   );
 };
 

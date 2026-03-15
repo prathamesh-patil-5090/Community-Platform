@@ -96,7 +96,7 @@ export const CraftToolbox = () => {
                   fontSize={32}
                   textAlign="left"
                   fontWeight="bold"
-                  color="#000000"
+                  color="#ffffff"
                   variant="h2"
                   margin={0}
                 />,
@@ -120,7 +120,7 @@ export const CraftToolbox = () => {
                   fontSize={16}
                   textAlign="left"
                   fontWeight="normal"
-                  color="#000000"
+                  color="#ffffff"
                   variant="body1"
                   margin={0}
                 />,

@@ -2,13 +2,17 @@
 
 import { useNode } from "@craftjs/core";
 import {
-    Box,
-    FormControl,
-    FormLabel,
-    MenuItem,
-    Select,
-    TextField,
+  Box,
+  Button,
+  CircularProgress,
+  FormControl,
+  FormLabel,
+  MenuItem,
+  Select,
+  TextField,
 } from "@mui/material";
+import React, { useRef, useState } from "react";
+import { SettingsAccordion } from "./SettingsAccordion";
 
 export interface CraftImageProps {
   src?: string;
@@ -89,101 +93,170 @@ export const CraftImageSettings = () => {
     customCss: node.data.props.customCss,
   }));
 
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      // Uses the same upload endpoint as the CoverImage component
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) {
+        throw new Error("Upload failed");
+      }
+
+      const data = await res.json();
+      const imageUrl = data.url || data.secure_url;
+      if (imageUrl) {
+        setProp((props: CraftImageProps) => (props.src = imageUrl));
+      }
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      alert("Failed to upload image.");
+    } finally {
+      setIsUploading(false);
+      // Reset input so the user can upload the same file again if they want
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
+  };
+
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-      <FormControl>
-        <FormLabel>Image URL (src)</FormLabel>
-        <TextField
-          value={src || ""}
-          onChange={(e) =>
-            setProp((props: CraftImageProps) => (props.src = e.target.value))
-          }
-          size="small"
-          fullWidth
-          sx={{ mt: 1 }}
-        />
-      </FormControl>
+    <>
+      <SettingsAccordion title="Source">
+        <FormControl fullWidth sx={{ mb: 2 }}>
+          <FormLabel>Upload Image</FormLabel>
+          <input
+            type="file"
+            accept="image/*"
+            hidden
+            ref={fileInputRef}
+            onChange={handleImageUpload}
+          />
+          <Button
+            variant="outlined"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={isUploading}
+            sx={{ mt: 1 }}
+          >
+            {isUploading ? <CircularProgress size={24} /> : "Choose Image"}
+          </Button>
+        </FormControl>
 
-      <FormControl>
-        <FormLabel>Alt Text</FormLabel>
-        <TextField
-          value={alt || ""}
-          onChange={(e) =>
-            setProp((props: CraftImageProps) => (props.alt = e.target.value))
-          }
-          size="small"
-          fullWidth
-          sx={{ mt: 1 }}
-        />
-      </FormControl>
+        <FormControl fullWidth sx={{ mb: 2 }}>
+          <FormLabel>Image URL (src)</FormLabel>
+          <TextField
+            value={src || ""}
+            onChange={(e) =>
+              setProp((props: CraftImageProps) => (props.src = e.target.value))
+            }
+            size="small"
+            fullWidth
+            sx={{ mt: 1 }}
+          />
+        </FormControl>
 
-      <FormControl>
-        <FormLabel>Width</FormLabel>
-        <TextField
-          value={width || ""}
-          onChange={(e) =>
-            setProp((props: CraftImageProps) => (props.width = e.target.value))
-          }
-          size="small"
-          fullWidth
-          sx={{ mt: 1 }}
-          placeholder="e.g., 100%, 300px"
-        />
-      </FormControl>
+        <FormControl fullWidth>
+          <FormLabel>Alt Text</FormLabel>
+          <TextField
+            value={alt || ""}
+            onChange={(e) =>
+              setProp((props: CraftImageProps) => (props.alt = e.target.value))
+            }
+            size="small"
+            fullWidth
+            sx={{ mt: 1 }}
+          />
+        </FormControl>
+      </SettingsAccordion>
 
-      <FormControl>
-        <FormLabel>Height</FormLabel>
-        <TextField
-          value={height || ""}
-          onChange={(e) =>
-            setProp((props: CraftImageProps) => (props.height = e.target.value))
-          }
-          size="small"
-          fullWidth
-          sx={{ mt: 1 }}
-          placeholder="e.g., auto, 200px"
-        />
-      </FormControl>
+      <SettingsAccordion title="Dimensions">
+        <FormControl fullWidth sx={{ mb: 2 }}>
+          <FormLabel>Width</FormLabel>
+          <TextField
+            value={width || ""}
+            onChange={(e) =>
+              setProp(
+                (props: CraftImageProps) => (props.width = e.target.value),
+              )
+            }
+            size="small"
+            fullWidth
+            sx={{ mt: 1 }}
+            placeholder="e.g., 100%, 300px"
+          />
+        </FormControl>
 
-      <FormControl>
-        <FormLabel>Object Fit</FormLabel>
-        <Select
-          value={objectFit || "cover"}
-          onChange={(e) =>
-            setProp(
-              (props: CraftImageProps) =>
-                (props.objectFit = e.target.value as CraftImageProps["objectFit"])
-            )
-          }
-          size="small"
-          sx={{ mt: 1 }}
-        >
-          <MenuItem value="fill">Fill</MenuItem>
-          <MenuItem value="contain">Contain</MenuItem>
-          <MenuItem value="cover">Cover</MenuItem>
-          <MenuItem value="none">None</MenuItem>
-          <MenuItem value="scale-down">Scale Down</MenuItem>
-        </Select>
-      </FormControl>
+        <FormControl fullWidth sx={{ mb: 2 }}>
+          <FormLabel>Height</FormLabel>
+          <TextField
+            value={height || ""}
+            onChange={(e) =>
+              setProp(
+                (props: CraftImageProps) => (props.height = e.target.value),
+              )
+            }
+            size="small"
+            fullWidth
+            sx={{ mt: 1 }}
+            placeholder="e.g., auto, 200px"
+          />
+        </FormControl>
 
-      <FormControl>
-        <FormLabel>Custom CSS (JSON for sx prop)</FormLabel>
-        <TextField
-          multiline
-          rows={4}
-          value={customCss || ""}
-          onChange={(e) =>
-            setProp(
-              (props: CraftImageProps) => (props.customCss = e.target.value)
-            )
-          }
-          size="small"
-          fullWidth
-          sx={{ mt: 1 }}
-          placeholder='{"borderRadius": "8px"}'
-        />
-      </FormControl>
-    </Box>
+        <FormControl fullWidth>
+          <FormLabel>Object Fit</FormLabel>
+          <Select
+            value={objectFit || "cover"}
+            onChange={(e) =>
+              setProp(
+                (props: CraftImageProps) =>
+                  (props.objectFit = e.target
+                    .value as CraftImageProps["objectFit"]),
+              )
+            }
+            size="small"
+            sx={{ mt: 1 }}
+          >
+            <MenuItem value="fill">Fill</MenuItem>
+            <MenuItem value="contain">Contain</MenuItem>
+            <MenuItem value="cover">Cover</MenuItem>
+            <MenuItem value="none">None</MenuItem>
+            <MenuItem value="scale-down">Scale Down</MenuItem>
+          </Select>
+        </FormControl>
+      </SettingsAccordion>
+
+      <SettingsAccordion title="Appearance">
+        <FormControl fullWidth>
+          <FormLabel>Custom CSS (JSON for sx prop)</FormLabel>
+          <TextField
+            multiline
+            rows={4}
+            value={customCss || ""}
+            onChange={(e) =>
+              setProp(
+                (props: CraftImageProps) => (props.customCss = e.target.value),
+              )
+            }
+            size="small"
+            fullWidth
+            sx={{ mt: 1 }}
+            placeholder='{"borderRadius": "8px"}'
+          />
+        </FormControl>
+      </SettingsAccordion>
+    </>
   );
 };
 

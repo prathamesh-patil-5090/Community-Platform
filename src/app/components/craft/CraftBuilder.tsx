@@ -22,6 +22,7 @@ import { CraftSettingsPanel } from "./CraftSettingsPanel";
 import { CraftSpacer } from "./CraftSpacer";
 import { CraftText } from "./CraftText";
 import { CraftToolbox } from "./CraftToolbox";
+import { CraftKeyboardShortcuts } from "./CraftKeyboardShortcuts";
 
 const darkTheme = createTheme({
   palette: {
@@ -145,6 +146,7 @@ export const CraftBuilder = ({ initialData, onSave }: CraftBuilderProps) => {
           craftStateRef.current = query.serialize();
         }}
       >
+        <CraftKeyboardShortcuts />
         <Box sx={{ display: "flex", flexDirection: "column", width: "100%" }}>
           <BuilderTopbar onSave={onSave} />
 

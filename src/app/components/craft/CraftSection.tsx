@@ -1,14 +1,9 @@
 "use client";
 
 import { useNode } from "@craftjs/core";
-import {
-    Box,
-    FormControl,
-    FormLabel,
-    Slider,
-    TextField,
-} from "@mui/material";
+import { Box, FormControl, FormLabel, Slider, TextField } from "@mui/material";
 import React from "react";
+import { SettingsAccordion } from "./SettingsAccordion";
 
 export interface CraftSectionProps {
   background?: string;
@@ -19,7 +14,7 @@ export interface CraftSectionProps {
 }
 
 export const CraftSection = ({
-  background = "transparent",
+  background = "#000000",
   padding = 40,
   margin = 0,
   customCss = "",
@@ -85,79 +80,84 @@ export const CraftSectionSettings = () => {
   }));
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-      <FormControl>
-        <FormLabel>Background Color</FormLabel>
-        <TextField
-          type="color"
-          value={background || "transparent"}
-          onChange={(e) =>
-            setProp(
-              (props: CraftSectionProps) =>
-                (props.background = e.target.value),
-            )
-          }
-          size="small"
-          fullWidth
-          sx={{ mt: 1 }}
-        />
-      </FormControl>
+    <>
+      <SettingsAccordion title="Appearance">
+        <FormControl fullWidth sx={{ mb: 2 }}>
+          <FormLabel>Background Color</FormLabel>
+          <TextField
+            type="color"
+            value={background || "#000000"}
+            onChange={(e) =>
+              setProp(
+                (props: CraftSectionProps) =>
+                  (props.background = e.target.value),
+              )
+            }
+            size="small"
+            fullWidth
+            sx={{ mt: 1 }}
+          />
+        </FormControl>
 
-      <FormControl>
-        <FormLabel>Padding (px)</FormLabel>
-        <Slider
-          value={padding || 0}
-          onChange={(_, value) =>
-            setProp(
-              (props: CraftSectionProps) => (props.padding = value as number),
-            )
-          }
-          min={0}
-          max={200}
-          valueLabelDisplay="auto"
-        />
-      </FormControl>
+        <FormControl fullWidth>
+          <FormLabel>Custom CSS (JSON for sx prop)</FormLabel>
+          <TextField
+            multiline
+            rows={4}
+            value={customCss || ""}
+            onChange={(e) =>
+              setProp(
+                (props: CraftSectionProps) =>
+                  (props.customCss = e.target.value),
+              )
+            }
+            size="small"
+            fullWidth
+            sx={{ mt: 1 }}
+            placeholder='{"borderRadius": "8px", "boxShadow": "0 4px 8px rgba(0,0,0,0.1)"}'
+          />
+        </FormControl>
+      </SettingsAccordion>
 
-      <FormControl>
-        <FormLabel>Margin (px)</FormLabel>
-        <Slider
-          value={margin || 0}
-          onChange={(_, value) =>
-            setProp(
-              (props: CraftSectionProps) => (props.margin = value as number),
-            )
-          }
-          min={0}
-          max={100}
-          valueLabelDisplay="auto"
-        />
-      </FormControl>
+      <SettingsAccordion title="Spacing">
+        <FormControl fullWidth sx={{ mb: 2 }}>
+          <FormLabel>Padding (px)</FormLabel>
+          <Slider
+            value={padding || 0}
+            onChange={(_, value) =>
+              setProp(
+                (props: CraftSectionProps) => (props.padding = value as number),
+              )
+            }
+            min={0}
+            max={200}
+            valueLabelDisplay="auto"
+          />
+        </FormControl>
 
-      <FormControl>
-        <FormLabel>Custom CSS (JSON for sx prop)</FormLabel>
-        <TextField
-          multiline
-          rows={4}
-          value={customCss || ""}
-          onChange={(e) =>
-            setProp(
-              (props: CraftSectionProps) => (props.customCss = e.target.value),
-            )
-          }
-          size="small"
-          fullWidth
-          sx={{ mt: 1 }}
-          placeholder='{"borderRadius": "8px", "boxShadow": "0 4px 8px rgba(0,0,0,0.1)"}'
-        />
-      </FormControl>
-    </Box>
+        <FormControl fullWidth>
+          <FormLabel>Margin (px)</FormLabel>
+          <Slider
+            value={margin || 0}
+            onChange={(_, value) =>
+              setProp(
+                (props: CraftSectionProps) => (props.margin = value as number),
+              )
+            }
+            min={0}
+            max={100}
+            valueLabelDisplay="auto"
+          />
+        </FormControl>
+      </SettingsAccordion>
+    </>
   );
 };
 
 CraftSection.craft = {
   displayName: "Section",
   props: {
-    background: "transparent",
+    background: "#000000",
     padding: 40,
     margin: 0,
     customCss: "",

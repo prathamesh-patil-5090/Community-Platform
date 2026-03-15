@@ -13,6 +13,7 @@ import {
   Switch,
   TextField,
 } from "@mui/material";
+import { SettingsAccordion } from "./SettingsAccordion";
 
 export interface CraftButtonProps {
   text: string;
@@ -120,143 +121,155 @@ export const CraftButtonSettings = () => {
   }));
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-      <FormControl>
-        <FormLabel>Button Text</FormLabel>
-        <TextField
-          value={text || ""}
-          onChange={(e) =>
-            setProp((props: CraftButtonProps) => (props.text = e.target.value))
-          }
-          size="small"
-          fullWidth
-          sx={{ mt: 1 }}
-        />
-      </FormControl>
+    <>
+      <SettingsAccordion title="General">
+        <FormControl fullWidth sx={{ mb: 2 }}>
+          <FormLabel>Button Text</FormLabel>
+          <TextField
+            value={text || ""}
+            onChange={(e) =>
+              setProp(
+                (props: CraftButtonProps) => (props.text = e.target.value),
+              )
+            }
+            size="small"
+            fullWidth
+            sx={{ mt: 1 }}
+          />
+        </FormControl>
 
-      <FormControl>
-        <FormLabel>Link URL</FormLabel>
-        <TextField
-          value={href || ""}
-          onChange={(e) =>
-            setProp((props: CraftButtonProps) => (props.href = e.target.value))
-          }
-          size="small"
-          placeholder="https://..."
-          fullWidth
-          sx={{ mt: 1 }}
-        />
-      </FormControl>
+        <FormControl fullWidth>
+          <FormLabel>Link URL</FormLabel>
+          <TextField
+            value={href || ""}
+            onChange={(e) =>
+              setProp(
+                (props: CraftButtonProps) => (props.href = e.target.value),
+              )
+            }
+            size="small"
+            placeholder="https://..."
+            fullWidth
+            sx={{ mt: 1 }}
+          />
+        </FormControl>
+      </SettingsAccordion>
 
-      <FormControl>
-        <FormLabel>Variant</FormLabel>
-        <Select
-          size="small"
-          value={variant || "contained"}
-          onChange={(e) =>
-            setProp(
-              (props: CraftButtonProps) =>
-                (props.variant = e.target.value as CraftButtonProps["variant"]),
-            )
-          }
-          sx={{ mt: 1 }}
-        >
-          <MenuItem value="text">Text</MenuItem>
-          <MenuItem value="outlined">Outlined</MenuItem>
-          <MenuItem value="contained">Contained</MenuItem>
-        </Select>
-      </FormControl>
-
-      <FormControl>
-        <FormLabel>Color</FormLabel>
-        <Select
-          size="small"
-          value={color || "primary"}
-          onChange={(e) =>
-            setProp(
-              (props: CraftButtonProps) =>
-                (props.color = e.target.value as CraftButtonProps["color"]),
-            )
-          }
-          sx={{ mt: 1 }}
-        >
-          <MenuItem value="inherit">Inherit</MenuItem>
-          <MenuItem value="primary">Primary</MenuItem>
-          <MenuItem value="secondary">Secondary</MenuItem>
-          <MenuItem value="success">Success</MenuItem>
-          <MenuItem value="error">Error</MenuItem>
-          <MenuItem value="info">Info</MenuItem>
-          <MenuItem value="warning">Warning</MenuItem>
-        </Select>
-      </FormControl>
-
-      <FormControl>
-        <FormLabel>Size</FormLabel>
-        <Select
-          size="small"
-          value={size || "medium"}
-          onChange={(e) =>
-            setProp(
-              (props: CraftButtonProps) =>
-                (props.size = e.target.value as CraftButtonProps["size"]),
-            )
-          }
-          sx={{ mt: 1 }}
-        >
-          <MenuItem value="small">Small</MenuItem>
-          <MenuItem value="medium">Medium</MenuItem>
-          <MenuItem value="large">Large</MenuItem>
-        </Select>
-      </FormControl>
-
-      <FormControlLabel
-        control={
-          <Switch
-            checked={fullWidth || false}
+      <SettingsAccordion title="Appearance">
+        <FormControl fullWidth sx={{ mb: 2 }}>
+          <FormLabel>Variant</FormLabel>
+          <Select
+            size="small"
+            value={variant || "contained"}
             onChange={(e) =>
               setProp(
                 (props: CraftButtonProps) =>
-                  (props.fullWidth = e.target.checked),
+                  (props.variant = e.target
+                    .value as CraftButtonProps["variant"]),
               )
             }
+            sx={{ mt: 1 }}
+          >
+            <MenuItem value="text">Text</MenuItem>
+            <MenuItem value="outlined">Outlined</MenuItem>
+            <MenuItem value="contained">Contained</MenuItem>
+          </Select>
+        </FormControl>
+
+        <FormControl fullWidth sx={{ mb: 2 }}>
+          <FormLabel>Color</FormLabel>
+          <Select
+            size="small"
+            value={color || "primary"}
+            onChange={(e) =>
+              setProp(
+                (props: CraftButtonProps) =>
+                  (props.color = e.target.value as CraftButtonProps["color"]),
+              )
+            }
+            sx={{ mt: 1 }}
+          >
+            <MenuItem value="inherit">Inherit</MenuItem>
+            <MenuItem value="primary">Primary</MenuItem>
+            <MenuItem value="secondary">Secondary</MenuItem>
+            <MenuItem value="success">Success</MenuItem>
+            <MenuItem value="error">Error</MenuItem>
+            <MenuItem value="info">Info</MenuItem>
+            <MenuItem value="warning">Warning</MenuItem>
+          </Select>
+        </FormControl>
+
+        <FormControl fullWidth sx={{ mb: 2 }}>
+          <FormLabel>Size</FormLabel>
+          <Select
+            size="small"
+            value={size || "medium"}
+            onChange={(e) =>
+              setProp(
+                (props: CraftButtonProps) =>
+                  (props.size = e.target.value as CraftButtonProps["size"]),
+              )
+            }
+            sx={{ mt: 1 }}
+          >
+            <MenuItem value="small">Small</MenuItem>
+            <MenuItem value="medium">Medium</MenuItem>
+            <MenuItem value="large">Large</MenuItem>
+          </Select>
+        </FormControl>
+
+        <FormControlLabel
+          control={
+            <Switch
+              checked={fullWidth || false}
+              onChange={(e) =>
+                setProp(
+                  (props: CraftButtonProps) =>
+                    (props.fullWidth = e.target.checked),
+                )
+              }
+            />
+          }
+          label="Full Width"
+          sx={{ mb: 2, display: "block" }}
+        />
+
+        <FormControl fullWidth>
+          <FormLabel>Custom CSS (JSON for sx prop)</FormLabel>
+          <TextField
+            multiline
+            rows={4}
+            value={customCss || ""}
+            onChange={(e) =>
+              setProp(
+                (props: CraftButtonProps) => (props.customCss = e.target.value),
+              )
+            }
+            size="small"
+            fullWidth
+            sx={{ mt: 1 }}
+            placeholder='{"borderRadius": "8px", "boxShadow": "0 4px 8px rgba(0,0,0,0.1)"}'
           />
-        }
-        label="Full Width"
-      />
+        </FormControl>
+      </SettingsAccordion>
 
-      <FormControl>
-        <FormLabel>Margin (px)</FormLabel>
-        <Slider
-          value={margin || 0}
-          onChange={(_, value) =>
-            setProp(
-              (props: CraftButtonProps) => (props.margin = value as number),
-            )
-          }
-          min={0}
-          max={100}
-          valueLabelDisplay="auto"
-        />
-      </FormControl>
-
-      <FormControl>
-        <FormLabel>Custom CSS (JSON for sx prop)</FormLabel>
-        <TextField
-          multiline
-          rows={4}
-          value={customCss || ""}
-          onChange={(e) =>
-            setProp(
-              (props: CraftButtonProps) => (props.customCss = e.target.value),
-            )
-          }
-          size="small"
-          fullWidth
-          sx={{ mt: 1 }}
-          placeholder='{"borderRadius": "8px", "boxShadow": "0 4px 8px rgba(0,0,0,0.1)"}'
-        />
-      </FormControl>
-    </Box>
+      <SettingsAccordion title="Spacing">
+        <FormControl fullWidth>
+          <FormLabel>Margin (px)</FormLabel>
+          <Slider
+            value={margin || 0}
+            onChange={(_, value) =>
+              setProp(
+                (props: CraftButtonProps) => (props.margin = value as number),
+              )
+            }
+            min={0}
+            max={100}
+            valueLabelDisplay="auto"
+          />
+        </FormControl>
+      </SettingsAccordion>
+    </>
   );
 };
 

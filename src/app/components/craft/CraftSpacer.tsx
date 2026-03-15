@@ -2,6 +2,7 @@
 
 import { useNode } from "@craftjs/core";
 import { Box, FormControl, FormLabel, Slider, TextField } from "@mui/material";
+import { SettingsAccordion } from "./SettingsAccordion";
 
 export interface CraftSpacerProps {
   height?: number;
@@ -38,6 +39,8 @@ export const CraftSpacer = ({
       sx={{
         width: "100%",
         height: `${height}px`,
+        minHeight: `${height}px`,
+        flexShrink: 0,
         display: "block",
         background: selected
           ? "rgba(33, 150, 243, 0.1)"
@@ -68,40 +71,44 @@ export const CraftSpacerSettings = () => {
   }));
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-      <FormControl>
-        <FormLabel>Height (px)</FormLabel>
-        <Slider
-          value={height || 20}
-          onChange={(_, value) =>
-            setProp(
-              (props: CraftSpacerProps) => (props.height = value as number),
-            )
-          }
-          min={0}
-          max={200}
-          valueLabelDisplay="auto"
-        />
-      </FormControl>
+    <>
+      <SettingsAccordion title="Spacing">
+        <FormControl fullWidth>
+          <FormLabel>Height (px)</FormLabel>
+          <Slider
+            value={height || 20}
+            onChange={(_, value) =>
+              setProp(
+                (props: CraftSpacerProps) => (props.height = value as number),
+              )
+            }
+            min={0}
+            max={200}
+            valueLabelDisplay="auto"
+          />
+        </FormControl>
+      </SettingsAccordion>
 
-      <FormControl>
-        <FormLabel>Custom CSS (JSON for sx prop)</FormLabel>
-        <TextField
-          multiline
-          rows={4}
-          value={customCss || ""}
-          onChange={(e) =>
-            setProp(
-              (props: CraftSpacerProps) => (props.customCss = e.target.value),
-            )
-          }
-          size="small"
-          fullWidth
-          sx={{ mt: 1 }}
-          placeholder='{"backgroundColor": "#f0f0f0"}'
-        />
-      </FormControl>
-    </Box>
+      <SettingsAccordion title="Appearance">
+        <FormControl fullWidth>
+          <FormLabel>Custom CSS (JSON for sx prop)</FormLabel>
+          <TextField
+            multiline
+            rows={4}
+            value={customCss || ""}
+            onChange={(e) =>
+              setProp(
+                (props: CraftSpacerProps) => (props.customCss = e.target.value),
+              )
+            }
+            size="small"
+            fullWidth
+            sx={{ mt: 1 }}
+            placeholder='{"backgroundColor": "#f0f0f0"}'
+          />
+        </FormControl>
+      </SettingsAccordion>
+    </>
   );
 };
 

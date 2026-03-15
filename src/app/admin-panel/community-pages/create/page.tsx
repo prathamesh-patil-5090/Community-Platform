@@ -77,7 +77,7 @@ function CoverImageUpload({
               </svg>
               Uploading cover image…
             </>
-          ) : (
+          ) :   (
             <>
               <FaImage size={14} />
               Add a cover image
@@ -321,7 +321,14 @@ export default function CreateCommunityPagePage() {
   ];
 
   return (
-    <div className="space-y-6 w-full">
+    <>
+      <div className="flex lg:hidden items-center justify-center min-h-[60vh] text-center p-6">
+        <h2 className="text-xl font-bold text-white">
+          Please open this page in your Desktop or Laptop
+        </h2>
+      </div>
+      <div className="hidden lg:block w-full">
+      <div className="space-y-6 w-full">
       {/* Toast */}
       {toast && (
         <div
@@ -646,5 +653,7 @@ export default function CreateCommunityPagePage() {
         </div>
       )}
     </div>
+    </div>
+    </>
   );
 }
