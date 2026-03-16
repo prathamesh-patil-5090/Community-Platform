@@ -518,7 +518,7 @@ export default function EditCommunityPagePage() {
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g. Tech Talk"
               maxLength={100}
-              className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white text-base font-semibold placeholder:text-gray-600 outline-none focus:border-purple-500/50 transition-colors"
+              className="w-full h-[50px] px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white text-base font-semibold placeholder:text-gray-600 outline-none focus:border-purple-500/50 transition-colors"
             />
           </div>
 

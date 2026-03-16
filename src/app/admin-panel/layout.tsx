@@ -380,7 +380,24 @@ export default function AdminPanelLayout({
   children: React.ReactNode;
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState<boolean>(false);
+
+  const toggleCollapse = () => setIsCollapsed((v) => !v);
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("admin-sidebar-collapsed");
+      if (stored !== null) {
+        setIsCollapsed(stored === "true");
+      }
+    } catch {}
+  }, []);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("admin-sidebar-collapsed", String(isCollapsed));
+    } catch {}
+  }, [isCollapsed]);
 
   return (
     <div className="min-h-screen bg-[#08080b] text-gray-100">
@@ -389,7 +406,7 @@ export default function AdminPanelLayout({
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
         isCollapsed={isCollapsed}
-        toggleCollapse={() => setIsCollapsed(!isCollapsed)}
+        toggleCollapse={toggleCollapse}
       />
 
       {/* Main content area — offset by sidebar width on desktop */}
@@ -401,7 +418,7 @@ export default function AdminPanelLayout({
         {/* Navbar */}
         <AdminNavbar
           onMenuToggle={() => setSidebarOpen((v) => !v)}
-          onToggleCollapse={() => setIsCollapsed(!isCollapsed)}
+          onToggleCollapse={toggleCollapse}
         />
 
         {/* Page content */}

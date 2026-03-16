@@ -120,7 +120,6 @@ CraftSpacer.craft = {
   },
   rules: {
     canDrag: () => true,
-    canDrop: () => false,
   },
   related: {
     settings: CraftSpacerSettings,

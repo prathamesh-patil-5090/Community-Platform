@@ -146,7 +146,6 @@ CraftDivider.craft = {
   },
   rules: {
     canDrag: () => true,
-    canDrop: () => false,
   },
   related: {
     settings: CraftDividerSettings,

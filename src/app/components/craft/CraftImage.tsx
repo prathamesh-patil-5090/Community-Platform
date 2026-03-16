@@ -272,7 +272,6 @@ CraftImage.craft = {
   },
   rules: {
     canDrag: () => true,
-    canDrop: () => false,
   },
   related: {
     settings: CraftImageSettings,
