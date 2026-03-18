@@ -62,6 +62,11 @@ export const authConfig = {
         return true;
       }
 
+      // Allow index route bypass
+      if (pathname === "/") {
+        return true;
+      }
+
       // Allow public routes; redirect logged-in users away from login/register
       if (PUBLIC_ROUTES.includes(pathname)) {
         if (isLoggedIn) {
@@ -70,23 +75,41 @@ export const authConfig = {
         return true;
       }
 
-      // Handle expired/missing refresh tokens
-      const sessionError = (auth as { error?: string } | null)?.error;
-      if (
-        sessionError === "RefreshTokenExpired" ||
-        sessionError === "RefreshTokenMissing"
-      ) {
-        const loginUrl = new URL("/login", nextUrl);
-        loginUrl.searchParams.set("callbackUrl", pathname);
-        loginUrl.searchParams.set("error", "SessionExpired");
-        return Response.redirect(loginUrl);
-      }
+      // Define protected routes that require authentication
+      const isProtectedRoute =
+        ["/settings", "/admin-panel"].some((prefix) =>
+          pathname.startsWith(prefix),
+        ) ||
+        // Protect API routes except public ones
+        (pathname.startsWith("/api/") &&
+          ![
+            "/api/posts",
+            "/api/search",
+            "/api/top-discussions",
+            "/api/ads",
+            "/api/community-pages",
+            "/api/users",
+          ].some((prefix) => pathname.startsWith(prefix)));
 
-      // Redirect unauthenticated users to login
-      if (!isLoggedIn) {
-        const loginUrl = new URL("/login", nextUrl);
-        loginUrl.searchParams.set("callbackUrl", pathname);
-        return Response.redirect(loginUrl);
+      if (isProtectedRoute) {
+        // Handle expired/missing refresh tokens
+        const sessionError = (auth as { error?: string } | null)?.error;
+        if (
+          sessionError === "RefreshTokenExpired" ||
+          sessionError === "RefreshTokenMissing"
+        ) {
+          const loginUrl = new URL("/login", nextUrl);
+          loginUrl.searchParams.set("callbackUrl", pathname);
+          loginUrl.searchParams.set("error", "SessionExpired");
+          return Response.redirect(loginUrl);
+        }
+
+        // Redirect unauthenticated users to login
+        if (!isLoggedIn) {
+          const loginUrl = new URL("/login", nextUrl);
+          loginUrl.searchParams.set("callbackUrl", pathname);
+          return Response.redirect(loginUrl);
+        }
       }
 
       // ── Admin route protection ──────────────────────────────────────────

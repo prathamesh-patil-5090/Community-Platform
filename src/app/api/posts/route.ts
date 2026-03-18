@@ -9,13 +9,6 @@ export async function GET(req: NextRequest) {
   try {
     const session = await auth();
 
-    if (!session?.user?.id) {
-      return NextResponse.json(
-        { error: "You must be signed in to view posts." },
-        { status: 401 },
-      );
-    }
-
     await connectDB();
 
     const { searchParams } = req.nextUrl;
@@ -66,15 +59,18 @@ export async function GET(req: NextRequest) {
     if (tag) filter.tags = tag;
 
     // Check if the current user is an admin — only admins see hidden posts
-    const dbUser = await User.findById(session.user.id).select("role").lean();
-    const isAdmin = dbUser?.role === "admin";
+    let isAdmin = false;
+    if (session?.user?.id) {
+      const dbUser = await User.findById(session.user.id).select("role").lean();
+      isAdmin = dbUser?.role === "admin";
+    }
 
     // Non-admin users should never see hidden posts
     if (!isAdmin) {
       filter.isHidden = { $ne: true };
     }
 
-    const currentUserId = session.user.id;
+    const currentUserId = session?.user?.id;
 
     const [posts, total] = await Promise.all([
       Post.find(filter)
@@ -87,9 +83,10 @@ export async function GET(req: NextRequest) {
 
     const annotatedPosts = posts.map((post) => ({
       ...post,
-      userHasLiked: Array.isArray(post.likedBy)
-        ? post.likedBy.includes(currentUserId)
-        : false,
+      userHasLiked:
+        Array.isArray(post.likedBy) && currentUserId
+          ? post.likedBy.includes(currentUserId)
+          : false,
     }));
 
     return NextResponse.json(

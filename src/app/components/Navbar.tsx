@@ -93,7 +93,7 @@ function Navbar() {
     <div>
       <div className="w-full bg-[#0A0A0A] flex items-center justify-between pt-2 pr-5 sm:pr-15 pb-3 relative">
         {pathName === "/" && (
-          <div className="hidden lg:block absolute bottom-0 left-[233px] right-0 border-b border-white/10" />
+          <div className="hidden lg:block absolute bottom-0 left-[233px] right-0" />
         )}
 
         {/* Left side */}
@@ -145,141 +145,149 @@ function Navbar() {
           </div>
 
           {/* Profile avatar + dropdown */}
-          <div className="relative" ref={profileRef}>
-            <button
-              aria-label="Profile menu"
-              onClick={() => setIsProfileOpen((v) => !v)}
-              className="flex items-center justify-center rounded-full focus:outline-none cursor-pointer"
-            >
-              {user?.image ? (
-                <Image
-                  src={user.image}
-                  width={36}
-                  height={36}
-                  alt={displayName}
-                  className="rounded-full object-cover border border-white/20 w-9 h-9"
-                />
-              ) : (
-                <IoPersonCircle size={40} className="text-white/80" />
-              )}
-            </button>
+          {status === "authenticated" ? (
+            <div className="relative" ref={profileRef}>
+              <button
+                aria-label="Profile menu"
+                onClick={() => setIsProfileOpen((v) => !v)}
+                className="flex items-center justify-center rounded-full focus:outline-none cursor-pointer"
+              >
+                {user?.image ? (
+                  <Image
+                    src={user.image}
+                    width={36}
+                    height={36}
+                    alt={displayName}
+                    className="rounded-full object-cover border border-white/20 w-9 h-9"
+                  />
+                ) : (
+                  <IoPersonCircle size={40} className="text-white/80" />
+                )}
+              </button>
 
-            {/* Dropdown */}
-            {isProfileOpen && (
-              <div className="absolute right-0 mt-2 w-56 bg-[#141414] border border-white/10 rounded-xl shadow-xl z-50 overflow-hidden">
-                {/* User info header */}
-                <div className="px-4 py-3 border-b border-white/10">
-                  <div className="flex items-center gap-3">
-                    {user?.image ? (
-                      <Image
-                        src={user.image}
-                        width={36}
-                        height={36}
-                        alt={displayName}
-                        className="rounded-full object-cover w-9 h-9 shrink-0"
-                      />
-                    ) : (
-                      <IoPersonCircle
-                        size={36}
-                        className="text-white/60 shrink-0"
-                      />
-                    )}
-                    <div className="min-w-0">
-                      <p className="text-white text-sm font-semibold truncate">
-                        {displayName}
-                      </p>
-                      {user?.email && (
-                        <p className="text-gray-400 text-xs truncate">
-                          {user.email}
-                        </p>
+              {/* Dropdown */}
+              {isProfileOpen && (
+                <div className="absolute right-0 mt-2 w-56 bg-[#141414] border border-white/10 rounded-xl shadow-xl z-50 overflow-hidden">
+                  {/* User info header */}
+                  <div className="px-4 py-3 border-b border-white/10">
+                    <div className="flex items-center gap-3">
+                      {user?.image ? (
+                        <Image
+                          src={user.image}
+                          width={36}
+                          height={36}
+                          alt={displayName}
+                          className="rounded-full object-cover w-9 h-9 shrink-0"
+                        />
+                      ) : (
+                        <IoPersonCircle
+                          size={36}
+                          className="text-white/60 shrink-0"
+                        />
                       )}
+                      <div className="min-w-0">
+                        <p className="text-white text-sm font-semibold truncate">
+                          {displayName}
+                        </p>
+                        {user?.email && (
+                          <p className="text-gray-400 text-xs truncate">
+                            {user.email}
+                          </p>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                {/* Menu items */}
-                <div className="py-1">
-                  <button
-                    onClick={() => {
-                      setIsProfileOpen(false);
-                      router.push("/profile");
-                    }}
-                    className="w-full text-left px-4 py-2.5 text-sm text-gray-200 hover:bg-white/5 transition-colors flex items-center gap-3 cursor-pointer"
-                  >
-                    <IoPersonCircle size={18} className="text-gray-400" />
-                    View Profile
-                  </button>
-
-                  {user?.role === "admin" && (
+                  {/* Menu items */}
+                  <div className="py-1">
                     <button
                       onClick={() => {
                         setIsProfileOpen(false);
-                        router.push("/admin-panel");
+                        router.push("/profile");
                       }}
-                      className="w-full text-left px-4 py-2.5 text-sm text-purple-300 hover:bg-purple-500/10 transition-colors flex items-center gap-3 cursor-pointer"
+                      className="w-full text-left px-4 py-2.5 text-sm text-gray-200 hover:bg-white/5 transition-colors flex items-center gap-3 cursor-pointer"
                     >
-                      <IoShieldCheckmarkOutline
-                        size={18}
-                        className="text-purple-400"
-                      />
-                      Admin Panel
+                      <IoPersonCircle size={18} className="text-gray-400" />
+                      View Profile
                     </button>
-                  )}
 
-                  <div className="border-t border-white/10 my-1" />
-
-                  <button
-                    onClick={handleLogout}
-                    disabled={isLoggingOut}
-                    className="w-full text-left px-4 py-2.5 text-sm text-red-400 hover:bg-red-500/10 transition-colors flex items-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-                  >
-                    {isLoggingOut ? (
-                      <>
-                        <svg
-                          className="animate-spin h-4 w-4 text-red-400"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                        >
-                          <circle
-                            className="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            strokeWidth="4"
-                          />
-                          <path
-                            className="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                          />
-                        </svg>
-                        Signing out…
-                      </>
-                    ) : (
-                      <>
-                        <svg
-                          className="w-4 h-4"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                          />
-                        </svg>
-                        Sign Out
-                      </>
+                    {user?.role === "admin" && (
+                      <button
+                        onClick={() => {
+                          setIsProfileOpen(false);
+                          router.push("/admin-panel");
+                        }}
+                        className="w-full text-left px-4 py-2.5 text-sm text-purple-300 hover:bg-purple-500/10 transition-colors flex items-center gap-3 cursor-pointer"
+                      >
+                        <IoShieldCheckmarkOutline
+                          size={18}
+                          className="text-purple-400"
+                        />
+                        Admin Panel
+                      </button>
                     )}
-                  </button>
+
+                    <div className="border-t border-white/10 my-1" />
+
+                    <button
+                      onClick={handleLogout}
+                      disabled={isLoggingOut}
+                      className="w-full text-left px-4 py-2.5 text-sm text-red-400 hover:bg-red-500/10 transition-colors flex items-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                    >
+                      {isLoggingOut ? (
+                        <>
+                          <svg
+                            className="animate-spin h-4 w-4 text-red-400"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                          >
+                            <circle
+                              className="opacity-25"
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                            />
+                            <path
+                              className="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                            />
+                          </svg>
+                          Signing out…
+                        </>
+                      ) : (
+                        <>
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                            />
+                          </svg>
+                          Sign Out
+                        </>
+                      )}
+                    </button>
+                  </div>
                 </div>
-              </div>
-            )}
-          </div>
+              )}
+            </div>
+          ) : (
+            <Button
+              name="Log In"
+              onClick={() => router.push("/login")}
+              className="bg-transparent text-white border border-white/10"
+            />
+          )}
         </div>
       </div>
 

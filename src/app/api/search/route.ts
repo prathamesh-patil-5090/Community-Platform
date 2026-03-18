@@ -25,13 +25,6 @@ export async function GET(req: NextRequest) {
   try {
     const session = await auth();
 
-    if (!session?.user?.id) {
-      return NextResponse.json(
-        { error: "You must be signed in to search." },
-        { status: 401 },
-      );
-    }
-
     const { searchParams } = req.nextUrl;
     const q = (searchParams.get("q") ?? "").trim();
     const type = searchParams.get("type") ?? "posts";
@@ -61,7 +54,7 @@ export async function GET(req: NextRequest) {
 
     await connectDB();
 
-    const currentUserId = session.user.id;
+    const currentUserId = session?.user?.id;
 
     switch (type) {
       case "posts":
@@ -125,7 +118,7 @@ async function searchPosts(
   sort: string,
   page: number,
   limit: number,
-  currentUserId: string,
+  currentUserId?: string,
 ) {
   const escapedQuery = q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const regex = new RegExp(escapedQuery, "i");
@@ -174,9 +167,10 @@ async function searchPosts(
     postType: post.postType,
     likes: post.likes ?? 0,
     commentsCount: post.commentList?.length ?? 0,
-    isLiked: Array.isArray(post.likedBy)
-      ? post.likedBy.includes(currentUserId)
-      : false,
+    isLiked:
+      Array.isArray(post.likedBy) && currentUserId
+        ? post.likedBy.includes(currentUserId)
+        : false,
     coverImage: post.coverImage ?? null,
   }));
 
@@ -373,7 +367,7 @@ async function searchComments(
   sort: string,
   page: number,
   limit: number,
-  currentUserId: string,
+  currentUserId?: string,
 ) {
   const escapedQuery = q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const regex = new RegExp(escapedQuery, "i");
@@ -449,9 +443,10 @@ async function searchComments(
     tags: c.postTags ?? [],
     postAuthorName: c.postAuthorName ?? "Anonymous",
     postAuthorImage: c.postAuthorImage ?? null,
-    isLiked: Array.isArray(c.likedBy)
-      ? c.likedBy.includes(currentUserId)
-      : false,
+    isLiked:
+      Array.isArray(c.likedBy) && currentUserId
+        ? c.likedBy.includes(currentUserId)
+        : false,
   }));
 
   return NextResponse.json(
@@ -466,13 +461,13 @@ async function searchMyPosts(
   sort: string,
   page: number,
   limit: number,
-  currentUserId: string,
+  currentUserId?: string,
 ) {
   const escapedQuery = q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const regex = new RegExp(escapedQuery, "i");
 
   const filter = {
-    authorId: currentUserId,
+    authorId: currentUserId || "ANONYMOUS_UNLIKELY_ID",
     $or: [
       { title: { $regex: regex } },
       { tags: { $regex: regex } },
@@ -516,9 +511,10 @@ async function searchMyPosts(
     postComments: post.commentList?.map((c) => c.text) ?? [],
     commentsCount: post.commentList?.length ?? 0,
     isHidden: post.isHidden ?? false,
-    isLiked: Array.isArray(post.likedBy)
-      ? post.likedBy.includes(currentUserId)
-      : false,
+    isLiked:
+      Array.isArray(post.likedBy) && currentUserId
+        ? post.likedBy.includes(currentUserId)
+        : false,
     coverImage: post.coverImage ?? null,
   }));
 

@@ -12,7 +12,7 @@ async function Profile() {
   if (!userId) {
     return (
       <div className="flex flex-col items-center justify-center pt-40 text-white/50">
-        <p>You must be signed in to view your profile.</p>
+        <p>Please Log in or Register to see your Profile</p>
       </div>
     );
   }

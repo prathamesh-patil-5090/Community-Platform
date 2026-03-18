@@ -42,7 +42,7 @@ function PostBar() {
         placeholder="What's on your mind?"
         value={content}
         onChange={(e) => setContent(e.target.value)}
-        className="text-white border border-white/10 bg-[#0A0A0A] rounded-md px-4 pl-2 py-2 w-full focus:outline-black resize-none"
+        className="text-white bg-[#0A0A0A] rounded-md px-4 pl-2 py-2 w-full focus:outline-black resize-none"
       />
       {showButton && (
         <div className="flex flex-row items-center justify-around md:justify-between p-2 font-light text-sm">

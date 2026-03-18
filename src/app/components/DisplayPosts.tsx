@@ -97,11 +97,6 @@ export default function DisplayPosts() {
           `/api/posts?page=${pageNum}&limit=${POSTS_PER_PAGE}`,
         );
 
-        if (res.status === 401) {
-          router.push("/login");
-          return;
-        }
-
         if (!res.ok) {
           const body = await res.json().catch(() => ({}));
           throw new Error(
@@ -134,14 +129,10 @@ export default function DisplayPosts() {
   );
 
   useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/login");
-      return;
-    }
-    if (status === "authenticated") {
+    if (status !== "loading") {
       fetchPosts(1, true);
     }
-  }, [status, fetchPosts, router]);
+  }, [status, fetchPosts]);
 
   const handleLoadMore = () => {
     fetchPosts(currentPage + 1, false);

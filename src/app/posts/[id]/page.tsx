@@ -525,10 +525,7 @@ export default function PostsPage() {
     setIsPostHidden(false);
     try {
       const res = await fetch(`/api/posts/${postId}`);
-      if (res.status === 401) {
-        router.push("/login");
-        return;
-      }
+
       if (res.status === 404) {
         setError("Post not found.");
         return;
@@ -562,14 +559,10 @@ export default function PostsPage() {
   }, [postId, router]);
 
   useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/login");
-      return;
-    }
-    if (status === "authenticated") {
+    if (status !== "loading") {
       fetchPost();
     }
-  }, [status, fetchPost, router]);
+  }, [status, fetchPost]);
 
   const handleCommentClick = () => {
     postComponentRef.current?.openCommentsAndScroll();

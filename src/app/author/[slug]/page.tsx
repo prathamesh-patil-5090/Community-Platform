@@ -55,11 +55,7 @@ export default function AuthorPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/login");
-      return;
-    }
-    if (status === "authenticated" && userId) {
+    if (status !== "loading" && userId) {
       fetchUser();
       fetchPosts();
     }
@@ -70,10 +66,6 @@ export default function AuthorPage() {
     setLoadingUser(true);
     try {
       const res = await fetch(`/api/users/${userId}`);
-      if (res.status === 401) {
-        router.push("/login");
-        return;
-      }
       if (res.status === 404) {
         setError("User not found.");
         return;

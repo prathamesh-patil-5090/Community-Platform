@@ -4,6 +4,7 @@ import { Link as TiptapLink } from "@tiptap/extension-link";
 import { TextStyle } from "@tiptap/extension-text-style";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 import { FaImage, FaTimes } from "react-icons/fa";
@@ -204,6 +205,7 @@ function CoverImageUpload({
 
 const CreatePostComponent = () => {
   const router = useRouter();
+  const { status } = useSession();
 
   const [title, setTitle] = useState("");
   const [tagInput, setTagInput] = useState("");
@@ -391,6 +393,14 @@ const CreatePostComponent = () => {
     } finally {
       setIsSubmitting(false);
     }
+  }
+
+  if (status === "unauthenticated") {
+    return (
+      <div className="flex flex-col items-center justify-center pt-40 text-white/50">
+        <p>Please Log in or Register to create posts</p>
+      </div>
+    );
   }
 
   return (

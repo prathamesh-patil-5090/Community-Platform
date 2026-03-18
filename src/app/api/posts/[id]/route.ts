@@ -214,13 +214,6 @@ export async function GET(
   try {
     const session = await auth();
 
-    if (!session?.user?.id) {
-      return NextResponse.json(
-        { error: "You must be signed in to view this post." },
-        { status: 401 },
-      );
-    }
-
     const { id } = await params;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -237,10 +230,13 @@ export async function GET(
 
     // Check if the post is hidden — only admins may view hidden posts
     if (post.isHidden) {
-      const currentUser = await User.findById(session.user.id)
-        .select("role")
-        .lean();
-      const isAdmin = currentUser?.role === "admin";
+      let isAdmin = false;
+      if (session?.user?.id) {
+        const currentUser = await User.findById(session.user.id)
+          .select("role")
+          .lean();
+        isAdmin = currentUser?.role === "admin";
+      }
 
       if (!isAdmin) {
         return NextResponse.json(
@@ -254,13 +250,14 @@ export async function GET(
       }
     }
 
-    const currentUserId = session.user.id;
+    const currentUserId = session?.user?.id;
 
     const annotatedPost = {
       ...post,
-      userHasLiked: Array.isArray(post.likedBy)
-        ? post.likedBy.includes(currentUserId)
-        : false,
+      userHasLiked:
+        Array.isArray(post.likedBy) && currentUserId
+          ? post.likedBy.includes(currentUserId)
+          : false,
     };
 
     return NextResponse.json({ post: annotatedPost }, { status: 200 });

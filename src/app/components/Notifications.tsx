@@ -1,4 +1,5 @@
 "use client";
+import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useState } from "react";
 import { useWindowSize } from "./hooks/useWindowSize";
@@ -9,6 +10,7 @@ export type NotificationType = "all" | "new_post" | "comment_on_post";
 
 export default function Notifications() {
   const { width } = useWindowSize();
+  const { status } = useSession();
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -41,6 +43,14 @@ export default function Notifications() {
   const handleUnreadCountChange = useCallback((count: number) => {
     setUnreadCount(count);
   }, []);
+
+  if (status === "unauthenticated") {
+    return (
+      <div className="flex flex-col items-center justify-center pt-40 text-white/50 w-full">
+        <p>Please Log in or Register to see your personalized Notifications</p>
+      </div>
+    );
+  }
 
   return (
     <div

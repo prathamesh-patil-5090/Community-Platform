@@ -269,7 +269,7 @@ export default function Post({ postData }: { postData: PostInfoType }) {
         {/* Like */}
         <button
           onClick={handleLike}
-          disabled={likeLoading}
+          disabled={likeLoading || !session}
           className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm transition-all
             ${
               isLiked

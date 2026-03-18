@@ -76,11 +76,6 @@ export default function UserPosts({
           `/api/posts?author=${authorParam}&page=${page}&limit=10`,
         );
 
-        if (res.status === 401) {
-          router.push("/login");
-          return;
-        }
-
         if (!res.ok) {
           const body = await res.json().catch(() => ({}));
           throw new Error(

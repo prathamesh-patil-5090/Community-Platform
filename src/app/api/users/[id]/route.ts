@@ -1,4 +1,3 @@
-import { auth } from "@/auth";
 import connectDB from "@/lib/mongodb";
 import Post from "@/models/Post";
 import User from "@/models/User";
@@ -10,15 +9,6 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const session = await auth();
-
-    if (!session?.user?.id) {
-      return NextResponse.json(
-        { error: "You must be signed in to view a profile." },
-        { status: 401 },
-      );
-    }
-
     const { id } = await params;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {

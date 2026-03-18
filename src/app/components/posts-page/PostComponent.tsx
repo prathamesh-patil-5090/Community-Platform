@@ -306,7 +306,7 @@ const PostComponent = forwardRef<PostComponentRef, Props>(
           {/* Like */}
           <button
             onClick={handleLike}
-            disabled={likeLoading}
+            disabled={likeLoading || !session}
             className={`flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all
               ${
                 isLiked

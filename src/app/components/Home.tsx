@@ -7,7 +7,7 @@ function Home() {
   return (
     <div className="relative min-h-screen">
       {/* Fixed Sidebar - Left side */}
-      <div className="hidden md:block fixed left-0 top-[60px] h-[calc(100vh-60px)] w-[233px] overflow-y-auto bg-[#0A0A0A] border-r border-white/10 z-40">
+      <div className="hidden md:block fixed left-0 top-[60px] h-[calc(100vh-60px)] w-[233px] overflow-y-auto bg-[#0A0A0A]  z-40">
         <SideBar />
       </div>
 
@@ -19,7 +19,7 @@ function Home() {
         </div>
 
         {/* Top Discussions - Scrolls with content */}
-        <div className="hidden lg:block flex-shrink-0 w-[350px]">
+        <div className="hidden lg:block flex-shrink-0 w-[340px]">
           <TopDiscussionsBox />
         </div>
       </div>

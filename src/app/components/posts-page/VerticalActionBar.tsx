@@ -1,4 +1,5 @@
 "use client";
+import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { BiLike, BiSolidLike } from "react-icons/bi";
 import { BsBookmark, BsBookmarkFill } from "react-icons/bs";
@@ -33,6 +34,7 @@ export default function VerticalActionBar({
   onCommentClickAction,
   onBookmarkAction,
 }: Props) {
+  const { status } = useSession();
   const [isLiked, setIsLiked] = useState<boolean>(initialIsLiked);
   const [likes, setLikes] = useState<number>(initialLikes);
   const [likeLoading, setLikeLoading] = useState(false);
@@ -117,7 +119,7 @@ export default function VerticalActionBar({
         aria-pressed={isLiked}
         aria-label={isLiked ? "Unlike post" : "Like post"}
         onClick={handleLike}
-        disabled={likeLoading}
+        disabled={likeLoading || status === "unauthenticated"}
         className={`flex flex-col items-center gap-1.5 px-3 py-2 rounded-xl transition-all
           ${
             isLiked
@@ -139,7 +141,8 @@ export default function VerticalActionBar({
       <button
         aria-label="Open comments"
         onClick={() => onCommentClickAction?.()}
-        className="flex flex-col items-center gap-1.5 px-3 py-2 rounded-xl text-white/60 hover:bg-white/5 hover:text-white transition-all"
+        disabled={status === "unauthenticated"}
+        className="flex flex-col items-center gap-1.5 px-3 py-2 rounded-xl text-white/60 hover:bg-white/5 hover:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         title="Comments"
       >
         <MdOutlineModeComment size={24} />
@@ -153,7 +156,8 @@ export default function VerticalActionBar({
         aria-pressed={isBookmarked}
         aria-label={isBookmarked ? "Remove bookmark" : "Save to bookmarks"}
         onClick={handleBookmark}
-        className={`flex flex-col items-center gap-1.5 px-3 py-2 rounded-xl transition-all
+        disabled={status === "unauthenticated"}
+        className={`flex flex-col items-center gap-1.5 px-3 py-2 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed
           ${
             isBookmarked
               ? "bg-blue-500/10 text-blue-400 hover:bg-blue-500/20"
