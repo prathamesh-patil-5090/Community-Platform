@@ -1,15 +1,18 @@
 import { auth } from "@/auth";
+import { env } from "@/lib/env";
 import connectDB from "@/lib/mongodb";
 import { notifyNewPost } from "@/lib/notifications";
 import Post from "@/models/Post";
 import User from "@/models/User";
+import mongoose from "mongoose";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   try {
     const session = await auth();
-
     await connectDB();
+
+    const gravityKey: number = env.GRAVITY_VAL;
 
     const { searchParams } = req.nextUrl;
     const page = Math.max(1, parseInt(searchParams.get("page") ?? "1", 10));
@@ -24,8 +27,6 @@ export async function GET(req: NextRequest) {
     const filter: Record<string, any> = {};
 
     if (author) {
-      // Accept either a MongoDB ObjectId string or an email address.
-      // If the value looks like an email, resolve it to the matching userId first.
       const isEmail = author.includes("@");
       if (isEmail) {
         const authorUser = await User.findOne({
@@ -33,7 +34,6 @@ export async function GET(req: NextRequest) {
         })
           .select("_id")
           .lean();
-        // If no user found for that email, return an empty result set immediately.
         if (!authorUser) {
           return NextResponse.json(
             {
@@ -58,35 +58,85 @@ export async function GET(req: NextRequest) {
 
     if (tag) filter.tags = tag;
 
-    // Check if the current user is an admin — only admins see hidden posts
     let isAdmin = false;
     if (session?.user?.id) {
       const dbUser = await User.findById(session.user.id).select("role").lean();
       isAdmin = dbUser?.role === "admin";
     }
 
-    // Non-admin users should never see hidden posts
     if (!isAdmin) {
       filter.isHidden = { $ne: true };
     }
 
     const currentUserId = session?.user?.id;
+    const now = new Date();
+    const gravity = gravityKey || 1.8;
+    const SCALING_FACTOR = 10000;
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const pipeline: any[] = [{ $match: filter }];
+
+    pipeline.push({
+      $addFields: {
+        ageInHours: {
+          $max: [
+            0,
+            {
+              $divide: [{ $subtract: [now, "$createdAt"] }, 1000 * 60 * 60],
+            },
+          ],
+        },
+        engagement: {
+          $add: [
+            { $multiply: [{ $ifNull: ["$likes", 0] }, 1.5] },
+            { $multiply: [{ $size: { $ifNull: ["$commentList", []] } }, 2] },
+          ],
+        },
+      },
+    });
+
+    const userIdObj =
+      currentUserId && mongoose.Types.ObjectId.isValid(currentUserId)
+        ? new mongoose.Types.ObjectId(currentUserId)
+        : currentUserId;
+
+    pipeline.push({
+      $addFields: {
+        score: {
+          $multiply: [
+            {
+              $divide: [
+                { $add: ["$engagement", 1] },
+                { $pow: [{ $add: ["$ageInHours", 2] }, gravity] },
+              ],
+            },
+            SCALING_FACTOR,
+          ],
+        },
+        userHasLiked: currentUserId
+          ? {
+              $or: [
+                { $in: [currentUserId, { $ifNull: ["$likedBy", []] }] },
+                { $in: [userIdObj, { $ifNull: ["$likedBy", []] }] },
+              ],
+            }
+          : false,
+      },
+    });
+
+    pipeline.push({ $sort: { score: -1, createdAt: -1 } });
+    pipeline.push({ $skip: (page - 1) * limit });
+    pipeline.push({ $limit: limit });
 
     const [posts, total] = await Promise.all([
-      Post.find(filter)
-        .sort({ createdAt: -1 })
-        .skip((page - 1) * limit)
-        .limit(limit)
-        .lean(),
+      Post.aggregate(pipeline),
       Post.countDocuments(filter),
     ]);
 
     const annotatedPosts = posts.map((post) => ({
       ...post,
-      userHasLiked:
-        Array.isArray(post.likedBy) && currentUserId
-          ? post.likedBy.includes(currentUserId)
-          : false,
+      _id: post._id.toString(),
+      authorId: post.authorId?.toString(),
     }));
 
     return NextResponse.json(

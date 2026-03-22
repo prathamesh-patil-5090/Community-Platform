@@ -30,6 +30,7 @@ export interface IPost extends Document {
   hiddenAt?: Date;
   createdAt: Date;
   updatedAt: Date;
+  score: number;
 }
 
 const CommentSchema = new Schema<IComment>(

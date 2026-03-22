@@ -96,6 +96,9 @@ function validate() {
   // ── Cloudinary ────────────────────────────────────────────────────────────
   const CLOUDINARY_URL = requireString("CLOUDINARY_URL", errors);
 
+  const GRAVITY_VAL_RAW = requireString("GRAVITY_VALUE", errors);
+  const GRAVITY_VAL = parseInt(GRAVITY_VAL_RAW, 1.8);
+
   if (errors.length > 0) {
     throw new Error(
       `\n\n❌  Missing or invalid environment variables:\n\n${errors.join("\n")}\n\n` +
@@ -126,6 +129,8 @@ function validate() {
 
     // Cloudinary
     CLOUDINARY_URL,
+
+    GRAVITY_VAL,
 
     IS_PRODUCTION: process.env.NODE_ENV === "production",
     IS_DEVELOPMENT: process.env.NODE_ENV === "development",
