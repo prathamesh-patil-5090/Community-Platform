@@ -3,10 +3,7 @@ import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
-import { CiSearch } from "react-icons/ci";
 import { HiMenuAlt2 } from "react-icons/hi";
-import { IoIosClose, IoIosNotificationsOutline } from "react-icons/io";
-import { IoPersonCircle, IoShieldCheckmarkOutline } from "react-icons/io5";
 import "./css/CreatePostButton.css";
 import Button from "./ui/Button";
 import Logo from "./ui/Logo";
@@ -90,86 +87,87 @@ function Navbar() {
   const displayName = user?.name || user?.email?.split("@")[0] || "Profile";
 
   return (
-    <div>
-      <div className="w-full bg-[#0A0A0A] flex items-center justify-between pt-2 pr-5 sm:pr-15 pb-3 relative">
-        {pathName === "/" && (
-          <div className="hidden lg:block absolute bottom-0 left-[233px] right-0" />
-        )}
-
+    <>
+      <nav className="fixed top-0 w-full z-50 bg-[#0B0E14]/60 backdrop-blur-xl border-b border-[#9D4EDD]/20 shadow-[0_4px_32px_rgba(0,0,0,0.4)] flex items-center justify-between px-6 h-16 w-full">
         {/* Left side */}
-        <div className="flex items-center justify-center pl-3">
+        <div className="flex items-center gap-4 md:gap-8">
           <HiMenuAlt2
-            size={40}
-            className="text-white cursor-pointer md:hidden"
+            size={28}
+            className="text-slate-400 hover:text-white cursor-pointer md:hidden transition-colors"
             onClick={toggleMenu}
             aria-label="Menu"
           />
-          <div className="flex gap-4 pl-3">
+          <div className="flex items-center gap-8">
             <Logo onClick={() => router.push("/")} />
-            <div className="hidden md:block items-center">
-              <Suspense fallback={null}>
-                <SearchBar />
-              </Suspense>
-            </div>
           </div>
         </div>
 
         {/* Right side */}
-        <div className="flex sm:gap-8 gap-4 pl-3 items-center">
-          <div className="hidden md:block">
-            <Button
-              name="Create Post"
-              onClick={() => router.push("/create-post")}
-              className="bg-transparent gradient-text border-white/10"
-            />
+        <div className="flex items-center gap-4">
+          <div className="hidden md:flex items-center bg-[#151921] px-3 py-1.5 rounded-xl border border-outline-variant/20">
+            <span className="material-symbols-outlined text-slate-400 text-sm mr-2">
+              search
+            </span>
+            <Suspense fallback={null}>
+              <SearchBar />
+            </Suspense>
           </div>
-          <div className="md:hidden">
-            <CiSearch
-              className="text-white"
-              size={35}
-              onClick={() => router.push("/search")}
-            />
-          </div>
-          <div className="relative">
-            <IoIosNotificationsOutline
-              size={40}
-              className="cursor-pointer rounded-full border border-white/10 p-1"
-              aria-label="Notifications"
-              onClick={() => router.push("/notifications")}
-            />
+
+          <button
+            className="p-2 text-slate-400 hover:text-primary transition-colors lg:hidden"
+            onClick={() => router.push("/search")}
+            aria-label="Search"
+          >
+            <span className="material-symbols-outlined text-[20px]">
+              search
+            </span>
+          </button>
+
+          <button
+            className="p-2 text-slate-400 hover:text-primary transition-colors relative"
+            aria-label="Notifications"
+            onClick={() => router.push("/notifications")}
+          >
+            <span className="material-symbols-outlined text-[20px]">
+              notifications
+            </span>
             {unreadCount > 0 && (
-              <span className="absolute -top-1 -right-1 flex items-center justify-center min-w-[20px] h-5 px-1 text-xs font-bold text-white bg-red-500 rounded-full leading-none pointer-events-none">
-                {unreadCount > 99 ? "99+" : unreadCount}
-              </span>
+              <span className="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
             )}
-          </div>
+          </button>
+
+          <button className="p-2 text-slate-400 hover:text-primary transition-colors">
+            <span className="material-symbols-outlined text-[20px]">mail</span>
+          </button>
 
           {/* Profile avatar + dropdown */}
           {status === "authenticated" ? (
-            <div className="relative" ref={profileRef}>
+            <div className="relative ml-2" ref={profileRef}>
               <button
                 aria-label="Profile menu"
                 onClick={() => setIsProfileOpen((v) => !v)}
-                className="flex items-center justify-center rounded-full focus:outline-none cursor-pointer"
+                className="h-8 w-8 rounded-full overflow-hidden border border-primary/30 flex items-center justify-center cursor-pointer focus:outline-none"
               >
                 {user?.image ? (
                   <Image
                     src={user.image}
-                    width={36}
-                    height={36}
+                    width={32}
+                    height={32}
                     alt={displayName}
-                    className="rounded-full object-cover border border-white/20 w-9 h-9"
+                    className="w-full h-full object-cover"
                   />
                 ) : (
-                  <IoPersonCircle size={40} className="text-white/80" />
+                  <span className="material-symbols-outlined text-[20px] text-on-surface-variant">
+                    person
+                  </span>
                 )}
               </button>
 
               {/* Dropdown */}
               {isProfileOpen && (
-                <div className="absolute right-0 mt-2 w-56 bg-[#141414] border border-white/10 rounded-xl shadow-xl z-50 overflow-hidden">
+                <div className="absolute right-0 mt-3 w-56 bg-surface-elevated border border-outline rounded-xl shadow-xl z-50 overflow-hidden">
                   {/* User info header */}
-                  <div className="px-4 py-3 border-b border-white/10">
+                  <div className="px-4 py-3 border-b border-outline">
                     <div className="flex items-center gap-3">
                       {user?.image ? (
                         <Image
@@ -177,20 +175,21 @@ function Navbar() {
                           width={36}
                           height={36}
                           alt={displayName}
-                          className="rounded-full object-cover w-9 h-9 shrink-0"
+                          className="rounded-full object-cover w-9 h-9 shrink-0 border border-outline"
                         />
                       ) : (
-                        <IoPersonCircle
-                          size={36}
-                          className="text-white/60 shrink-0"
-                        />
+                        <div className="w-9 h-9 rounded-full bg-surface-variant border border-outline flex items-center justify-center shrink-0">
+                          <span className="material-symbols-outlined text-[20px] text-on-surface-variant">
+                            person
+                          </span>
+                        </div>
                       )}
                       <div className="min-w-0">
-                        <p className="text-white text-sm font-semibold truncate">
+                        <p className="text-on-surface text-sm font-semibold truncate">
                           {displayName}
                         </p>
                         {user?.email && (
-                          <p className="text-gray-400 text-xs truncate">
+                          <p className="text-on-surface-variant text-xs truncate">
                             {user.email}
                           </p>
                         )}
@@ -205,9 +204,11 @@ function Navbar() {
                         setIsProfileOpen(false);
                         router.push("/profile");
                       }}
-                      className="w-full text-left px-4 py-2.5 text-sm text-gray-200 hover:bg-white/5 transition-colors flex items-center gap-3 cursor-pointer"
+                      className="w-full text-left px-4 py-2.5 text-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-colors flex items-center gap-3 cursor-pointer"
                     >
-                      <IoPersonCircle size={18} className="text-gray-400" />
+                      <span className="material-symbols-outlined text-[18px]">
+                        person
+                      </span>
                       View Profile
                     </button>
 
@@ -217,27 +218,26 @@ function Navbar() {
                           setIsProfileOpen(false);
                           router.push("/admin-panel");
                         }}
-                        className="w-full text-left px-4 py-2.5 text-sm text-purple-300 hover:bg-purple-500/10 transition-colors flex items-center gap-3 cursor-pointer"
+                        className="w-full text-left px-4 py-2.5 text-sm text-secondary hover:text-secondary-dim hover:bg-secondary/10 transition-colors flex items-center gap-3 cursor-pointer"
                       >
-                        <IoShieldCheckmarkOutline
-                          size={18}
-                          className="text-purple-400"
-                        />
+                        <span className="material-symbols-outlined text-[18px]">
+                          admin_panel_settings
+                        </span>
                         Admin Panel
                       </button>
                     )}
 
-                    <div className="border-t border-white/10 my-1" />
+                    <div className="border-t border-outline my-1" />
 
                     <button
                       onClick={handleLogout}
                       disabled={isLoggingOut}
-                      className="w-full text-left px-4 py-2.5 text-sm text-red-400 hover:bg-red-500/10 transition-colors flex items-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                      className="w-full text-left px-4 py-2.5 text-sm text-error hover:bg-error/10 transition-colors flex items-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                     >
                       {isLoggingOut ? (
                         <>
                           <svg
-                            className="animate-spin h-4 w-4 text-red-400"
+                            className="animate-spin h-4 w-4 text-error"
                             xmlns="http://www.w3.org/2000/svg"
                             fill="none"
                             viewBox="0 0 24 24"
@@ -260,19 +260,9 @@ function Navbar() {
                         </>
                       ) : (
                         <>
-                          <svg
-                            className="w-4 h-4"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                            />
-                          </svg>
+                          <span className="material-symbols-outlined text-[18px]">
+                            logout
+                          </span>
                           Sign Out
                         </>
                       )}
@@ -285,41 +275,49 @@ function Navbar() {
             <Button
               name="Log In"
               onClick={() => router.push("/login")}
-              className="bg-transparent text-white border border-white/10"
+              className="bg-transparent text-on-surface border border-outline hover:bg-surface-variant transition-colors ml-2 rounded-full px-4 py-2"
             />
           )}
         </div>
-      </div>
+      </nav>
 
       {/* Mobile Menu overlay */}
       <div
-        className={`md:hidden fixed inset-0 bg-black/30 z-40 transition-opacity duration-300 ${
+        className={`md:hidden fixed inset-0 bg-background/80 backdrop-blur-sm z-[60] transition-opacity duration-300 ${
           isMenuOpen ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
         onClick={toggleMenu}
         aria-label="Close Menu"
       >
         <div
-          className={`fixed top-0 left-0 w-80 h-full bg-[#0A0A0A] transform transition-transform duration-300 ease-in-out ${
+          className={`fixed top-0 left-0 w-80 h-full bg-surface border-r border-outline transform transition-transform duration-300 ease-in-out flex flex-col ${
             isMenuOpen ? "translate-x-0" : "-translate-x-full"
           }`}
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="flex items-center justify-between p-4 border-b border-gray-700">
-            <h2 className="text-white text-xl font-semibold">Menu</h2>
-            <IoIosClose
+          <div className="flex items-center justify-between p-4 border-b border-outline">
+            <h2 className="text-on-surface font-headline text-xl font-semibold">
+              Menu
+            </h2>
+            <button
               onClick={toggleMenu}
-              size={40}
-              className="cursor-pointer"
+              className="p-1 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant rounded-full transition-colors"
               aria-label="Close Menu"
-            />
+            >
+              <span className="material-symbols-outlined text-[24px]">
+                close
+              </span>
+            </button>
           </div>
-          <div className="bg-[#0A0A0A]" onClick={handleSidebarItemClick}>
+          <div
+            className="flex-1 overflow-y-auto"
+            onClick={handleSidebarItemClick}
+          >
             <SideBar />
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 

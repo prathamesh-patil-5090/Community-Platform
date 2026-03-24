@@ -15,12 +15,8 @@ function CheckIfLogin({
 
   return (
     <div className="min-h-screen">
-      {showNavbar && (
-        <div className="fixed top-0 left-0 right-0 z-50 bg-[#0A0A0A]">
-          <Navbar />
-        </div>
-      )}
-      <div className={showNavbar ? "pt-[60px]" : ""}>{children}</div>
+      {showNavbar && <Navbar />}
+      <div className={showNavbar ? "pt-16" : ""}>{children}</div>
     </div>
   );
 }

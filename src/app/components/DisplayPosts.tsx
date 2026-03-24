@@ -144,29 +144,39 @@ export default function DisplayPosts() {
 
   if (status === "loading" || initialLoading) {
     return (
-      <div className="space-y-2 mt-2">
+      <div className="space-y-8">
         {Array.from({ length: 3 }).map((_, i) => (
           <div
             key={i}
-            className="bg-[#0A0A0A] border border-white/10 md:rounded-xl p-5 animate-pulse"
+            className="bg-surface-container rounded-2xl border border-primary/15 overflow-hidden animate-pulse mb-8"
           >
             {/* Author row */}
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 rounded-full bg-white/10" />
-              <div className="space-y-2">
-                <div className="h-4 w-32 rounded bg-white/10" />
-                <div className="h-3 w-24 rounded bg-white/10" />
+            <div className="p-6 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-surface-variant border-2 border-primary/20" />
+                <div className="space-y-2">
+                  <div className="h-3 w-32 rounded bg-surface-variant" />
+                  <div className="h-2.5 w-24 rounded bg-surface-variant" />
+                </div>
               </div>
             </div>
             {/* Title */}
-            <div className="h-6 w-3/4 rounded bg-white/10 mb-3" />
+            <div className="px-6 pb-4">
+              <div className="h-6 w-3/4 rounded bg-surface-variant mb-4" />
+              <div className="flex gap-2">
+                <div className="h-5 w-20 rounded-full bg-surface-variant" />
+                <div className="h-5 w-24 rounded-full bg-surface-variant" />
+              </div>
+            </div>
             {/* Cover image placeholder */}
-            <div className="h-48 w-full rounded-lg bg-white/10 mb-3" />
-            {/* Body lines */}
-            <div className="space-y-2">
-              <div className="h-4 w-full rounded bg-white/10" />
-              <div className="h-4 w-5/6 rounded bg-white/10" />
-              <div className="h-4 w-4/6 rounded bg-white/10" />
+            <div className="px-6 relative mb-4">
+              <div className="aspect-video w-full rounded-xl bg-surface-variant border border-outline-variant/20" />
+            </div>
+            {/* Actions */}
+            <div className="px-6 py-4 bg-surface-variant border-t border-outline/10 flex items-center gap-6">
+              <div className="h-5 w-12 rounded bg-surface-elevated" />
+              <div className="h-5 w-12 rounded bg-surface-elevated" />
+              <div className="h-5 w-16 rounded bg-surface-elevated" />
             </div>
           </div>
         ))}
@@ -176,13 +186,17 @@ export default function DisplayPosts() {
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 text-center px-4">
-        <div className="text-4xl mb-4">⚠️</div>
-        <p className="text-red-400 text-lg mb-2">Could not load posts</p>
-        <p className="text-white/50 text-sm mb-6">{error}</p>
+      <div className="flex flex-col items-center justify-center py-16 text-center px-4 bg-surface-container rounded-2xl border border-primary/15">
+        <span className="material-symbols-outlined text-4xl mb-4 text-error">
+          warning
+        </span>
+        <p className="text-error text-lg mb-2 font-headline font-bold">
+          Could not load posts
+        </p>
+        <p className="text-slate-400 text-sm mb-6">{error}</p>
         <button
           onClick={handleRetry}
-          className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="px-6 py-2 bg-error/10 text-error rounded-full hover:bg-error/20 transition-colors font-medium text-sm"
         >
           Try Again
         </button>
@@ -192,15 +206,19 @@ export default function DisplayPosts() {
 
   if (!initialLoading && posts.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 text-center px-4">
-        <div className="text-5xl mb-4">✍️</div>
-        <p className="text-xl font-semibold text-white mb-2">No posts yet</p>
-        <p className="text-white/50 text-sm mb-6">
+      <div className="flex flex-col items-center justify-center py-20 text-center px-4 bg-surface-container rounded-2xl border border-primary/15">
+        <span className="material-symbols-outlined text-5xl mb-4 text-primary">
+          edit_document
+        </span>
+        <p className="text-xl font-bold font-headline text-white mb-2">
+          No posts yet
+        </p>
+        <p className="text-slate-400 text-sm mb-6">
           Be the first to share something with the community!
         </p>
         <button
           onClick={() => router.push("/create-post")}
-          className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="px-6 py-2 bg-primary/10 text-primary rounded-full hover:bg-primary/20 transition-colors font-medium text-sm"
         >
           Create Post
         </button>
@@ -220,11 +238,11 @@ export default function DisplayPosts() {
           <button
             onClick={handleLoadMore}
             disabled={loadingMore}
-            className="px-8 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+            className="px-8 py-2.5 bg-primary/10 text-primary font-bold rounded-full hover:bg-primary/20 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
           >
             {loadingMore ? (
               <>
-                <span className="inline-block w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                <span className="inline-block w-4 h-4 border-2 border-primary/40 border-t-primary rounded-full animate-spin" />
                 Loading…
               </>
             ) : (
@@ -236,7 +254,7 @@ export default function DisplayPosts() {
 
       {/* End of feed */}
       {!pagination?.hasNextPage && posts.length > 0 && (
-        <p className="text-center text-white/30 text-sm py-8">
+        <p className="text-center text-slate-500 text-sm py-8 font-medium">
           You&apos;ve reached the end of the feed
         </p>
       )}

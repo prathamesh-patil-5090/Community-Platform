@@ -3,7 +3,7 @@
 import PostComponent, {
   PostComponentRef,
 } from "@/app/components/posts-page/PostComponent";
-import VerticalActionBar from "@/app/components/posts-page/VerticalActionBar";
+import SideBar from "@/app/components/ui/SideBar";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -516,7 +516,6 @@ export default function PostsPage() {
 
   const [isLiked, setIsLiked] = useState(false);
   const [likes, setLikes] = useState(0);
-  const [commentsCount, setCommentsCount] = useState(0);
 
   const fetchPost = useCallback(async () => {
     if (!postId) return;
@@ -550,13 +549,12 @@ export default function PostsPage() {
       setPost(p);
       setIsLiked(p.userHasLiked ?? false);
       setLikes(p.likes ?? 0);
-      setCommentsCount(p.commentList?.length ?? 0);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
     } finally {
       setLoading(false);
     }
-  }, [postId, router]);
+  }, [postId]);
 
   useEffect(() => {
     if (status !== "loading") {
@@ -564,17 +562,13 @@ export default function PostsPage() {
     }
   }, [status, fetchPost]);
 
-  const handleCommentClick = () => {
-    postComponentRef.current?.openCommentsAndScroll();
-  };
-
   const handleLikeToggle = (liked: boolean, newCount: number) => {
     setIsLiked(liked);
     setLikes(newCount);
   };
 
-  const handleCommentsCountChange = (count: number) => {
-    setCommentsCount(count);
+  const handleCommentsCountChange = () => {
+    // Left for compatibility with PostComponent, although we don't store it here anymore
   };
 
   /* ── Loading ─────────────────────────────────────────────────────────────── */
@@ -631,73 +625,58 @@ export default function PostsPage() {
   };
 
   return (
-    <div className="flex items-start min-h-screen">
-      {/* ── Vertical Action Bar (fixed left sidebar — untouched) ──────────── */}
-      <div className="flex-none hidden md:block">
-        <VerticalActionBar
-          postId={post._id}
-          initialLikes={likes}
-          initialIsLiked={isLiked}
-          initialBookmarked={false}
-          commentsCount={commentsCount}
-          onLikeAction={handleLikeToggle}
-          onCommentClickAction={handleCommentClick}
-        />
+    <div className="relative min-h-screen">
+      <div className="hidden lg:block">
+        <SideBar />
       </div>
 
-      {/* ── Main content area (everything after the fixed sidebar) ────────── */}
-      <div className="md:pl-[83px] flex flex-col lg:ml-15 lg:flex-row lg:gap-6 lg:-mt-1.5 -mt-2 lg:px-6">
-        {/* ── LEFT: Post content — ~65% ───────────────────────────────────── */}
-        <div className="w-full lg:flex-[70] min-w-0">
-          {/* Admin hidden banner */}
-          {showHiddenBanner && (
-            <div className="mb-3 px-4 py-3 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-start gap-3">
-              <svg
-                className="w-5 h-5 text-amber-400 shrink-0 mt-0.5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 4.411m0 0L21 21"
-                />
-              </svg>
-              <div>
-                <p className="text-amber-300 text-sm font-semibold">
-                  This post is hidden from regular users
-                </p>
-                {post.hiddenReason && (
-                  <p className="text-amber-400/70 text-xs mt-0.5">
-                    Reason: {post.hiddenReason}
+      <div className="lg:ml-64 flex justify-center xl:justify-between gap-6 max-w-[1400px] mx-auto px-4 lg:px-8 py-8 items-start">
+        <main className="min-w-0 flex flex-col gap-6 w-full max-w-4xl">
+          <div className="glass-panel rounded-2xl p-6 sm:p-8 lg:p-10">
+            {/* Admin hidden banner */}
+            {showHiddenBanner && (
+              <div className="mb-3 px-4 py-3 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-start gap-3">
+                <svg
+                  className="w-5 h-5 text-amber-400 shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 4.411m0 0L21 21"
+                  />
+                </svg>
+                <div>
+                  <p className="text-amber-300 text-sm font-semibold">
+                    This post is hidden from regular users
                   </p>
-                )}
-                <p className="text-amber-500/60 text-xs mt-0.5">
-                  You can see it because you are an admin.
-                </p>
+                  {post.hiddenReason && (
+                    <p className="text-amber-400/70 text-xs mt-0.5">
+                      Reason: {post.hiddenReason}
+                    </p>
+                  )}
+                  <p className="text-amber-500/60 text-xs mt-0.5">
+                    You can see it because you are an admin.
+                  </p>
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-          <PostComponent
-            ref={postComponentRef}
-            postData={postData}
-            onLikeChange={handleLikeToggle}
-            onCommentsCountChange={handleCommentsCountChange}
-          />
-        </div>
-
-        {/* ── RIGHT: Sidebar — ~35% (Author Card + Ad Card) ──────────────── */}
-        <aside className="hidden lg:block lg:flex-[35] max-w-[380px] pt-2">
-          <div className="sticky top-20 space-y-5">
-            {/* Author Profile Card */}
-            <AuthorProfileCard authorId={post.authorId} />
-
-            {/* Ads */}
-            <SidebarAds />
+            <PostComponent
+              ref={postComponentRef}
+              postData={postData}
+              onLikeChange={handleLikeToggle}
+              onCommentsCountChange={handleCommentsCountChange}
+            />
           </div>
+        </main>
+
+        <aside className="hidden xl:block sticky top-24 self-start space-y-6 w-[340px] flex-shrink-0">
+          <AuthorProfileCard authorId={post.authorId} />
+          <SidebarAds />
         </aside>
       </div>
     </div>

@@ -1,7 +1,6 @@
 "use client";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { CiSearch } from "react-icons/ci";
 
 function SearchBar() {
   const searchParams = useSearchParams();
@@ -34,23 +33,13 @@ function SearchBar() {
   };
 
   return (
-    <div className="bg-black/30 rounded-lg relative">
-      <CiSearch
-        className="absolute left-3 top-1/3 transform -translate-y-1/4 text-white cursor-pointer"
-        size={18}
-        onClick={handleSearch}
-      />
-      <input
-        placeholder="Find..."
-        className={`text-white border border-white/10 bg-transparent rounded-md px-4 pl-10 py-2 w-2xl placeholder:text-white/50`}
-        onChange={handleChange}
-        value={query}
-        onKeyDown={enterQuery}
-      />
-      <p className="font-dmSans absolute right-3 top-1/3 transform -translate-y-1/3 text-white/50">
-        By P-Dev
-      </p>
-    </div>
+    <input
+      placeholder="Search architecture..."
+      className="bg-transparent border-none focus:outline-none focus:ring-0 text-sm text-white w-48 placeholder:text-slate-400"
+      onChange={handleChange}
+      value={query}
+      onKeyDown={enterQuery}
+    />
   );
 }
 

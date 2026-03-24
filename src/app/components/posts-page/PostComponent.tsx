@@ -17,6 +17,7 @@ import { BiLike, BiSolidLike } from "react-icons/bi";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { IoSend } from "react-icons/io5";
 import { MdOutlineModeComment } from "react-icons/md";
+import { toast } from "react-toastify";
 import ReportsComponent from "../ui/ReportsComponent";
 
 export type PostData = {
@@ -302,48 +303,102 @@ const PostComponent = forwardRef<PostComponentRef, Props>(
           />
         )}
 
-        <div className="flex items-center gap-5 py-3 border-t border-white/10">
-          {/* Like */}
-          <button
-            onClick={handleLike}
-            disabled={likeLoading || !session}
-            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all
-              ${
-                isLiked
-                  ? "bg-red-500/10 text-red-400 hover:bg-red-500/20"
-                  : "text-white/60 hover:bg-white/5 hover:text-white"
-              }
-              disabled:opacity-50 disabled:cursor-not-allowed`}
-            aria-label={isLiked ? "Unlike" : "Like"}
-          >
-            {isLiked ? (
-              <BiSolidLike size={22} className="text-red-400" />
-            ) : (
-              <BiLike size={22} />
-            )}
-            <span className="text-sm font-medium">{formatCount(likes)}</span>
-          </button>
+        <div className="flex flex-wrap items-center gap-4 py-4 border-t border-white/10">
+          <div className="flex bg-white/5 rounded-full border border-white/10 p-1">
+            <button
+              onClick={handleLike}
+              disabled={likeLoading || !session}
+              className={`flex items-center gap-2 px-4 py-2 rounded-full transition-colors
+                ${
+                  isLiked
+                    ? "text-red-400 hover:bg-white/10"
+                    : "text-white/80 hover:bg-white/10"
+                }
+                disabled:opacity-50 disabled:cursor-not-allowed`}
+              aria-label={isLiked ? "Unlike" : "Like"}
+            >
+              {isLiked ? (
+                <BiSolidLike size={20} className="text-red-400" />
+              ) : (
+                <BiLike size={20} />
+              )}
+              <span className="text-sm font-medium">{formatCount(likes)}</span>
+            </button>
+          </div>
 
-          {/* Comments toggle */}
-          <button
-            onClick={() => {
-              setIsCommentOpen((v) => !v);
-              if (!isCommentOpen) {
-                setTimeout(() => {
-                  commentsRef.current?.scrollIntoView({
-                    behavior: "smooth",
-                    block: "start",
-                  });
-                }, 120);
-              }
-            }}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-white/60 hover:bg-white/5 hover:text-white transition-all"
-          >
-            <MdOutlineModeComment size={22} />
-            <span className="text-sm font-medium">
-              {formatCount(comments.length)}
-            </span>
-          </button>
+          <div className="flex bg-white/5 rounded-full border border-white/10 p-1">
+            <button
+              onClick={() => {
+                setIsCommentOpen((v) => !v);
+                if (!isCommentOpen) {
+                  setTimeout(() => {
+                    commentsRef.current?.scrollIntoView({
+                      behavior: "smooth",
+                      block: "start",
+                    });
+                  }, 120);
+                }
+              }}
+              className="flex items-center gap-2 px-4 py-2 rounded-full hover:bg-white/10 text-white/80 transition-colors"
+            >
+              <MdOutlineModeComment size={20} />
+              <span className="text-sm font-medium">
+                {formatCount(comments.length)}{" "}
+                {comments.length === 1 ? "Comment" : "Comments"}
+              </span>
+            </button>
+          </div>
+
+          <div className="flex items-center gap-2 ml-auto">
+            <div className="flex bg-white/5 rounded-full border border-white/10 p-1">
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(window.location.href);
+                  toast.success("Link copied to clipboard!");
+                }}
+                className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-white/10 text-white/80 transition-colors"
+                aria-label="Share"
+              >
+                <svg
+                  stroke="currentColor"
+                  fill="none"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  height="20"
+                  width="20"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <circle cx="18" cy="5" r="3"></circle>
+                  <circle cx="6" cy="12" r="3"></circle>
+                  <circle cx="18" cy="19" r="3"></circle>
+                  <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                  <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                </svg>
+              </button>
+            </div>
+            <div className="flex bg-white/5 rounded-full border border-white/10 p-1">
+              <button
+                className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-white/10 text-white/80 transition-colors"
+                aria-label="Bookmark"
+              >
+                <svg
+                  stroke="currentColor"
+                  fill="none"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  height="20"
+                  width="20"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
         </div>
 
         <div ref={commentsRef}>
@@ -432,7 +487,7 @@ const PostComponent = forwardRef<PostComponentRef, Props>(
                               </button>
                               {openMenuId === c.id && (
                                 <div
-                                  className="absolute right-0 top-7 bg-[#1a1a1a] border border-white/10 rounded-lg shadow-xl z-50 min-w-[110px] overflow-hidden"
+                                  className="absolute right-0 top-7 bg-surface-elevated border border-outline/20 rounded-lg shadow-xl z-50 min-w-[110px] overflow-hidden"
                                   onClick={(e) => e.stopPropagation()}
                                 >
                                   {c.authorId === session?.user?.id && (
@@ -440,14 +495,14 @@ const PostComponent = forwardRef<PostComponentRef, Props>(
                                       onClick={() =>
                                         handleStartEditComment(c.id, c.text)
                                       }
-                                      className="w-full text-left px-4 py-2.5 text-sm text-blue-400 hover:bg-white/5 transition-colors"
+                                      className="w-full text-left px-4 py-2 text-sm text-secondary hover:bg-surface-variant transition-colors"
                                     >
                                       Edit
                                     </button>
                                   )}
                                   <button
                                     onClick={() => handleDeleteComment(c.id)}
-                                    className="w-full text-left px-4 py-2.5 text-sm text-red-400 hover:bg-white/5 transition-colors"
+                                    className="w-full text-left px-4 py-2 text-sm text-error hover:bg-surface-variant transition-colors"
                                   >
                                     Delete
                                   </button>

@@ -6,22 +6,19 @@ import TopDiscussionsBox from "./ui/TopDiscussionsBox";
 function Home() {
   return (
     <div className="relative min-h-screen">
-      {/* Fixed Sidebar - Left side */}
-      <div className="hidden md:block fixed left-0 top-[60px] h-[calc(100vh-60px)] w-[233px] overflow-y-auto bg-[#0A0A0A]  z-40">
+      <div className="hidden lg:block">
         <SideBar />
       </div>
 
-      {/* Main Content - Center (scrollable) */}
-      <div className="md:ml-[250px] min-h-screen flex justify-center lg:justify-start lg:gap-10">
-        <div className="flex-1 min-w-0 max-w-4xl">
+      <div className="lg:ml-64 flex justify-center xl:justify-between gap-6 max-w-[1400px] mx-auto px-4 lg:px-8 py-8 items-start">
+        <main className="min-w-[850px] flex flex-col gap-6 w-full max-w-3xl">
           <PostBar />
           <DisplayPosts />
-        </div>
+        </main>
 
-        {/* Top Discussions - Scrolls with content */}
-        <div className="hidden lg:block flex-shrink-0 w-[340px]">
+        <aside className="hidden xl:block sticky top-24 self-start space-y-6 w-[340px] flex-shrink-0">
           <TopDiscussionsBox />
-        </div>
+        </aside>
       </div>
     </div>
   );

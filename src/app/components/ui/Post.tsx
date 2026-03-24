@@ -7,10 +7,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { BiLike, BiSolidLike } from "react-icons/bi";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { IoSend } from "react-icons/io5";
-import { MdOutlineModeComment } from "react-icons/md";
+import { toast } from "react-toastify";
 import ReportsComponent from "./ReportsComponent";
 
 export default function Post({ postData }: { postData: PostInfoType }) {
@@ -164,182 +163,192 @@ export default function Post({ postData }: { postData: PostInfoType }) {
   const postId = postData.postId;
 
   return (
-    <article className="bg-[#0A0A0A] relative w-full overflow-x-hidden border border-white/10 md:rounded-xl p-4 md:p-5 mt-2">
-      <div className="flex items-center justify-between mb-3">
+    <article className="group bg-surface-container rounded-2xl border border-primary/15 transition-all hover:border-primary/40 hover:shadow-[0_0_40px_rgba(157,78,221,0.1)] relative w-full mb-8">
+      {/* User Info Header */}
+      <div className="p-6 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Link href={`/author/${postData.authorId}`} className="flex-shrink-0">
             {postData.authorPic ? (
               <Image
                 src={postData.authorPic}
                 alt={postData.authorName ?? "Author"}
-                width={44}
-                height={44}
-                className="w-10 h-10 md:w-11 md:h-11 rounded-full object-cover ring-2 ring-white/10 hover:ring-blue-500/60 transition-all"
+                width={40}
+                height={40}
+                className="w-10 h-10 rounded-full object-cover border-2 border-primary/20"
               />
             ) : (
-              <div className="w-10 h-10 md:w-11 md:h-11 rounded-full bg-blue-600 flex items-center justify-center text-white font-semibold text-base select-none ring-2 ring-white/10 hover:ring-blue-500/60 transition-all">
+              <div className="w-10 h-10 rounded-full bg-surface-variant flex items-center justify-center text-white font-semibold text-base select-none border-2 border-primary/20">
                 {(postData.authorName ?? "A").charAt(0).toUpperCase()}
               </div>
             )}
           </Link>
           <div>
-            <Link
-              href={`/author/${postData.authorId}`}
-              className="text-sm md:text-base font-medium text-white hover:text-blue-400 transition-colors"
-            >
-              {postData.authorName}
-            </Link>
-            <p className="text-xs text-white/40">
+            <p className="font-bold text-on-surface text-sm flex items-center gap-2">
+              <Link
+                href={`/author/${postData.authorId}`}
+                className="hover:underline"
+              >
+                {postData.authorName}
+              </Link>
+              {/* @username generation fallback */}
+              <span className="text-primary/60 font-normal">
+                @
+                {postData.authorName.replace(/\s+/g, "").toLowerCase() ||
+                  "user"}
+              </span>
+            </p>
+            <p className="text-xs text-on-surface-variant">
               {new Date(postData.postCreationDate)
                 .toDateString()
                 .split(" ")
                 .slice(1)
-                .join(" ")}
+                .join(" ")}{" "}
+              • {postData.postType}
             </p>
           </div>
         </div>
+        <button
+          className="text-on-surface-variant hover:text-white transition-colors"
+          aria-label="More options"
+        >
+          <span className="material-symbols-outlined">more_horiz</span>
+        </button>
+      </div>
 
-        {/* Post type badge */}
-        {postData.postType && (
-          <span className="text-xs bg-white/5 text-white/50 border border-white/10 px-2.5 py-0.5 rounded-full">
-            {postData.postType}
-          </span>
+      {/* Post Title & Tags */}
+      <div className="px-6 pb-4">
+        <h2
+          className="text-2xl font-bold font-headline text-white group-hover:text-primary transition-colors leading-tight cursor-pointer"
+          onClick={() => router.push(`/posts/${postId}`)}
+        >
+          {postData.postTitle}
+        </h2>
+        {tags.length > 0 && (
+          <div className="flex flex-wrap gap-2 mt-4">
+            {tags.map((tag, i) => (
+              <span
+                key={i}
+                onClick={() => router.push(`/search?q=${tag}`)}
+                className="px-3 py-1 rounded-full bg-primary/20 text-primary text-[11px] font-bold tracking-wider uppercase cursor-pointer hover:bg-primary/30 transition-colors"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
         )}
       </div>
 
-      <h2
-        className="font-bold text-lg md:text-2xl text-white mb-2 cursor-pointer hover:text-blue-300 transition-colors leading-snug"
-        onClick={() => router.push(`/posts/${postId}`)}
-      >
-        {postData.postTitle}
-      </h2>
-
+      {/* Hero Image Section */}
       {postData.postImage && (
+        <div className="px-6 relative">
+          <div
+            className="aspect-video w-full rounded-xl overflow-hidden border border-outline-variant/20 cursor-pointer"
+            onClick={() => router.push(`/posts/${postId}`)}
+          >
+            <Image
+              src={postData.postImage}
+              alt={postData.postTitle ?? "Post image"}
+              width={800}
+              height={450}
+              className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Content Preview */}
+      {postData.postDesc && (
         <div
-          className="mb-3 rounded-xl overflow-hidden cursor-pointer"
+          className="p-6 text-on-surface-variant text-sm leading-relaxed max-w-2xl cursor-pointer"
           onClick={() => router.push(`/posts/${postId}`)}
         >
-          <Image
-            src={postData.postImage}
-            alt={postData.postTitle ?? "Post image"}
-            width={800}
-            height={420}
-            className="w-full object-cover rounded-xl hover:opacity-90 transition-opacity"
+          <div
+            className="tiptap-content line-clamp-3"
+            dangerouslySetInnerHTML={{ __html: postData.postDesc }}
           />
         </div>
       )}
 
-      {postData.postDesc && (
-        <div className="mb-3">
-          <div
-            className="relative max-h-40 overflow-hidden cursor-pointer"
-            onClick={() => router.push(`/posts/${postId}`)}
-          >
-            <div
-              className="tiptap-content text-sm"
-              dangerouslySetInnerHTML={{ __html: postData.postDesc }}
-            />
-            {/* gradient fade to signal clipped content */}
-            <div className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-[#0A0A0A] to-transparent pointer-events-none" />
-          </div>
+      {/* Actions Footer */}
+      <div className="px-6 py-4 bg-surface-variant border-t border-outline/10 flex items-center justify-between mt-auto">
+        <div className="flex items-center gap-6">
+          {/* Like */}
           <button
-            onClick={() => router.push(`/posts/${postId}`)}
-            className="text-blue-400 hover:text-blue-300 transition-colors font-medium text-sm mt-1 inline-block"
+            onClick={handleLike}
+            disabled={likeLoading || !session}
+            className={`flex items-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+              isLiked
+                ? "text-error hover:text-error/80"
+                : "text-on-surface-variant hover:text-error"
+            }`}
+            aria-label={isLiked ? "Unlike" : "Like"}
           >
-            Read more →
+            <span
+              className="material-symbols-outlined text-[20px]"
+              style={isLiked ? { fontVariationSettings: '"FILL" 1' } : {}}
+            >
+              favorite
+            </span>
+            <span className="text-xs font-medium">{formatCount(likes)}</span>
+          </button>
+
+          {/* Comments toggle */}
+          <button
+            onClick={() => {
+              setIsCommentOpen((v) => !v);
+              if (!isCommentOpen) {
+                setTimeout(() => {
+                  commentsRef.current?.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start",
+                  });
+                }, 120);
+              }
+            }}
+            className="flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors"
+          >
+            <span className="material-symbols-outlined text-[20px]">
+              chat_bubble
+            </span>
+            <span className="text-xs font-medium">
+              {formatCount(comments.length)}
+            </span>
+          </button>
+
+          <button className="flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors">
+            <span className="material-symbols-outlined text-[20px]">
+              bookmark
+            </span>
+            <span className="text-xs font-medium">Save</span>
           </button>
         </div>
-      )}
 
-      {tags.length > 0 && (
-        <div className="flex flex-wrap gap-1.5 mb-3">
-          {tags.map((tag, i) => (
-            <button
-              key={i}
-              onClick={() => router.push(`/search?q=${tag}`)}
-              className="text-xs text-blue-400/70 bg-blue-500/8 hover:bg-blue-500/15 border border-blue-500/15 px-2.5 py-0.5 rounded-full transition-colors cursor-pointer"
-            >
-              #{tag}
-            </button>
-          ))}
-        </div>
-      )}
-
-      <div className="flex items-center gap-2 pt-1 border-t border-white/5">
-        {/* Like */}
-        <button
-          onClick={handleLike}
-          disabled={likeLoading || !session}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm transition-all
-            ${
-              isLiked
-                ? "bg-red-500/10 text-red-400 hover:bg-red-500/20"
-                : "text-white/50 hover:bg-white/5 hover:text-white"
-            }
-            disabled:opacity-50 disabled:cursor-not-allowed`}
-          aria-label={isLiked ? "Unlike" : "Like"}
-        >
-          {isLiked ? (
-            <BiSolidLike size={18} className="text-red-400" />
-          ) : (
-            <BiLike size={18} />
-          )}
-          <span className="font-medium">{formatCount(likes)}</span>
-        </button>
-
-        {/* Comment toggle */}
         <button
           onClick={() => {
-            setIsCommentOpen((v) => !v);
-            if (!isCommentOpen) {
-              setTimeout(() => {
-                commentsRef.current?.scrollIntoView({
-                  behavior: "smooth",
-                  block: "nearest",
-                });
-              }, 100);
-            }
+            navigator.clipboard.writeText(
+              window.location.origin + "/posts/" + postData.postId,
+            );
+            toast.success("Link copied to clipboard!");
           }}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm transition-all
-            ${
-              isCommentOpen
-                ? "bg-blue-500/10 text-blue-400"
-                : "text-white/50 hover:bg-white/5 hover:text-white"
-            }`}
-          aria-label="Toggle comments"
+          className="p-2 text-on-surface-variant hover:text-primary transition-colors"
         >
-          <MdOutlineModeComment size={18} />
-          <span className="font-medium">{formatCount(comments.length)}</span>
+          <span className="material-symbols-outlined text-[20px]">share</span>
         </button>
       </div>
 
+      {/* ── Comments Section ── */}
       <div ref={commentsRef}>
         {isCommentOpen && (
-          <div className="pt-4 space-y-3 border-t border-white/5 mt-2">
-            {/* Input row */}
-            <div className="flex gap-2 items-start">
-              {/* Current user avatar */}
-              {session?.user?.image ? (
-                <Image
-                  src={session.user.image}
-                  alt="You"
-                  width={32}
-                  height={32}
-                  className="w-8 h-8 rounded-full object-cover flex-shrink-0 mt-0.5"
-                />
-              ) : (
-                <div className="w-8 h-8 rounded-full bg-blue-700 flex items-center justify-center text-white text-xs font-semibold flex-shrink-0 mt-0.5 select-none">
-                  {(session?.user?.name ?? session?.user?.email ?? "?")
-                    .charAt(0)
-                    .toUpperCase()}
-                </div>
-              )}
-
+          <div className="pt-4 pb-2 px-6 mt-0 border-t border-outline/10 space-y-4 bg-surface-variant">
+            {/* Input area */}
+            <div className="flex gap-3 items-start">
+              <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary text-xs font-semibold flex-shrink-0 select-none mt-0.5 border border-primary/20">
+                💬
+              </div>
               <div className="flex-1 flex gap-2 items-end">
                 <textarea
-                  className="flex-1 bg-white/5 border border-white/10 text-white placeholder-white/30 rounded-xl p-2.5 text-sm resize-none focus:outline-none focus:border-blue-500/50 focus:bg-white/8 transition-all"
-                  rows={2}
-                  placeholder="Write a comment…"
+                  className="flex-1 bg-surface-elevated border border-outline/20 text-on-surface placeholder-slate-500 rounded-xl p-3 text-sm resize-none focus:outline-none focus:border-primary/50 focus:bg-surface-elevated transition-all min-h-[44px]"
+                  placeholder="Add a comment…"
                   value={commentInput}
                   onChange={(e) => setCommentInput(e.target.value)}
                   onKeyDown={(e) => {
@@ -347,12 +356,13 @@ export default function Post({ postData }: { postData: PostInfoType }) {
                       handleSubmitComment();
                     }
                   }}
+                  rows={1}
                 />
                 <button
                   onClick={handleSubmitComment}
                   disabled={!commentInput.trim() || commentSubmitting}
-                  className="p-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed rounded-xl transition-colors flex-shrink-0"
-                  aria-label="Post comment"
+                  className="p-3 bg-primary hover:bg-primary-dim disabled:opacity-40 disabled:cursor-not-allowed rounded-xl transition-colors flex-shrink-0 shadow-lg shadow-primary/20"
+                  aria-label="Submit comment"
                 >
                   {commentSubmitting ? (
                     <span className="block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -363,56 +373,53 @@ export default function Post({ postData }: { postData: PostInfoType }) {
               </div>
             </div>
 
-            {/* Comment list */}
+            {/* Comments List */}
             {comments.length === 0 ? (
-              <p className="text-center text-white/30 text-sm py-4">
+              <p className="text-center text-slate-500 text-xs py-4">
                 No comments yet.
               </p>
             ) : (
-              <div className="space-y-2">
+              <div className="space-y-4 mt-4">
                 {comments.map((c) => (
-                  <div key={c.id} className="flex gap-2 items-start group">
-                    {/* Commenter avatar */}
+                  <div key={c.id} className="flex gap-3 items-start group">
                     {c.authorImage ? (
                       <Image
                         src={c.authorImage}
                         alt={c.authorName ?? "Commenter"}
-                        width={30}
-                        height={30}
-                        className="w-7 h-7 md:w-8 md:h-8 rounded-full object-cover flex-shrink-0 mt-0.5"
+                        width={32}
+                        height={32}
+                        className="w-8 h-8 rounded-full object-cover flex-shrink-0 mt-0.5 border border-primary/20"
                       />
                     ) : (
-                      <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white text-xs font-semibold flex-shrink-0 mt-0.5 select-none">
+                      <div className="w-8 h-8 rounded-full bg-surface-elevated flex items-center justify-center text-slate-400 text-xs font-semibold flex-shrink-0 mt-0.5 select-none border border-outline/20">
                         {(c.authorName ?? "A").charAt(0).toUpperCase()}
                       </div>
                     )}
 
-                    {/* Bubble */}
-                    <div className="flex-1 min-w-0 bg-white/5 border border-white/8 rounded-xl px-3 py-2.5">
-                      <div className="flex items-center justify-between gap-2 mb-1">
+                    <div className="flex-1 bg-surface-elevated border border-outline/10 rounded-xl px-4 py-3 relative">
+                      <div className="flex items-center justify-between mb-2 gap-2">
                         <Link
                           href={`/author/${c.authorId}`}
-                          className="text-xs font-semibold text-white/80 hover:text-blue-400 transition-colors truncate"
+                          className="text-xs font-bold text-on-surface hover:text-primary transition-colors"
                         >
                           {c.authorName ?? "Anonymous"}
                         </Link>
-                        <div className="flex items-center gap-1 flex-shrink-0">
-                          <span className="text-xs text-white/25">
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] text-slate-500">
                             {new Date(c.createdAt).toLocaleDateString()}
                           </span>
-                          {/* Context menu */}
                           <div className="relative">
                             <button
                               onClick={() =>
                                 setOpenMenuId(openMenuId === c.id ? null : c.id)
                               }
-                              className="p-0.5 rounded text-white/20 hover:text-white/60 opacity-0 group-hover:opacity-100 transition-all"
+                              className="p-1 rounded text-slate-500 hover:text-on-surface opacity-0 group-hover:opacity-100 transition-all"
                             >
                               <BsThreeDotsVertical size={12} />
                             </button>
                             {openMenuId === c.id && (
                               <div
-                                className="absolute right-0 top-6 bg-[#1a1a1a] border border-white/10 rounded-lg shadow-xl z-50 min-w-[100px] overflow-hidden"
+                                className="absolute right-0 top-6 bg-surface-elevated border border-outline/20 rounded-lg shadow-xl z-50 min-w-[100px] overflow-hidden"
                                 onClick={(e) => e.stopPropagation()}
                               >
                                 {c.authorId === session?.user?.id && (
@@ -420,14 +427,14 @@ export default function Post({ postData }: { postData: PostInfoType }) {
                                     onClick={() =>
                                       handleStartEditComment(c.id, c.text)
                                     }
-                                    className="w-full text-left px-3 py-2 text-xs text-blue-400 hover:bg-white/5 transition-colors"
+                                    className="w-full text-left px-3 py-2 text-xs text-secondary hover:bg-surface-variant transition-colors"
                                   >
                                     Edit
                                   </button>
                                 )}
                                 <button
                                   onClick={() => handleDeleteComment(c.id)}
-                                  className="w-full text-left px-3 py-2 text-xs text-red-400 hover:bg-white/5 transition-colors"
+                                  className="w-full text-left px-3 py-2 text-xs text-error bg-surface-variant transition-colors"
                                 >
                                   Delete
                                 </button>
@@ -436,13 +443,11 @@ export default function Post({ postData }: { postData: PostInfoType }) {
                           </div>
                         </div>
                       </div>
-
-                      {/* Inline edit mode */}
                       {editingCommentId === c.id ? (
                         <div className="space-y-2 mt-1">
                           <textarea
-                            className="w-full bg-white/5 border border-white/10 text-white placeholder-white/30 rounded-lg p-2 text-sm resize-none focus:outline-none focus:border-blue-500/50 transition-all"
-                            rows={3}
+                            className="w-full bg-surface-variant border border-outline/20 text-on-surface placeholder-slate-500 rounded-lg p-2 text-xs resize-none focus:outline-none focus:border-primary/50 transition-all"
+                            rows={2}
                             value={editCommentText}
                             onChange={(e) => setEditCommentText(e.target.value)}
                             onKeyDown={(e) => {
@@ -465,7 +470,7 @@ export default function Post({ postData }: { postData: PostInfoType }) {
                               disabled={
                                 !editCommentText.trim() || editCommentSubmitting
                               }
-                              className="px-3 py-1 bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs rounded-lg transition-colors"
+                              className="px-3 py-1 bg-primary hover:bg-primary-dim disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold text-[10px] rounded transition-colors"
                             >
                               {editCommentSubmitting ? "Saving…" : "Save"}
                             </button>
@@ -474,14 +479,14 @@ export default function Post({ postData }: { postData: PostInfoType }) {
                                 setEditingCommentId(null);
                                 setEditCommentText("");
                               }}
-                              className="px-3 py-1 text-white/40 hover:text-white text-xs transition-colors"
+                              className="px-3 py-1 text-slate-400 hover:text-on-surface font-medium text-[10px] transition-colors"
                             >
                               Cancel
                             </button>
                           </div>
                         </div>
                       ) : (
-                        <p className="text-white/70 text-sm leading-relaxed break-words">
+                        <p className="text-on-surface-variant text-sm leading-relaxed break-words">
                           {c.text}
                         </p>
                       )}

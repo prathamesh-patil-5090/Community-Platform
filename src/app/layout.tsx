@@ -1,5 +1,11 @@
 import type { Metadata } from "next";
-import { DM_Sans, Geist, Geist_Mono, Poppins } from "next/font/google";
+import {
+  DM_Sans,
+  Geist,
+  Geist_Mono,
+  Poppins,
+  Space_Grotesk,
+} from "next/font/google";
 import { ToastContainer } from "react-toastify";
 import CheckIfLogin from "./components/layouts/CheckIfLogin";
 import SessionProvider from "./components/providers/SessionProvider";
@@ -16,6 +22,13 @@ const poppins = Poppins({
   display: "swap",
   variable: "--font-poppins",
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+});
+
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-space-grotesk",
+  weight: ["300", "400", "500", "600", "700"],
 });
 
 const geistSans = Geist({
@@ -40,8 +53,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
+        <link
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap"
+          rel="stylesheet"
+        />
+      </head>
       <body
-        className={` ${geistSans.variable} ${geistMono.variable} ${poppins.variable} ${dmSans.variable} antialiased`}
+        className={` ${geistSans.variable} ${geistMono.variable} ${poppins.variable} ${dmSans.variable} ${spaceGrotesk.variable} antialiased`}
       >
         <SessionProvider>
           <ToastContainer />

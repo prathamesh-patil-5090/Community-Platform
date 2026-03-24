@@ -1,68 +1,104 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Core Base */
+  --background: #0b0e14;
+  --foreground: #f8fafc;
 
-  /* Additional surface colors for components */
-  --surface: #f8f9fa;
-  --surface-elevated: #ffffff;
-  --surface-hover: #f1f3f4;
-  --border: #e5e7eb;
-  --border-subtle: #f3f4f6;
-  --text-secondary: #4b5563;
-  --text-muted: #6b7280;
+  /* Surfaces */
+  --surface: #111424;
+  --surface-variant: #15192b;
+  --surface-elevated: #1e293b;
+
+  /* Brand Accents */
+  --primary: #d946ef;
+  --primary-dim: #c026d3;
+  --secondary: #38bdf8;
+  --tertiary: #2dd4bf;
+  --error: #f43f5e;
+
+  /* Borders and Lines */
+  --outline: #334155;
+  --outline-variant: #1e293b;
+
+  /* Typography */
+  --on-background: #f8fafc;
+  --on-surface: #f1f5f9;
+  --on-surface-variant: #94a3b8;
+  --on-primary: #ffffff;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-theme-primary: #1e293b;
-  --color-theme-secondary: #334155;
-  --color-surface: var(--surface);
-  --color-surface-elevated: var(--surface-elevated);
-  --color-surface-hover: var(--surface-hover);
-  --color-border: var(--border);
-  --color-border-subtle: var(--border-subtle);
-  --color-text-secondary: var(--text-secondary);
-  --color-text-muted: var(--text-muted);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0f1419;
-    --foreground: #e4e7eb;
-    --surface: #1a1f29;
-    --surface-elevated: #212733;
-    --surface-hover: #2c3441;
-    --border: #3d4855;
-    --border-subtle: #2a3441;
-    --text-secondary: #9ca6ba;
-    --text-muted: #6b7588;
-  }
+  --color-surface: var(--surface);
+  --color-surface-variant: var(--surface-variant);
+  --color-primary: var(--primary);
+  --color-primary-dim: var(--primary-dim);
+  --color-secondary: var(--secondary);
+  --color-tertiary: var(--tertiary);
+  --color-error: var(--error);
+
+  --color-outline: var(--outline);
+  --color-outline-variant: var(--outline-variant);
+
+  --color-on-background: var(--on-background);
+  --color-on-surface: var(--on-surface);
+  --color-on-surface-variant: var(--on-surface-variant);
+  --color-on-primary: var(--on-primary);
+
+  /* Mapping fonts to variables set in layout.tsx */
+  --font-sans:
+    var(--font-dmSans), var(--font-geist-sans), ui-sans-serif, system-ui,
+    sans-serif;
+  --font-headline:
+    var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-space-grotesk:
+    var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--background);
+  color: var(--on-background);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
+/* Scrollbar Customization */
 ::-webkit-scrollbar {
-  width: 3px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--surface);
+  background: var(--background);
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: var(--border);
-  border-radius: 1px;
+  background-color: var(--outline);
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--text-muted);
+  background-color: var(--on-surface-variant);
+}
+
+/* Global Utility Classes from Inspiration */
+.glass-panel {
+  background: rgba(17, 20, 36, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(51, 65, 85, 0.5);
+}
+
+/* Material Symbols Adjustments */
+.material-symbols-outlined {
+  font-variation-settings:
+    "FILL" 0,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 24;
 }
