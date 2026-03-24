@@ -218,7 +218,7 @@ export default function Post({ postData }: { postData: PostInfoType }) {
       {/* Post Title & Tags */}
       <div className="px-6 pb-4">
         <h2
-          className="text-2xl font-bold font-headline text-white group-hover:text-primary transition-colors leading-tight cursor-pointer"
+          className="text-2xl font-bold font-headline text-white transition-colors leading-tight cursor-pointer"
           onClick={() => router.push(`/posts/${postId}`)}
         >
           {postData.postTitle}
