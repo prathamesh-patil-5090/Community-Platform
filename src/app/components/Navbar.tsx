@@ -136,13 +136,9 @@ function Navbar() {
             )}
           </button>
 
-          <button className="p-2 text-slate-400 hover:text-primary transition-colors">
-            <span className="material-symbols-outlined text-[20px]">mail</span>
-          </button>
-
           {/* Profile avatar + dropdown */}
           {status === "authenticated" ? (
-            <div className="relative ml-2" ref={profileRef}>
+            <div className="relative ml-2 pb-1" ref={profileRef}>
               <button
                 aria-label="Profile menu"
                 onClick={() => setIsProfileOpen((v) => !v)}

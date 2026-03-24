@@ -13,10 +13,7 @@ import {
   useState,
 } from "react";
 import { createPortal } from "react-dom";
-import { BiLike, BiSolidLike } from "react-icons/bi";
 import { BsThreeDotsVertical } from "react-icons/bs";
-import { IoSend } from "react-icons/io5";
-import { MdOutlineModeComment } from "react-icons/md";
 import { toast } from "react-toastify";
 import ReportsComponent from "../ui/ReportsComponent";
 
@@ -225,108 +222,32 @@ const PostComponent = forwardRef<PostComponentRef, Props>(
     const tags = postData.tags ?? [];
 
     return (
-      <article className="bg-[#0A0A0A] relative w-full p-5 mt-2 max-w-7xl mx-auto">
-        <div className="flex items-center gap-3 mb-4">
-          <Link href={`/author/${postData.authorId}`} className="flex-shrink-0">
-            {postData.authorPic ? (
-              <Image
-                src={postData.authorPic}
-                alt={postData.authorName ?? "Author"}
-                width={52}
-                height={52}
-                className="w-11 h-11 md:w-13 md:h-13 rounded-full object-cover ring-2 ring-white/10 hover:ring-blue-500/60 transition-all"
-              />
-            ) : (
-              <div className="w-11 h-11 md:w-13 md:h-13 rounded-full bg-blue-600 flex items-center justify-center text-white font-semibold text-lg select-none ring-2 ring-white/10 hover:ring-blue-500/60 transition-all">
-                {(postData.authorName ?? "A").charAt(0).toUpperCase()}
-              </div>
-            )}
-          </Link>
-          <div>
-            <Link
-              href={`/author/${postData.authorId}`}
-              className="text-white font-medium hover:text-blue-400 transition-colors"
-            >
-              {postData.authorName}
-            </Link>
-            {postData.postCreationDate && (
-              <p className="text-white/50 text-sm">
-                {new Date(postData.postCreationDate)
-                  .toDateString()
-                  .split(" ")
-                  .slice(1)
-                  .join(" ")}
-              </p>
-            )}
-          </div>
-          {postData.postType && (
-            <span className="ml-auto text-xs bg-white/10 text-white/60 px-2.5 py-1 rounded-full">
-              {postData.postType}
-            </span>
-          )}
-        </div>
-
-        <h1 className="font-bold text-2xl md:text-4xl text-white mb-3 leading-snug">
-          {postData.postTitle}
-        </h1>
-
-        {tags.length > 0 && (
-          <div className="flex flex-wrap gap-2 mb-4">
-            {tags.map((tag, i) => (
-              <button
-                key={i}
-                onClick={() => router.push(`/search?q=${tag}`)}
-                className="text-sm text-blue-400/80 bg-blue-500/10 hover:bg-blue-500/20 px-2.5 py-0.5 rounded-full transition-colors cursor-pointer"
-              >
-                #{tag}
-              </button>
-            ))}
-          </div>
-        )}
-
-        {postData.postImage && (
-          <div className="mb-6 rounded-xl overflow-hidden">
-            <Image
-              src={postData.postImage}
-              alt={postData.postTitle ?? "Post image"}
-              width={1100}
-              height={600}
-              className="w-full object-cover rounded-xl"
-            />
-          </div>
-        )}
-
+      <article className="relative w-full">
         {postData.postDesc && (
           <div
-            className="tiptap-content mb-6"
+            className="tiptap-content prose prose-invert max-w-none text-on-surface-variant font-body leading-relaxed mb-12"
             dangerouslySetInnerHTML={{ __html: postData.postDesc }}
           />
         )}
 
-        <div className="flex flex-wrap items-center gap-4 py-4 border-t border-white/10">
-          <div className="flex bg-white/5 rounded-full border border-white/10 p-1">
+        <div className="flex items-center justify-between py-8 mt-12 border-y border-outline-variant/10 text-on-surface-variant">
+          <div className="flex gap-6">
             <button
               onClick={handleLike}
               disabled={likeLoading || !session}
-              className={`flex items-center gap-2 px-4 py-2 rounded-full transition-colors
-                ${
-                  isLiked
-                    ? "text-red-400 hover:bg-white/10"
-                    : "text-white/80 hover:bg-white/10"
-                }
-                disabled:opacity-50 disabled:cursor-not-allowed`}
+              className={`flex items-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                isLiked ? "text-primary" : "hover:text-primary"
+              }`}
               aria-label={isLiked ? "Unlike" : "Like"}
             >
-              {isLiked ? (
-                <BiSolidLike size={20} className="text-red-400" />
-              ) : (
-                <BiLike size={20} />
-              )}
-              <span className="text-sm font-medium">{formatCount(likes)}</span>
+              <span
+                className="material-symbols-outlined"
+                style={isLiked ? { fontVariationSettings: '"FILL" 1' } : {}}
+              >
+                favorite
+              </span>
+              <span className="font-bold">{formatCount(likes)}</span>
             </button>
-          </div>
-
-          <div className="flex bg-white/5 rounded-full border border-white/10 p-1">
             <button
               onClick={() => {
                 setIsCommentOpen((v) => !v);
@@ -339,65 +260,25 @@ const PostComponent = forwardRef<PostComponentRef, Props>(
                   }, 120);
                 }
               }}
-              className="flex items-center gap-2 px-4 py-2 rounded-full hover:bg-white/10 text-white/80 transition-colors"
+              className="flex items-center gap-2 hover:text-primary transition-colors"
             >
-              <MdOutlineModeComment size={20} />
-              <span className="text-sm font-medium">
-                {formatCount(comments.length)}{" "}
-                {comments.length === 1 ? "Comment" : "Comments"}
-              </span>
+              <span className="material-symbols-outlined">forum</span>
+              <span className="font-bold">{formatCount(comments.length)}</span>
             </button>
           </div>
-
-          <div className="flex items-center gap-2 ml-auto">
-            <div className="flex bg-white/5 rounded-full border border-white/10 p-1">
-              <button
-                onClick={() => {
-                  navigator.clipboard.writeText(window.location.href);
-                  toast.success("Link copied to clipboard!");
-                }}
-                className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-white/10 text-white/80 transition-colors"
-                aria-label="Share"
-              >
-                <svg
-                  stroke="currentColor"
-                  fill="none"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  height="20"
-                  width="20"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <circle cx="18" cy="5" r="3"></circle>
-                  <circle cx="6" cy="12" r="3"></circle>
-                  <circle cx="18" cy="19" r="3"></circle>
-                  <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
-                  <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
-                </svg>
-              </button>
-            </div>
-            <div className="flex bg-white/5 rounded-full border border-white/10 p-1">
-              <button
-                className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-white/10 text-white/80 transition-colors"
-                aria-label="Bookmark"
-              >
-                <svg
-                  stroke="currentColor"
-                  fill="none"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  height="20"
-                  width="20"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
-                </svg>
-              </button>
-            </div>
+          <div className="flex gap-4">
+            <button className="material-symbols-outlined p-2 hover:bg-surface-bright rounded-lg transition-colors">
+              bookmark
+            </button>
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(window.location.href);
+                toast.success("Link copied to clipboard!");
+              }}
+              className="material-symbols-outlined p-2 hover:bg-surface-bright rounded-lg transition-colors"
+            >
+              share
+            </button>
           </div>
         </div>
 
@@ -405,13 +286,13 @@ const PostComponent = forwardRef<PostComponentRef, Props>(
           {isCommentOpen && (
             <div className="pt-4 space-y-4">
               {/* Comment input */}
-              <div className="flex gap-3 items-start">
-                <div className="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-semibold flex-shrink-0 select-none mt-0.5">
+              <div className="flex gap-4 items-start mt-6">
+                <div className="w-10 h-10 rounded-full bg-surface-variant flex items-center justify-center text-white text-sm font-semibold flex-shrink-0 select-none border-2 border-primary/20">
                   💬
                 </div>
-                <div className="flex-1 flex gap-2 items-end">
+                <div className="flex-1 flex gap-3 items-end">
                   <textarea
-                    className="flex-1 bg-white/5 border border-white/10 text-white placeholder-white/30 rounded-xl p-3 text-sm resize-none focus:outline-none focus:border-blue-500/60 focus:bg-white/8 transition-all min-h-[80px]"
+                    className="flex-1 bg-surface-container border-none text-on-surface placeholder-on-surface-variant rounded-xl p-4 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-primary transition-all min-h-[80px]"
                     placeholder="Write a comment…"
                     value={commentInput}
                     onChange={(e) => setCommentInput(e.target.value)}
@@ -424,13 +305,15 @@ const PostComponent = forwardRef<PostComponentRef, Props>(
                   <button
                     onClick={handleSubmitComment}
                     disabled={!commentInput.trim() || commentSubmitting}
-                    className="p-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed rounded-xl transition-colors flex-shrink-0"
+                    className="p-3 bg-primary hover:bg-primary-dim disabled:opacity-40 disabled:cursor-not-allowed rounded-xl transition-colors flex-shrink-0 text-on-primary-container"
                     aria-label="Submit comment"
                   >
                     {commentSubmitting ? (
-                      <span className="block w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
                     ) : (
-                      <IoSend size={18} className="text-white" />
+                      <span className="material-symbols-outlined ml-0.5 text-white">
+                        send
+                      </span>
                     )}
                   </button>
                 </div>
@@ -438,42 +321,44 @@ const PostComponent = forwardRef<PostComponentRef, Props>(
 
               {/* Comments list */}
               {comments.length === 0 ? (
-                <p className="text-center text-white/30 text-sm py-6">
+                <p className="text-center text-on-surface-variant text-sm py-6">
                   No comments yet. Be the first to comment!
                 </p>
               ) : (
-                <div className="space-y-3">
+                <div className="space-y-4">
                   {comments.map((c) => (
-                    <div key={c.id} className="flex gap-3 items-start group">
+                    <div
+                      key={c.id}
+                      className="flex gap-4 items-start group mt-4"
+                    >
                       {/* Avatar */}
                       {c.authorImage ? (
                         <Image
                           src={c.authorImage}
                           alt={c.authorName ?? "Commenter"}
-                          width={36}
-                          height={36}
-                          className="w-9 h-9 rounded-full object-cover flex-shrink-0 mt-0.5"
+                          width={40}
+                          height={40}
+                          className="w-10 h-10 rounded-full object-cover border-2 border-primary/20 flex-shrink-0"
                         />
                       ) : (
-                        <div className="w-9 h-9 rounded-full bg-indigo-600 flex items-center justify-center text-white text-sm font-semibold flex-shrink-0 mt-0.5 select-none">
+                        <div className="w-10 h-10 rounded-full bg-surface-variant flex items-center justify-center text-white text-sm font-semibold border-2 border-primary/20 flex-shrink-0 select-none">
                           {(c.authorName ?? "A").charAt(0).toUpperCase()}
                         </div>
                       )}
 
                       {/* Bubble */}
-                      <div className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 relative">
-                        <div className="flex items-center justify-between mb-1.5 gap-2">
+                      <div className="flex-1 bg-surface-container rounded-2xl px-5 py-4 relative">
+                        <div className="flex items-center justify-between mb-2 gap-2">
                           <Link
                             href={`/author/${c.authorId}`}
-                            className="text-sm font-semibold text-white hover:text-blue-400 transition-colors"
+                            className="text-sm font-bold text-on-surface hover:text-primary transition-colors"
                           >
                             {c.authorName ?? "Anonymous"}
                           </Link>
                           <div className="flex items-center gap-2">
-                            <span className="text-xs text-white/30">
+                            <span className="text-[10px] text-on-surface-variant">
                               {new Date(c.createdAt).toLocaleDateString()}
                             </span>
-                            {/* Menu button */}
                             <div className="relative">
                               <button
                                 onClick={() =>
@@ -481,7 +366,7 @@ const PostComponent = forwardRef<PostComponentRef, Props>(
                                     openMenuId === c.id ? null : c.id,
                                   )
                                 }
-                                className="p-1 rounded text-white/30 hover:text-white/70 opacity-0 group-hover:opacity-100 transition-all"
+                                className="p-1 rounded text-on-surface-variant hover:text-white opacity-0 group-hover:opacity-100 transition-all"
                               >
                                 <BsThreeDotsVertical size={14} />
                               </button>
@@ -515,7 +400,7 @@ const PostComponent = forwardRef<PostComponentRef, Props>(
                         {editingCommentId === c.id ? (
                           <div className="space-y-2 mt-1">
                             <textarea
-                              className="w-full bg-white/5 border border-white/10 text-white placeholder-white/30 rounded-lg p-2.5 text-sm resize-none focus:outline-none focus:border-blue-500/50 transition-all"
+                              className="w-full bg-surface-variant border border-outline/20 text-on-surface placeholder-on-surface-variant rounded-xl p-3 text-sm resize-none focus:outline-none focus:border-primary/50 transition-all"
                               rows={3}
                               value={editCommentText}
                               onChange={(e) =>
@@ -542,7 +427,7 @@ const PostComponent = forwardRef<PostComponentRef, Props>(
                                   !editCommentText.trim() ||
                                   editCommentSubmitting
                                 }
-                                className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs rounded-lg transition-colors"
+                                className="px-4 py-1.5 bg-primary hover:bg-primary-dim disabled:opacity-40 disabled:cursor-not-allowed text-on-primary-container text-xs font-bold rounded-lg transition-colors"
                               >
                                 {editCommentSubmitting ? "Saving…" : "Save"}
                               </button>
@@ -551,16 +436,17 @@ const PostComponent = forwardRef<PostComponentRef, Props>(
                                   setEditingCommentId(null);
                                   setEditCommentText("");
                                 }}
-                                className="px-3 py-1.5 text-white/40 hover:text-white text-xs transition-colors"
+                                disabled={editCommentSubmitting}
+                                className="px-4 py-1.5 bg-surface-variant border border-outline/10 hover:bg-surface-elevated disabled:opacity-40 disabled:cursor-not-allowed text-on-surface text-xs font-bold rounded-lg transition-colors"
                               >
                                 Cancel
                               </button>
                             </div>
                           </div>
                         ) : (
-                          <p className="text-white/80 text-sm leading-relaxed break-words">
+                          <div className="text-on-surface-variant text-sm whitespace-pre-wrap break-words leading-relaxed mt-1">
                             {c.text}
-                          </p>
+                          </div>
                         )}
                       </div>
                     </div>

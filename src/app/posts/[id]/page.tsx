@@ -217,9 +217,9 @@ function AuthorProfileCard({ authorId }: { authorId: string }) {
   });
 
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.02] overflow-hidden">
+    <div className="rounded-2xl border border-white/10 bg-white/2 overflow-hidden">
       {/* Banner gradient */}
-      <div className="h-16 bg-gradient-to-r from-purple-600/20 via-blue-600/10 to-pink-600/20" />
+      <div className="h-16 bg-linear-to-r from-purple-600/20 via-blue-600/10 to-pink-600/20" />
 
       <div className="px-5 pb-5 -mt-8">
         {/* Avatar */}
@@ -367,10 +367,10 @@ function AdCardPlaceholder() {
 
 function AdCard({ ad }: { ad: SidebarAd }) {
   const inner = (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.02] overflow-hidden hover:border-white/20 transition-colors group">
-      {/* Cover image */}
-      {ad.coverImage ? (
-        <div className="relative aspect-[16/9] overflow-hidden bg-black/20">
+    <div className="relative overflow-hidden p-8 rounded-2xl bg-gradient-to-br from-secondary-container to-surface-container group">
+      <div className="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 bg-primary/20 blur-3xl group-hover:bg-primary/40 transition-all"></div>
+      {ad.coverImage && (
+        <div className="relative h-24 mb-4 rounded-xl overflow-hidden bg-black/20">
           <Image
             src={ad.coverImage}
             alt={ad.title}
@@ -378,60 +378,22 @@ function AdCard({ ad }: { ad: SidebarAd }) {
             className="object-cover group-hover:scale-[1.02] transition-transform duration-300"
             sizes="380px"
           />
-          <span className="absolute top-3 right-3 text-[10px] px-1.5 py-0.5 rounded bg-black/60 text-gray-300 border border-white/10 backdrop-blur-sm">
-            Ad
-          </span>
-        </div>
-      ) : (
-        <div className="aspect-[16/9] bg-gradient-to-br from-purple-500/10 via-blue-500/5 to-pink-500/10 flex items-center justify-center relative">
-          <div className="text-center px-4">
-            <p className="text-gray-400 text-sm font-semibold">{ad.title}</p>
-          </div>
-          <span className="absolute top-3 right-3 text-[10px] px-1.5 py-0.5 rounded bg-white/5 text-gray-600 border border-white/5">
-            Ad
-          </span>
         </div>
       )}
-
-      {/* Body */}
-      <div className="p-4 space-y-2">
-        <p className="text-white/90 text-sm font-semibold leading-snug line-clamp-2">
-          {ad.title}
-        </p>
-
-        {/* Rendered TipTap HTML content */}
-        <div
-          className="text-gray-400 text-xs leading-relaxed line-clamp-3 prose prose-invert prose-sm max-w-none
-            [&_p]:my-0 [&_ul]:my-0 [&_ol]:my-0 [&_li]:my-0
-            [&_strong]:text-gray-300 [&_em]:text-gray-400 [&_a]:text-purple-400"
-          dangerouslySetInnerHTML={{ __html: ad.content }}
-        />
-
-        {/* Tags */}
-        {ad.tags.length > 0 && (
-          <div className="flex flex-wrap gap-1 pt-1">
-            {ad.tags.slice(0, 3).map((tag) => (
-              <span
-                key={tag}
-                className="text-[10px] px-1.5 py-0.5 rounded-full bg-white/5 text-gray-500 border border-white/5"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-        )}
-
-        {/* CTA button */}
-        {ad.linkUrl && (
-          <div className="pt-2">
-            <div className="h-9 w-full rounded-lg bg-purple-600/20 border border-purple-500/20 flex items-center justify-center group-hover:bg-purple-600/30 group-hover:border-purple-500/40 transition-colors">
-              <span className="text-purple-300 text-xs font-medium">
-                Learn More &rarr;
-              </span>
-            </div>
-          </div>
-        )}
-      </div>
+      <h4 className="text-2xl font-black font-headline text-white mb-2 line-clamp-2 relative z-10">
+        {ad.title}
+      </h4>
+      <div
+        className="text-on-secondary-container text-sm mb-6 leading-relaxed line-clamp-3 prose prose-invert prose-sm max-w-none relative z-10
+          [&_p]:my-0 [&_ul]:my-0 [&_ol]:my-0 [&_li]:my-0
+          [&_strong]:text-gray-300 [&_em]:text-gray-400 [&_a]:text-purple-400"
+        dangerouslySetInnerHTML={{ __html: ad.content }}
+      />
+      {ad.linkUrl && (
+        <button className="w-full py-3 bg-white text-secondary-container font-black rounded-xl hover:scale-[1.02] transition-transform active:scale-95 relative z-10">
+          Learn More
+        </button>
+      )}
     </div>
   );
 
@@ -491,7 +453,7 @@ function SidebarAds() {
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-10">
       {ads.map((ad) => (
         <AdCard key={ad.id} ad={ad} />
       ))}
@@ -625,14 +587,98 @@ export default function PostsPage() {
   };
 
   return (
-    <div className="relative min-h-screen">
+    <div className="relative min-h-screen bg-background text-foreground">
       <div className="hidden lg:block">
         <SideBar />
       </div>
 
-      <div className="lg:ml-64 flex justify-center xl:justify-between gap-6 max-w-[1400px] mx-auto px-4 lg:px-8 py-8 items-start">
-        <main className="min-w-0 flex flex-col gap-6 w-full max-w-4xl">
-          <div className="glass-panel rounded-2xl p-6 sm:p-8 lg:p-10">
+      <main className="lg:ml-64 px-4 sm:px-8 py-8 md:py-12 max-w-[1600px] mx-auto mt-16 lg:mt-0 min-w-0">
+        {/* Hero Section */}
+        {post && (
+          <header className="relative rounded-3xl overflow-hidden mb-12 min-h-[400px] md:min-h-[500px] flex items-end p-8 md:p-12 group">
+            <div className="absolute inset-0">
+              {post.coverImage && (
+                <Image
+                  src={post.coverImage}
+                  alt={post.title}
+                  fill
+                  className="object-cover group-hover:scale-105 transition-all duration-700"
+                  priority
+                />
+              )}
+            </div>
+
+            <div className="relative z-10 max-w-4xl w-full">
+              <div className="flex flex-wrap gap-3 mb-6">
+                {post.tags?.map((tag: string) => (
+                  <span
+                    key={tag}
+                    className="px-4 py-1.5 rounded-full bg-primary/20 text-primary text-xs font-black tracking-widest uppercase backdrop-blur-md border border-primary/20"
+                  >
+                    {tag}
+                  </span>
+                ))}
+                {post.postType && (
+                  <span className="px-4 py-1.5 rounded-full bg-secondary/20 text-secondary text-xs font-black tracking-widest uppercase backdrop-blur-md border border-secondary/20">
+                    {post.postType}
+                  </span>
+                )}
+              </div>
+
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-black font-headline text-white leading-[1.1] mb-8 tracking-tight">
+                {post.title}
+              </h1>
+
+              <div className="flex items-center gap-4">
+                <Link
+                  href={`/author/${post.authorId}`}
+                  className="flex-shrink-0"
+                >
+                  {post.authorImage ? (
+                    <Image
+                      className="w-14 h-14 rounded-full object-cover border-2 border-primary/30"
+                      src={post.authorImage}
+                      alt={post.authorName || "Author"}
+                      width={56}
+                      height={56}
+                    />
+                  ) : (
+                    <div className="w-14 h-14 rounded-full bg-surface-variant flex items-center justify-center text-white font-semibold text-lg border-2 border-primary/30">
+                      {(post.authorName ?? "A").charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                </Link>
+                <div>
+                  <div className="font-bold text-white text-lg">
+                    <Link
+                      href={`/author/${post.authorId}`}
+                      className="hover:text-primary transition-colors"
+                    >
+                      {post.authorName}
+                    </Link>
+                  </div>
+                  <div className="text-on-surface-variant text-sm flex items-center gap-2 font-medium">
+                    <span>
+                      {new Date(post.createdAt).toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                      })}
+                    </span>
+                    <span>•</span>
+                    <span>
+                      {Math.ceil((post.content?.split(" ").length || 0) / 200)}{" "}
+                      min read
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </header>
+        )}
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 relative">
+          <div className="lg:col-span-8 space-y-12 min-w-0">
             {/* Admin hidden banner */}
             {showHiddenBanner && (
               <div className="mb-3 px-4 py-3 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-start gap-3">
@@ -672,13 +718,12 @@ export default function PostsPage() {
               onCommentsCountChange={handleCommentsCountChange}
             />
           </div>
-        </main>
 
-        <aside className="hidden xl:block sticky top-24 self-start space-y-6 w-[340px] flex-shrink-0">
-          <AuthorProfileCard authorId={post.authorId} />
-          <SidebarAds />
-        </aside>
-      </div>
+          <aside className="lg:col-span-4 space-y-10 pt-2 lg:pt-0 hidden md:block">
+            <SidebarAds />
+          </aside>
+        </div>
+      </main>
     </div>
   );
 }

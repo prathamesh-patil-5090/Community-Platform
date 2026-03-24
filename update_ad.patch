@@ -1,0 +1,65 @@
+--- src/app/posts/[id]/page.tsx
++++ src/app/posts/[id]/page.tsx
+@@ -325,43 +325,23 @@
+ 
+ function AdCardPlaceholder() {
+   return (
+-    <div className="rounded-2xl border border-white/10 bg-white/[0.02] overflow-hidden">
+-      <div className="aspect-[16/9] bg-gradient-to-br from-purple-500/10 via-blue-500/5 to-pink-500/10 flex items-center justify-center relative">
+-        <div className="text-center px-4">
+-          <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
+-            <svg
+-              className="w-6 h-6 text-gray-500"
+-              fill="none"
+-              stroke="currentColor"
+-              viewBox="0 0 24 24"
+-            >
+-              <path
+-                strokeLinecap="round"
+-                strokeLinejoin="round"
+-                strokeWidth={1.5}
+-                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+-              />
+-            </svg>
+-          </div>
+-          <p className="text-gray-500 text-sm font-medium">Advertisement</p>
+-          <p className="text-gray-600 text-xs mt-1">Your ad could be here</p>
+-        </div>
+-        <span className="absolute top-3 right-3 text-[10px] px-1.5 py-0.5 rounded bg-white/5 text-gray-600 border border-white/5">
+-          Ad
+-        </span>
+-      </div>
+-      <div className="p-4 space-y-3">
+-        <div className="h-3 w-3/4 bg-white/5 rounded" />
+-        <div className="h-3 w-1/2 bg-white/5 rounded" />
+-        <div className="mt-4">
+-          <div className="h-9 w-full rounded-lg bg-purple-600/10 border border-purple-500/10 flex items-center justify-center">
+-            <span className="text-purple-400/60 text-xs font-medium">
+-              Learn More
+-            </span>
+-          </div>
+-        </div>
+-      </div>
++    <div className="relative overflow-hidden p-8 rounded-2xl bg-gradient-to-br from-primary-dim/20 to-surface-container group border border-outline/20">
++      <div className="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 bg-primary/20 blur-3xl group-hover:bg-primary/40 transition-all"></div>
++      <h4 className="text-2xl font-black font-headline text-white mb-2">
++        Upgrade to Pro
++      </h4>
++      <p className="text-on-surface-variant text-sm mb-6 leading-relaxed">
++        Get unlimited access to deep-dive architecture diagrams and early
++        access to our weekly tech talks.
++      </p>
++      <button className="w-full py-3 bg-white text-surface-variant font-black rounded-xl hover:scale-[1.02] transition-transform active:scale-95">
++        Go Unlimited
++      </button>
+     </div>
+   );
+ }
+ 
+ function AdCard({ ad }: { ad: SidebarAd }) {
+   const inner = (
+-    <div className="rounded-2xl border border-white/10 bg-white/[0.02] overflow-hidden hover:border-white/20 transition-colors group">
++    <div className="rounded-2xl border border-outline/20 bg-surface-container overflow-hidden hover:border-primary/40 transition-colors group">
+       {/* Cover image */}
+       {ad.coverImage ? (
+         <div className="relative aspect-[16/9] overflow-hidden bg-black/20">

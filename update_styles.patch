@@ -1,0 +1,68 @@
+--- src/app/components/create-post/styles.scss
++++ src/app/components/create-post/styles.scss
+@@ -9,7 +9,7 @@
+ .ProseMirror,
+ .tiptap-content {
+   outline: none;
+-  color: #e5e7eb;
++  color: var(--on-surface-variant);
+   line-height: 1.7;
+ 
+   > :first-child {
+@@ -19,7 +19,7 @@
+   /* ── Paragraph ──────────────────────────────────────────────────────────── */
+   p {
+     margin: 0.75rem 0;
+-    line-height: 1.75;
++    line-height: 1.8;
+   }
+ 
+   /* ── Lists ──────────────────────────────────────────────────────────────── */
+@@ -73,15 +73,16 @@
+   h5,
+   h6 {
+-    font-weight: 700;
++    font-weight: 900;
++    font-family: var(--font-headline);
+     line-height: 1.25;
+-    color: #f9fafb;
++    color: var(--on-surface);
+     text-wrap: pretty;
+   }
+ 
+   h1 {
+     font-size: 2rem;
+-    margin: 2rem 0 1rem;
++    margin: 2.5rem 0 1.25rem;
+   }
+ 
+   h2 {
+     font-size: 1.6rem;
+-    margin: 1.75rem 0 0.875rem;
++    margin: 2rem 0 1rem;
+   }
+ 
+   h3 {
+@@ -154,7 +155,7 @@
+ 
+   /* ── Images ─────────────────────────────────────────────────────────────── */
+   img {
+-    border-radius: 0.5rem;
++    border-radius: 1rem;
+     max-width: 100%;
+     height: auto;
+     margin: 1rem 0;
+@@ -162,11 +163,11 @@
+ 
+   /* ── Strong / Em ────────────────────────────────────────────────────────── */
+   strong {
+-    color: #f9fafb;
++    color: var(--on-surface);
+     font-weight: 700;
+   }
+ 
+   em {
+-    color: #d1d5db;
++    color: var(--on-surface-variant);
+   }
+ }

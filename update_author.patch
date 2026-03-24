@@ -1,0 +1,56 @@
+--- src/app/posts/[id]/page.tsx
++++ src/app/posts/[id]/page.tsx
+@@ -219,7 +219,7 @@
+   });
+ 
+   return (
+-    <div className="rounded-2xl border border-white/10 bg-white/[0.02] overflow-hidden">
++    <div className="rounded-2xl border border-outline/20 bg-surface-container overflow-hidden">
+       {/* Banner gradient */}
+       <div className="h-16 bg-gradient-to-r from-purple-600/20 via-blue-600/10 to-pink-600/20" />
+ 
+@@ -233,11 +233,11 @@
+               alt={author.name ?? "Author"}
+               width={64}
+               height={64}
+-              className="w-16 h-16 rounded-full object-cover ring-4 ring-[#0A0A0A] hover:ring-purple-500/40 transition-all"
++              className="w-16 h-16 rounded-full object-cover ring-4 ring-background hover:ring-primary/40 transition-all border-2 border-primary/20"
+             />
+           ) : (
+-            <div className="w-16 h-16 rounded-full bg-purple-600 flex items-center justify-center text-white font-bold text-xl ring-4 ring-[#0A0A0A] hover:ring-purple-500/40 transition-all select-none">
++            <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center text-white font-bold text-xl ring-4 ring-background hover:ring-primary/40 transition-all select-none border-2 border-primary/20">
+               {(author.name ?? "A").charAt(0).toUpperCase()}
+             </div>
+           )}
+@@ -248,10 +248,10 @@
+           <Link
+             href={`/author/${author.id}`}
+-            className="text-white font-semibold text-lg hover:text-purple-300 transition-colors"
++            className="text-white font-bold text-lg hover:text-primary transition-colors font-headline"
+           >
+             {author.name ?? "Anonymous"}
+           </Link>
+-          <p className="text-gray-500 text-sm truncate">{author.email}</p>
++          <p className="text-on-surface-variant text-sm truncate">{author.email}</p>
+         </div>
+ 
+         {/* Bio */}
+@@ -263,7 +263,7 @@
+         <div className="flex gap-4 mt-4 pt-4 border-t border-white/5">
+           <div className="flex flex-col">
+             <span className="text-white font-medium">{author.postsCount}</span>
+-            <span className="text-gray-500 text-xs">Posts</span>
++            <span className="text-on-surface-variant text-xs uppercase tracking-wider font-bold">Posts</span>
+           </div>
+           <div className="flex flex-col">
+             <span className="text-white font-medium">
+@@ -271,7 +271,7 @@
+             </span>
+-            <span className="text-gray-500 text-xs">Upvotes</span>
++            <span className="text-on-surface-variant text-xs uppercase tracking-wider font-bold">Upvotes</span>
+           </div>
+         </div>
+ 
+         {/* Joined */}
+         <div className="mt-5 text-xs text-gray-500 flex items-center gap-1.5">
+           <svg
