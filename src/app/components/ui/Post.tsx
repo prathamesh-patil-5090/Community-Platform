@@ -270,7 +270,7 @@ export default function Post({ postData }: { postData: PostInfoType }) {
       )}
 
       {/* Actions Footer */}
-      <div className="px-6 py-4 bg-surface-variant border-t border-outline/10 flex items-center justify-between mt-auto">
+      <div className="px-6 py-4 bg-surface-variant border-t rounded-b-2xl border-outline/10 flex items-center justify-between mt-auto">
         <div className="flex items-center gap-6">
           {/* Like */}
           <button
