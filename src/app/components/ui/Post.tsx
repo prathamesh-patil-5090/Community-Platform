@@ -294,6 +294,7 @@ export default function Post({ postData }: { postData: PostInfoType }) {
 
           {/* Comments toggle */}
           <button
+            disabled={!session}
             onClick={() => {
               setIsCommentOpen((v) => !v);
               if (!isCommentOpen) {
@@ -305,7 +306,7 @@ export default function Post({ postData }: { postData: PostInfoType }) {
                 }, 120);
               }
             }}
-            className="flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors"
+            className="flex items-center disabled:opacity-50 disabled:cursor-not-allowed gap-2 text-on-surface-variant hover:text-primary transition-colors"
           >
             <span className="material-symbols-outlined text-[20px]">
               chat_bubble
@@ -315,7 +316,10 @@ export default function Post({ postData }: { postData: PostInfoType }) {
             </span>
           </button>
 
-          <button className="flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors">
+          <button
+            className="flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={!session}
+          >
             <span className="material-symbols-outlined text-[20px]">
               bookmark
             </span>

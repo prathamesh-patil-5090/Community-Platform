@@ -247,6 +247,7 @@ const PostComponent = forwardRef<PostComponentRef, Props>(
               <span className="font-bold">{formatCount(likes)}</span>
             </button>
             <button
+              disabled={!session}
               onClick={() => {
                 setIsCommentOpen((v) => !v);
                 if (!isCommentOpen) {
@@ -258,14 +259,17 @@ const PostComponent = forwardRef<PostComponentRef, Props>(
                   }, 120);
                 }
               }}
-              className="flex items-center gap-2 hover:text-primary transition-colors"
+              className="disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 hover:text-primary transition-colors"
             >
               <span className="material-symbols-outlined">forum</span>
               <span className="font-bold">{formatCount(comments.length)}</span>
             </button>
           </div>
           <div className="flex gap-4">
-            <button className="material-symbols-outlined p-2 hover:bg-surface-bright rounded-lg transition-colors">
+            <button
+              disabled={!session}
+              className="disabled:opacity-50 disabled:cursor-not-allowed material-symbols-outlined p-2 hover:bg-surface-bright rounded-lg transition-colors"
+            >
               bookmark
             </button>
             <button
