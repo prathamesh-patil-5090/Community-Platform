@@ -325,52 +325,21 @@ interface SidebarAd {
 
 function AdCardPlaceholder() {
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.02] overflow-hidden">
-      <div className="aspect-[16/9] bg-gradient-to-br from-purple-500/10 via-blue-500/5 to-pink-500/10 flex items-center justify-center relative">
-        <div className="text-center px-4">
-          <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
-            <svg
-              className="w-6 h-6 text-gray-500"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1.5}
-                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
-              />
-            </svg>
-          </div>
-          <p className="text-gray-500 text-sm font-medium">Advertisement</p>
-          <p className="text-gray-600 text-xs mt-1">Your ad could be here</p>
-        </div>
-        <span className="absolute top-3 right-3 text-[10px] px-1.5 py-0.5 rounded bg-white/5 text-gray-600 border border-white/5">
-          Ad
-        </span>
-      </div>
-      <div className="p-4 space-y-3">
-        <div className="h-3 w-3/4 bg-white/5 rounded" />
-        <div className="h-3 w-1/2 bg-white/5 rounded" />
-        <div className="mt-4">
-          <div className="h-9 w-full rounded-lg bg-purple-600/10 border border-purple-500/10 flex items-center justify-center">
-            <span className="text-purple-400/60 text-xs font-medium">
-              Learn More
-            </span>
-          </div>
-        </div>
-      </div>
+    <div className="relative overflow-hidden p-6 rounded-2xl bg-gradient-to-br from-[#5A0B91]/50 to-[#1A1025]/50 border border-white/5">
+      <div className="h-32 mb-5 rounded-xl bg-white/10 animate-pulse" />
+      <div className="h-8 w-3/4 bg-white/10 rounded-lg mb-2 animate-pulse" />
+      <div className="h-4 w-full bg-white/10 rounded mb-2 animate-pulse" />
+      <div className="h-4 w-5/6 bg-white/10 rounded mb-6 animate-pulse" />
+      <div className="w-full h-12 bg-white/10 rounded-xl animate-pulse" />
     </div>
   );
 }
 
 function AdCard({ ad }: { ad: SidebarAd }) {
   const inner = (
-    <div className="relative overflow-hidden p-8 rounded-2xl bg-gradient-to-br from-secondary-container to-surface-container group">
-      <div className="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 bg-primary/20 blur-3xl group-hover:bg-primary/40 transition-all"></div>
+    <div className="relative overflow-hidden p-6 rounded-2xl bg-gradient-to-br from-[#5A0B91] to-[#1A1025] group">
       {ad.coverImage && (
-        <div className="relative h-24 mb-4 rounded-xl overflow-hidden bg-black/20">
+        <div className="relative h-32 mb-5 rounded-xl overflow-hidden bg-black/20">
           <Image
             src={ad.coverImage}
             alt={ad.title}
@@ -384,13 +353,13 @@ function AdCard({ ad }: { ad: SidebarAd }) {
         {ad.title}
       </h4>
       <div
-        className="text-on-secondary-container text-sm mb-6 leading-relaxed line-clamp-3 prose prose-invert prose-sm max-w-none relative z-10
+        className="text-purple-200 text-sm mb-6 leading-relaxed line-clamp-3 prose prose-invert prose-sm max-w-none relative z-10
           [&_p]:my-0 [&_ul]:my-0 [&_ol]:my-0 [&_li]:my-0
-          [&_strong]:text-gray-300 [&_em]:text-gray-400 [&_a]:text-purple-400"
+          [&_strong]:text-purple-100 [&_em]:text-purple-300 [&_a]:text-white"
         dangerouslySetInnerHTML={{ __html: ad.content }}
       />
       {ad.linkUrl && (
-        <button className="w-full text-black py-3 bg-white text-secondary-container font-black rounded-xl hover:scale-[1.02] transition-transform active:scale-95 relative z-10">
+        <button className="w-full py-3 bg-white text-black font-bold rounded-xl hover:scale-[1.02] transition-transform active:scale-95 relative z-10">
           Learn More
         </button>
       )}
