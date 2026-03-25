@@ -77,8 +77,8 @@ const PageLoader = () => {
         </div>
 
         {/* Loading animation */}
-        <div className="mb-6">
-          <div className="w-64 h-2 bg-gray-200 rounded-full overflow-hidden">
+        <div className="mb-6 flex justify-center px-4">
+          <div className="w-64 max-w-full h-2 bg-gray-200 rounded-full overflow-hidden mx-auto">
             <div
               className="h-full bg-gradient-to-r from-[#0f2027] via-[#203a43] to-[#2c5364] rounded-full transition-all duration-300 ease-out"
               style={{ width: `${progress}%` }}
@@ -87,8 +87,8 @@ const PageLoader = () => {
         </div>
 
         {/* Loading text */}
-        <div className="text-white font-dmSans font-medium">
-          <div className="flex items-center justify-center gap-2">
+        <div className="text-white font-dmSans font-medium px-4 text-sm md:text-base">
+          <div className="flex items-center justify-center gap-2 text-center">
             <span>Welcome to our community platform...</span>
           </div>
         </div>
