@@ -114,17 +114,7 @@ function Navbar() {
           </div>
 
           <button
-            className="p-2 text-slate-400 hover:text-primary transition-colors lg:hidden"
-            onClick={() => router.push("/search")}
-            aria-label="Search"
-          >
-            <span className="material-symbols-outlined text-[20px]">
-              search
-            </span>
-          </button>
-
-          <button
-            className="p-2 text-slate-400 hover:text-primary transition-colors relative"
+            className="p-2 text-slate-400 hover:text-primary transition-colors relative hidden lg:block"
             aria-label="Notifications"
             onClick={() => router.push("/notifications")}
           >

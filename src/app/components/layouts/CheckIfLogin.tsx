@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import Navbar from "../Navbar";
+import MobileBottomNav from "../ui/MobileBottomNav";
 
 function CheckIfLogin({
   children,
@@ -17,6 +18,7 @@ function CheckIfLogin({
     <div className="min-h-screen">
       {showNavbar && <Navbar />}
       <div className={showNavbar ? "pt-16" : ""}>{children}</div>
+      <MobileBottomNav />
     </div>
   );
 }
