@@ -163,7 +163,7 @@ export default function Post({ postData }: { postData: PostInfoType }) {
   const postId = postData.postId;
 
   return (
-    <article className="group bg-surface-container rounded-2xl border border-primary/15 transition-all hover:border-primary/40 hover:shadow-[0_0_40px_rgba(157,78,221,0.1)] relative w-full mb-8">
+    <article className="group bg-(--surface-container) rounded-2xl border border-outline/60 transition-all hover:border-primary/40 hover:shadow-[0_0_40px_rgba(157,78,221,0.1)] relative w-full mb-8">
       {/* User Info Header */}
       <div className="p-6 flex items-center justify-between">
         <div className="flex items-center gap-3">

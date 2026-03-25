@@ -4,7 +4,6 @@ import { CommentType } from "@/lib/types";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import {
   forwardRef,
   useEffect,
@@ -46,7 +45,6 @@ type Props = {
 
 const PostComponent = forwardRef<PostComponentRef, Props>(
   ({ postData, onLikeChange, onCommentsCountChange }, ref) => {
-    const router = useRouter();
     const { data: session } = useSession();
     const commentsRef = useRef<HTMLDivElement>(null);
 

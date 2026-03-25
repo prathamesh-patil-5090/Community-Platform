@@ -390,7 +390,7 @@ function AdCard({ ad }: { ad: SidebarAd }) {
         dangerouslySetInnerHTML={{ __html: ad.content }}
       />
       {ad.linkUrl && (
-        <button className="w-full py-3 bg-white text-secondary-container font-black rounded-xl hover:scale-[1.02] transition-transform active:scale-95 relative z-10">
+        <button className="w-full text-black py-3 bg-white text-secondary-container font-black rounded-xl hover:scale-[1.02] transition-transform active:scale-95 relative z-10">
           Learn More
         </button>
       )}

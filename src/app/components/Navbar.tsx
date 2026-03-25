@@ -161,7 +161,7 @@ function Navbar() {
 
               {/* Dropdown */}
               {isProfileOpen && (
-                <div className="absolute right-0 mt-3 w-56 bg-surface-elevated border border-outline rounded-xl shadow-xl z-50 overflow-hidden">
+                <div className="absolute right-0 mt-3 w-56 bg-(--surface-elevated) border border-outline rounded-xl shadow-xl z-50 overflow-hidden">
                   {/* User info header */}
                   <div className="px-4 py-3 border-b border-outline">
                     <div className="flex items-center gap-3">

@@ -125,7 +125,7 @@ function TopDiscussionsBox() {
                 <p className="text-xs text-slate-400 mb-1 uppercase font-bold tracking-tighter">
                   Discussion
                 </p>
-                <p className="text-sm font-semibold text-white group-hover:text-primary transition-colors line-clamp-2 leading-tight">
+                <p className="text-sm font-semibold text-white transition-colors line-clamp-2 leading-tight">
                   {discussion.postTitle}
                 </p>
                 <div className="flex items-center justify-between mt-2">
